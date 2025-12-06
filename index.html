@@ -47,17 +47,14 @@ src="https://www.facebook.com/tr?id=1202350998538131&ev=PageView&noscript=1"
 
     // --- TIKTOK: evento de formulario/enlace enviado (SubmitForm = equivalente a Lead)
     function trackLeadTT(source) {
-      // Comprobamos que el objeto ttq existe y que el método track está disponible
-      if (window.ttq && typeof window.ttq.track === 'function') {
-        window.ttq.track('SubmitForm', {
-          content_name: 'WhatsApp Autoresponder',
-          content_category: 'Landing Impulso Digital',
-          lead_source: source
-        });
-      } else {
-        console.log('TikTok Pixel todavía no está listo para trackear.');
-      }
+      // Enviar evento estándar de TikTok para envío de formulario / lead
+      ttq.track('SubmitForm', {
+        content_name: 'WhatsApp Autoresponder',
+        content_category: 'Landing Impulso Digital',
+        lead_source: source
+      });
     }
+
 
 
     function trackLeadAll(source) {
