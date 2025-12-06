@@ -34,8 +34,8 @@ src="https://www.facebook.com/tr?id=1202350998538131&ev=PageView&noscript=1"
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    // Función reutilizable para enviar el evento Lead
-    function trackLead(source) {
+    // --- META: evento Lead estandarizado
+    function trackLeadFB(source) {
       if (typeof fbq === 'function') {
         fbq('track', 'Lead', {
           content_name: 'WhatsApp Autoresponder',
@@ -45,11 +45,27 @@ src="https://www.facebook.com/tr?id=1202350998538131&ev=PageView&noscript=1"
       }
     }
 
+    // --- TIKTOK: evento de formulario/enlace enviado (SubmitForm = equivalente a Lead)
+    function trackLeadTT(source) {
+      if (typeof ttq === 'function') {
+        ttq.track('SubmitForm', {   // estándar recomendado para "lead" en TikTok 
+          content_name: 'WhatsApp Autoresponder',
+          content_category: 'Landing Impulso Digital',
+          lead_source: source
+        });
+      }
+    }
+
+    function trackLeadAll(source) {
+      trackLeadFB(source);
+      trackLeadTT(source);
+    }
+
     // Botón principal del hero
     var btnHero = document.getElementById('whatsapp');
     if (btnHero) {
       btnHero.addEventListener('click', function () {
-        trackLead('cta_hero_whatsapp');
+        trackLeadAll('cta_hero_whatsapp');
       });
     }
 
@@ -57,11 +73,12 @@ src="https://www.facebook.com/tr?id=1202350998538131&ev=PageView&noscript=1"
     var btnOffer = document.getElementById('offer-cta');
     if (btnOffer) {
       btnOffer.addEventListener('click', function () {
-        trackLead('cta_offer_whatsapp');
+        trackLeadAll('cta_offer_whatsapp');
       });
     }
   });
 </script>
+
 
 
 
