@@ -221,10 +221,11 @@ position: relative;          /* antes: sticky */
 .timer-bar-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;   /* ← CENTRA TODO EL CONTENIDO */
   gap: 12px;
   padding: 8px 0;
 }
+
 
 .timer-bar-left {
   display: inline-flex;
@@ -275,9 +276,10 @@ position: relative;          /* antes: sticky */
 .timer-bar-time {
   font-family: "Share Tech Mono", "Inter", monospace;
   font-weight: 600;
-  font-size: 1.12rem; /* MÁS GRANDE */
+  /* Tamaño más grande y adaptable a PC, tablet y móvil */
+  font-size: clamp(1.3rem, 2.2vw + 0.6rem, 1.8rem);
   letter-spacing: 0.06em;
-  padding: 4px 12px;
+  padding: 6px 16px; /* un poco más de “peso” alrededor del número */
   border-radius: 999px;
   background: radial-gradient(circle at top, #022c22, #020617);
   border: 1px solid rgba(16, 185, 129, 0.8);
@@ -286,6 +288,7 @@ position: relative;          /* antes: sticky */
     0 0 6px rgba(34, 197, 94, 0.9),
     0 0 18px rgba(34, 197, 94, 0.8);
 }
+
 
 /* ÚLTIMO MINUTO: ROJO + PULSO INFINITO */
 .timer-bar-time.is-urgent {
@@ -394,7 +397,7 @@ position: relative;          /* antes: sticky */
 
 
 
-/* Centrar el botón principal en versión celular */
+/* Centrar el botón principal en versión celular y hacerlo un poco más grande */
 @media (max-width: 768px) {
   .hero-text {
     text-align: center;
@@ -407,6 +410,8 @@ position: relative;          /* antes: sticky */
   .hero-text .btn-primary {
     margin-left: auto;
     margin-right: auto;
+    padding: 14px 30px;   /* ← un poco más grande en alto y ancho */
+    font-size: 1rem;      /* ← ligeramente más grande que 0.95rem */
   }
 
   .hero-testimonial .testimonial-slider-wrapper {
@@ -416,6 +421,13 @@ position: relative;          /* antes: sticky */
 }
 
 
+/* Botón rosa más grande solo en escritorio (PC) */
+@media (min-width: 1024px) {
+  .hero-text .btn-primary {
+    padding: 18px 48px;   /* ← bastante más ancho y alto en desktop */
+    font-size: 1.1rem;    /* ← texto más grande */
+  }
+}
 
 
 
@@ -1187,8 +1199,10 @@ position: relative;          /* antes: sticky */
 
 .section-header {
   max-width: 640px;
-  margin-bottom: 28px;
+  margin: 0 auto 28px;   /* centra el bloque dentro del container */
+  text-align: center;    /* centra el texto (título + párrafo) */
 }
+
 
 .section-header h2 {
   margin: 0 0 6px;
@@ -1400,18 +1414,32 @@ position: relative;          /* antes: sticky */
 /* FOOTER */
 
 .footer {
-  padding: 16px 0 22px;
+  position: relative;                         /* queda por encima de la lluvia */
+  z-index: 10;
+  margin-top: 24px;                           /* separación respecto a beneficios */
+  padding: 24px 0 28px;
   background: #020617;
-  border-top: 1px solid rgba(15, 23, 42, 0.9);
+  border-top: 1px solid rgba(148, 163, 184, 0.6);
 }
 
 .footer-inner {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  flex-direction: column;                     /* siempre en columna */
+  align-items: center;                        /* centrado horizontal */
+  text-align: center;                         /* texto centrado */
+  gap: 6px;
+  font-size: 0.9rem;                          /* un poco más grande */
+  color: #e5e7eb;                             /* más claro que var(--text-muted) */
 }
+
+/* Ya no necesitas este media query para el footer,
+   porque siempre usamos columna. Puedes BORRARLO: */
+@media (max-width: 600px) {
+  .footer-inner {
+    flex-direction: column;
+  }
+}
+
 
 /* RESPONSIVE */
 
