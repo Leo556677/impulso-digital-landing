@@ -35,15 +35,19 @@ src="https://www.facebook.com/tr?id=1202350998538131&ev=PageView&noscript=1"
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     // --- META: evento Lead estandarizado
-    function trackLeadFB(source) {
-      if (typeof fbq === 'function') {
-        fbq('track', 'Lead', {
+    function trackLeadTT(source) {
+      // Evento estándar de TikTok para LEAD (clic al WhatsApp, etc.)
+      if (window.ttq && typeof window.ttq.track === 'function') {
+        window.ttq.track('Lead', {
           content_name: 'WhatsApp Autoresponder',
           content_category: 'Landing Impulso Digital',
           lead_source: source
         });
+      } else {
+        console.log('TikTok Pixel no está listo. ttq =', window.ttq);
       }
     }
+
 
     // --- TIKTOK: evento de formulario/enlace enviado (SubmitForm = equivalente a Lead)
     function trackLeadTT(source) {
