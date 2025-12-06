@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Impulso Digital – Autoresponder para WhatsApp</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+
+  <!-- AQUÍ IRÁ EL META PIXEL (cuando lo tengas) -->
+  <!-- AQUÍ IRÁ EL TIKTOK PIXEL (cuando lo tengas) -->
+</head>
+<body>
+  <!-- CAPA DE LLUVIA WHATSAPP (FONDO ANIMADO CON LOGOS) -->
+  <div class="whatsapp-rain" id="whatsapp-rain"></div>
+
+  <!-- CONTENEDOR STICKY COMPLETO -->
+  <div class="top-shell">
+    <!-- BARRA SUPERIOR CON TEMPORIZADOR PEQUEÑO -->
+    <header class="top-bar">
+      <div class="container top-bar-inner">
+        <div class="top-bar-left">
+          <span class="top-pill">Impulso Digital</span>
+          <span class="top-tagline">
+            Configuro tu autoresponder para WhatsApp en horas, no en semanas.
+          </span>
+        </div>
+        <div class="top-bar-right">
+          <!-- OPCIONALMENTE AGREGAS COSAS AQUÍ -->
+        </div>
+      </div>
+    </header>
+
+    <!-- BARRA DE TEMPORIZADOR SUPERIOR -->
+    <div class="timer-bar">
+      <div class="container">
+        <div class="timer-bar-inner">
+          <div class="timer-bar-left">
+            <span class="timer-bar-pulse-dot"></span>
+            <span class="timer-bar-label">Oferta termina en:</span>
+            <span class="timer-bar-time" id="timer-text-top">00:05:00</span>
+          </div>
+          <div class="timer-bar-right">
+            <span class="timer-bar-tag">Precio especial solo hoy</span>
+          </div>
+        </div>
+        <div class="timer-bar-progress">
+          <div class="timer-bar-progress-fill" id="timer-bar-progress-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- cierre de .top-shell -->
+
+
+
+
+  <main>
+    <!-- SECCIÓN HERO -->
+    <section class="hero" id="inicio">
+      <div class="container hero-inner">
+        <div class="hero-text">
+
+          <!-- TÍTULO SUBIDO CERCA AL TEMPORIZADOR -->
+          <div class="hero-heading">
+            <p class="eyebrow">AUTOMATIZACIÓN PARA WHATSAPP</p>
+            <h1>Automatiza tu WhatsApp 24/7 y cierra clientes mientras duermes</h1>
+          </div>
+
+
+
+          <!-- SLIDER DE TIPOS DE ARCHIVO (IMAGEN, VIDEO, AUDIO, PDF) -->
+          <div class="hero-file-slider" id="hero-file-slider">
+            <div class="hero-file-slide is-active">
+              <span class="hero-file-icon" id="hero-file-icon">🖼️</span>
+              <span class="hero-file-label" id="hero-file-label">Imágenes automáticas 24/7</span>
+            </div>
+          </div>
+
+          <!-- PRECIOS – PERÚ / INTERNACIONAL -->
+          <div class="hero-price">
+            <div class="price-block">
+              <span class="price-label">Perú</span>
+              <div class="price-row">
+                <span class="price-old">S/ 299</span>
+                <span class="price-new">S/ 100</span>
+              </div>
+              <span class="price-hint">Solo hoy</span>
+            </div>
+            <div class="price-divider"></div>
+            <div class="price-block">
+              <span class="price-label">Internacional</span>
+              <div class="price-row">
+                <span class="price-old">$ 99.99</span>
+                <span class="price-new">$ 29</span>
+              </div>
+              <span class="price-hint">Solo hoy</span>
+            </div>
+          </div>
+
+          <!-- BOTÓN PRINCIPAL CON EFECTO PULSE -->
+          <a id="whatsapp" href="#" class="btn-primary btn-pulse">
+            Obtener mi autoresponder
+          </a>
+          <p class="hero-note">Instalación en menos de 24 horas. Cupos limitados.</p>
+
+          <!-- TESTIMONIO / RECOMENDACIÓN INMEDIATAMENTE DEBAJO DEL BOTÓN -->
+          <!-- (Se vuelve dorado después de regalar +1 minuto) -->
+          <!-- TESTIMONIO DESTACADO DEBAJO DEL TÍTULO -->
+          <div class="hero-testimonial">
+            <div class="testimonial-slider-wrapper">
+              <article class="testimonial-card" id="testimonial-card">
+                <div class="testimonial-header">
+                  <div class="testimonial-header-left">
+                    <img
+                      id="testimonial-avatar"
+                      class="testimonial-avatar"
+                      src=""
+                      alt="Avatar cliente"
+                    />
+                    <div>
+                      <div class="testimonial-name" id="testimonial-name"></div>
+                      <div class="testimonial-role" id="testimonial-role"></div>
+                    </div>
+                  </div>
+                  <div class="testimonial-rating" id="testimonial-rating"></div>
+                </div>
+                <p class="testimonial-text" id="testimonial-text"></p>
+                <div class="testimonial-meta">
+                  <span class="testimonial-date" id="testimonial-date"></span>
+                  <span class="testimonial-tag" id="testimonial-tag"></span>
+                </div>
+              </article>
+            </div>
+          </div>
+          <!-- FIN TESTIMONIO HERO -->
+        </div>
+
+        <!-- HERO VISUAL: CELULAR CON WHATSAPP -->
+        <div class="hero-visual">
+          <div class="hero-card">
+            <!-- Título del tipo de negocio (fuera del celular) -->
+            <div class="hero-chat-header">
+              <span class="hero-chat-pill" id="hero-chat-label">
+                Tienda de ropa online
+              </span>
+            </div>
+
+            <!-- Celular con borde y fondo -->
+            <div class="hero-phone">
+              <div class="hero-phone-frame">
+                <div class="hero-phone-inner">
+                  <!-- Header de WhatsApp ficticio -->
+                  <div class="hero-wa-header">
+                    <div class="hero-wa-header-left">
+                      <div class="hero-wa-avatar"></div>
+                      <div class="hero-wa-title-wrap">
+                        <span class="hero-wa-title">Impulso Digital Bot</span>
+                        <span class="hero-wa-subtitle">en línea</span>
+                      </div>
+                    </div>
+                    <div class="hero-wa-header-right">
+                      <span class="hero-wa-dot"></span>
+                      <span class="hero-wa-dot"></span>
+                      <span class="hero-wa-dot"></span>
+                    </div>
+                  </div>
+
+                  <!-- Zona de chat -->
+                  <div class="hero-phone-chat" id="hero-chat">
+                    <!-- Mensajes se insertan por JS -->
+                  </div>
+
+                  <!-- Barra inferior simulada -->
+                  <div class="hero-wa-input">
+                    <div class="hero-wa-input-placeholder">Escribe un mensaje...</div>
+                    <div class="hero-wa-input-mic"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Fin celular -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- SECCIÓN 3: OFERTA + TIMER CIRCULAR -->
+    <section class="section offer-section" id="oferta">
+      <div class="container offer-inner">
+        <div class="offer-copy">
+          <h2>Activa tu autoresponder hoy con precio especial</h2>
+          <div class="offer-prices">
+            <div class="price-block">
+              <span class="price-label">Perú</span>
+              <div class="price-row">
+                <span class="price-old">S/ 299</span>
+                <span class="price-new price-new-lg">S/ 100</span>
+              </div>
+              <span class="price-hint">Pago único. Sin mensualidades.</span>
+            </div>
+            <div class="price-divider vertical"></div>
+            <div class="price-block">
+              <span class="price-label">Internacional</span>
+              <div class="price-row">
+                <span class="price-old">$ 99.99</span>
+                <span class="price-new price-new-lg">$ 29</span>
+              </div>
+              <span class="price-hint">Pago único. Soporte por WhatsApp.</span>
+            </div>
+          </div>
+
+          <ul class="offer-list">
+            <li>✅ Configuración personalizada de tu autoresponder para WhatsApp Business.</li>
+            <li>✅ Textos pensados para tu tipo de negocio (no plantillas genéricas).</li>
+            <li>✅ Configuración de envío de imágenes, PDFs o videos automatizados.</li>
+            <li>✅ Ajustes finos durante los primeros días para mejorar resultados.</li>
+          </ul>
+
+          <p class="offer-warning">
+            Esta oferta está pensada para emprendedores que quieren resultados rápidos y medibles.
+          </p>
+        </div>
+
+        <div class="offer-timer-card">
+          <p class="timer-label">Tu descuento especial termina en:</p>
+          <div class="timer-circle" id="timer-circle">
+            <span id="timer-text">00:05:00</span>
+          </div>
+          <a href="#" class="btn-primary btn-large" id="offer-cta">
+            Obtener mi autoresponder ahora
+          </a>
+          <p class="hero-note center">Instalación en menos de 24 horas.</p>
+          <!-- NOTA: las notificaciones extra ya no se muestran aquí.
+               El “minuto extra” ahora activa testimonios dorados en el hero. -->
+        </div>
+      </div>
+    </section>
+
+
+    <!-- SECCIÓN 2: BENEFICIOS -->
+    <section class="section" id="beneficios">
+      <div class="container">
+        <div class="section-header">
+          <h2>Deja de perder mensajes y clientes por no responder a tiempo</h2>
+          <p>Transforma tu WhatsApp en un sistema que atiende, envía información y filtra clientes por ti.</p>
+        </div>
+
+        <div class="benefits-grid">
+          <article class="benefit-card">
+            <div class="benefit-icon">⚡</div>
+            <h3>Respuestas Automáticas en Segundos</h3>
+            <p>Tu cliente recibe información clara y profesional incluso si estás ocupado, en reunión o durmiendo.</p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-icon">📊</div>
+            <h3>Mensajes Diseñados para Vender</h3>
+            <p>No solo responde: guía al cliente a cotizar, reservar o comprar según tu tipo de negocio.</p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-icon">📎</div>
+            <h3>Envío Inteligente de Texto, Imágenes y PDFs</h3>
+            <p>Entrega catálogos, listas de precios, menús y material visual en segundos, sin copiar y pegar.</p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-icon">🤖</div>
+            <h3>Bots con Reglas Avanzadas y Flujos Personalizados</h3>
+            <p>Diseño de flujos a medida para tu rubro, orientados a agendar, cotizar o cerrar ventas.</p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-icon">⏱️</div>
+            <h3>Ahorra Tiempo y Reduce Costos Operativos</h3>
+            <p>Menos horas respondiendo chats manualmente y más tiempo en las tareas clave de tu negocio.</p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-icon">📈</div>
+            <h3>Listo para Conectar con Anuncios</h3>
+            <p>Preparado para campañas en Facebook, Instagram o TikTok que lleguen directo a tu WhatsApp.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> Impulso Digital. Todos los derechos reservados.</span>
+      <span>Hecho para emprendedores que quieren vender más con automatización.</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
