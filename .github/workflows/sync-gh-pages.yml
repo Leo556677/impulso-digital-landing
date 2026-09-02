@@ -1,0 +1,46 @@
+name: Sync Impulso Digital to gh-pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "gh-pages-sync"
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Prepare GitHub Pages site
+        run: |
+          rm -rf /tmp/impulso-site
+          mkdir -p /tmp/impulso-site
+          rsync -av --exclude='.git' --exclude='.github' --exclude='.nojekyll' ./ /tmp/impulso-site/
+          touch /tmp/impulso-site/.nojekyll
+          sed -i 's#https://impulso-digital-landing.vercel.app#https://leo556677.github.io/impulso-digital-landing#g' /tmp/impulso-site/index.html /tmp/impulso-site/robots.txt /tmp/impulso-site/sitemap.xml
+
+      - name: Publish gh-pages branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin gh-pages
+          git checkout gh-pages
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          rsync -av /tmp/impulso-site/ ./
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No hay cambios para publicar."
+          else
+            git commit -m "deploy: sincronizar GitHub Pages"
+            git push origin gh-pages
+          fi
