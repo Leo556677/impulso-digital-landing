@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://impulso-digital-landing.vercel.app/sitemap.xml
