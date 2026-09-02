@@ -40,12 +40,10 @@ const IMPULSO = {
 const qs = (selector, parent = document) => parent.querySelector(selector);
 const qsa = (selector, parent = document) => [...parent.querySelectorAll(selector)];
 
-function buildWhatsAppUrl(interest, source) {
+function buildWhatsAppUrl(interest) {
   const detail = interest ? ` Me interesa: ${interest}.` : '';
   const text = encodeURIComponent(`${IMPULSO.whatsappBaseText}${detail}`);
-  const url = `https://wa.me/${IMPULSO.phone}?text=${text}`;
-  trackEvent('click_whatsapp', { source: source || 'unknown', interest: interest || 'general' });
-  return url;
+  return `https://wa.me/${IMPULSO.phone}?text=${text}`;
 }
 
 function wireWhatsAppLinks() {
@@ -54,7 +52,8 @@ function wireWhatsAppLinks() {
       event.preventDefault();
       const interest = link.dataset.interest || 'servicios';
       const source = link.dataset.source || 'site';
-      window.open(buildWhatsAppUrl(interest, source), '_blank', 'noopener');
+      trackEvent('click_whatsapp', { source, interest });
+      window.open(buildWhatsAppUrl(interest), '_blank', 'noopener');
     });
   });
 }
@@ -141,8 +140,13 @@ function wireOrientador() {
       title.textContent = data.title;
       copy.textContent = data.copy;
       price.textContent = data.price;
-      wa.href = buildWhatsAppUrl(data.interest, `orientador-${key}`);
-      wa.onclick = () => trackEvent('complete_orientation', { recommendation: key });
+      wa.href = buildWhatsAppUrl(data.interest);
+      wa.target = '_blank';
+      wa.rel = 'noopener';
+      wa.onclick = () => {
+        trackEvent('complete_orientation', { recommendation: key });
+        trackEvent('click_whatsapp', { source: `orientador-${key}`, interest: data.interest });
+      };
       question.hidden = true;
       result.hidden = false;
       trackEvent('select_service', { recommendation: key });
