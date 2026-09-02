@@ -1,3 +1,8 @@
+const brandAssetsStyles = document.createElement('link');
+brandAssetsStyles.rel = 'stylesheet';
+brandAssetsStyles.href = 'brand-assets.css';
+document.head.appendChild(brandAssetsStyles);
+
 const IMPULSO = {
   phone: '51910838451',
   metaPixelId: '1202350998538131',
