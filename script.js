@@ -12,13 +12,13 @@ const IMPULSO = {
     },
     brand: {
       title: 'Logo + Identidad',
-      copy: 'Si tu negocio todavía no tiene una apariencia consistente, podemos empezar por un logo o por una identidad visual más completa.',
+      copy: 'Si tu negocio todavía no tiene una apariencia consistente, podemos empezar por un logo o una identidad visual más completa.',
       price: 'Desde S/590',
       interest: 'Logo + Identidad'
     },
     social: {
       title: 'Impulso Social',
-      copy: 'Si ya tienes una oferta clara pero necesitas presentarla mejor en redes, los packs de creativos pueden ayudarte a producir piezas visuales con una línea más coherente.',
+      copy: 'Si necesitas presentar mejor tu negocio en redes, los packs de creativos pueden ayudarte a mantener una línea visual más coherente.',
       price: 'Desde S/420',
       interest: 'Creativos para redes'
     },
@@ -30,7 +30,7 @@ const IMPULSO = {
     },
     360: {
       title: 'Paquetes Impulso',
-      copy: 'Si necesitas resolver varias áreas a la vez, conviene revisar los paquetes para combinar marca, web, creativos y, cuando corresponda, Agenda.',
+      copy: 'Si necesitas resolver varias áreas a la vez, revisamos los paquetes que combinan marca, web, creativos y, cuando corresponde, Agenda.',
       price: 'Desde S/2,390',
       interest: 'Paquetes Impulso'
     }
@@ -42,8 +42,7 @@ const qsa = (selector, parent = document) => [...parent.querySelectorAll(selecto
 
 function buildWhatsAppUrl(interest) {
   const detail = interest ? ` Me interesa: ${interest}.` : '';
-  const text = encodeURIComponent(`${IMPULSO.whatsappBaseText}${detail}`);
-  return `https://wa.me/${IMPULSO.phone}?text=${text}`;
+  return `https://wa.me/${IMPULSO.phone}?text=${encodeURIComponent(`${IMPULSO.whatsappBaseText}${detail}`)}`;
 }
 
 function wireWhatsAppLinks() {
@@ -64,8 +63,8 @@ function wireMenu() {
   if (!toggle || !nav) return;
 
   toggle.addEventListener('click', () => {
-    const isOpen = nav.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', String(isOpen));
+    const open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
   });
 
   qsa('a', nav).forEach(link => {
@@ -80,19 +79,18 @@ function wireServiceDetails() {
   qsa('.service-toggle').forEach(button => {
     button.setAttribute('aria-expanded', 'false');
     button.addEventListener('click', () => {
-      const targetId = button.dataset.target;
-      const target = document.getElementById(targetId);
+      const target = document.getElementById(button.dataset.target);
       if (!target) return;
+      const shouldOpen = target.hidden;
 
-      const willOpen = target.hidden;
       qsa('.detail-panel').forEach(panel => { panel.hidden = true; });
       qsa('.service-toggle').forEach(item => item.setAttribute('aria-expanded', 'false'));
 
-      if (willOpen) {
+      if (shouldOpen) {
         target.hidden = false;
         button.setAttribute('aria-expanded', 'true');
-        trackEvent('view_service', { service: targetId.replace('-detail', '') });
-        window.setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+        trackEvent('view_service', { service: button.dataset.target.replace('-detail', '') });
+        window.setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
       }
     });
   });
@@ -117,7 +115,6 @@ function wireOrientador() {
     result.hidden = true;
     trackEvent('open_orientation', { source: 'home' });
   };
-
   const close = () => {
     modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('modal-open');
@@ -165,15 +162,15 @@ function wireHeroOrbit() {
   if (cards.length !== 4) return;
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let frameId = null;
+  let frame = null;
 
-  const positionCards = time => {
+  const render = time => {
     const rect = stage.getBoundingClientRect();
-    const compact = rect.width < 520;
-    const radiusX = compact ? Math.min(rect.width * .37, 175) : Math.min(rect.width * .35, 205);
-    const radiusY = compact ? 145 : 178;
-    const speed = reduceMotion ? 0 : 0.00012;
-    const base = reduceMotion ? 0 : time * speed;
+    const mobile = rect.width < 520;
+    const radiusX = mobile ? Math.min(rect.width * 0.37, 145) : Math.min(rect.width * 0.38, 205);
+    const radiusY = mobile ? 135 : 190;
+    const revolutionMs = 22000;
+    const base = reduceMotion ? 0 : (time / revolutionMs) * Math.PI * 2;
 
     cards.forEach((card, index) => {
       const angle = base + index * (Math.PI * 2 / cards.length) - Math.PI / 2;
@@ -182,50 +179,36 @@ function wireHeroOrbit() {
       card.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
     });
 
-    stage.classList.add('orbit-ready');
-    if (!reduceMotion) frameId = requestAnimationFrame(positionCards);
+    if (!reduceMotion) frame = requestAnimationFrame(render);
   };
 
-  frameId = requestAnimationFrame(positionCards);
-  window.addEventListener('resize', () => {
-    if (reduceMotion) positionCards(0);
-  }, { passive: true });
-
-  document.addEventListener('visibilitychange', () => {
-    if (reduceMotion) return;
-    if (document.hidden && frameId) {
-      cancelAnimationFrame(frameId);
-      frameId = null;
-    } else if (!document.hidden && !frameId) {
-      frameId = requestAnimationFrame(positionCards);
-    }
-  });
+  frame = requestAnimationFrame(render);
+  window.addEventListener('pagehide', () => { if (frame) cancelAnimationFrame(frame); }, { once: true });
 }
 
 function setYear() {
-  const year = qs('#year');
-  if (year) year.textContent = String(new Date().getFullYear());
+  const el = qs('#year');
+  if (el) el.textContent = String(new Date().getFullYear());
 }
 
-/* ---------- Analítica con consentimiento ---------- */
+// ---------- Analítica con consentimiento ----------
 const ANALYTICS_KEY = 'impulso_analytics_consent_v1';
 let analyticsEnabled = false;
 
 function getConsent() {
   try { return localStorage.getItem(ANALYTICS_KEY); } catch { return null; }
 }
-
 function saveConsent(value) {
-  try { localStorage.setItem(ANALYTICS_KEY, value); } catch { /* sin almacenamiento */ }
+  try { localStorage.setItem(ANALYTICS_KEY, value); } catch { /* sin persistencia */ }
 }
 
 function loadMetaPixel() {
   if (window.fbq) return;
   !function(f,b,e,v,n,t,s){
-    if(f.fbq)return;n=f.fbq=function(){n.callMethod ? n.callMethod.apply(n,arguments) : n.queue.push(arguments)};
+    if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
     if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
     t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s);
-  }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+  }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
   window.fbq('init', IMPULSO.metaPixelId);
   window.fbq('track', 'PageView');
 }
@@ -238,17 +221,9 @@ function loadTikTokPixel() {
     ttq.methods=['page','track','identify','instances','debug','on','off','once','ready','alias','group','enableCookie','disableCookie','holdConsent','revokeConsent','grantConsent'];
     ttq.setAndDefer=function(obj,method){obj[method]=function(){obj.push([method].concat([].slice.call(arguments,0)));};};
     for(let i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
-    ttq.load=function(id){
-      const script=d.createElement('script');
-      script.type='text/javascript';
-      script.async=true;
-      script.src=`https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=${id}&lib=${t}`;
-      const first=d.getElementsByTagName('script')[0];
-      first.parentNode.insertBefore(script,first);
-    };
-    ttq.load(IMPULSO.tiktokPixelId);
-    ttq.page();
-  }(window, document, 'ttq');
+    ttq.load=function(id){const s=d.createElement('script');s.type='text/javascript';s.async=true;s.src=`https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=${id}&lib=${t}`;const first=d.getElementsByTagName('script')[0];first.parentNode.insertBefore(s,first);};
+    ttq.load(IMPULSO.tiktokPixelId);ttq.page();
+  }(window,document,'ttq');
 }
 
 function enableAnalytics() {
@@ -260,12 +235,10 @@ function enableAnalytics() {
 function trackEvent(name, params = {}) {
   if (!analyticsEnabled) return;
   const safeParams = { ...params };
-
   if (window.fbq) {
     if (name === 'click_whatsapp') window.fbq('track', 'Contact', safeParams);
     else window.fbq('trackCustom', name, safeParams);
   }
-
   if (window.ttq && typeof window.ttq.track === 'function') {
     if (name === 'click_whatsapp') window.ttq.track('Contact', safeParams);
     else window.ttq.track(name, safeParams);
@@ -279,40 +252,26 @@ function wireConsent() {
   if (!banner) return;
 
   const consent = getConsent();
-  if (consent === 'accepted') {
-    enableAnalytics();
-    return;
-  }
+  if (consent === 'accepted') { enableAnalytics(); return; }
   if (consent === 'rejected') return;
 
   banner.hidden = false;
-  accept?.addEventListener('click', () => {
-    saveConsent('accepted');
-    banner.hidden = true;
-    enableAnalytics();
-  });
-  reject?.addEventListener('click', () => {
-    saveConsent('rejected');
-    banner.hidden = true;
-  });
+  accept?.addEventListener('click', () => { saveConsent('accepted'); banner.hidden = true; enableAnalytics(); });
+  reject?.addEventListener('click', () => { saveConsent('rejected'); banner.hidden = true; });
 }
 
 function trackPackageVisibility() {
   if (!('IntersectionObserver' in window)) return;
   const section = qs('#paquetes');
   if (!section) return;
-  let tracked = false;
-
+  let sent = false;
   const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !tracked) {
-        tracked = true;
-        trackEvent('view_package', { section: 'packages' });
-        observer.disconnect();
-      }
-    });
-  }, { threshold: .35 });
-
+    if (entries.some(entry => entry.isIntersecting) && !sent) {
+      sent = true;
+      trackEvent('view_package', { section: 'packages' });
+      observer.disconnect();
+    }
+  }, { threshold: 0.3 });
   observer.observe(section);
 }
 
