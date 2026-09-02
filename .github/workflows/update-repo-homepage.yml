@@ -17,3 +17,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api --method PATCH "repos/${GITHUB_REPOSITORY}" -f homepage='https://leo556677.github.io/impulso-digital-landing/'
+
+# trigger: 2026-09-02
