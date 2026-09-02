@@ -39,6 +39,7 @@ const IMPULSO = {
 
 const qs = (selector, parent = document) => parent.querySelector(selector);
 const qsa = (selector, parent = document) => [...parent.querySelectorAll(selector)];
+const MOBILE_QUERY = '(max-width: 760px)';
 
 function buildWhatsAppUrl(interest) {
   const detail = interest ? ` Me interesa: ${interest}.` : '';
@@ -75,6 +76,99 @@ function wireMenu() {
   });
 }
 
+function makeCarouselButton(direction) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `carousel-arrow ${direction}`;
+  const isPrev = direction === 'prev';
+  button.setAttribute('aria-label', isPrev ? 'Ver tarjeta anterior' : 'Ver tarjeta siguiente');
+  button.innerHTML = isPrev
+    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>'
+    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+  return button;
+}
+
+function centerRecommendedInTrack(track, behavior = 'auto') {
+  if (!track || !window.matchMedia(MOBILE_QUERY).matches) return;
+  const recommended = qs('.recommended', track);
+  if (!recommended || recommended.offsetParent === null) return;
+  const left = recommended.offsetLeft - (track.clientWidth - recommended.clientWidth) / 2;
+  track.scrollTo({ left: Math.max(0, left), behavior });
+}
+
+function wireMobileCarousels() {
+  const tracks = qsa('.service-grid, .comparison-grid');
+
+  tracks.forEach(track => {
+    track.classList.add('carousel-track-mobile');
+    if (track.parentElement?.classList.contains('carousel-mobile-wrap')) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'carousel-mobile-wrap';
+    track.parentNode.insertBefore(wrapper, track);
+    wrapper.appendChild(track);
+
+    const prev = makeCarouselButton('prev');
+    const next = makeCarouselButton('next');
+    wrapper.append(prev, next);
+
+    const getStep = () => Math.max(260, Math.min(track.clientWidth * 0.84, 380));
+
+    const updateArrows = () => {
+      if (!window.matchMedia(MOBILE_QUERY).matches || track.offsetParent === null) {
+        prev.disabled = true;
+        next.disabled = true;
+        return;
+      }
+      const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+      prev.disabled = track.scrollLeft <= 8;
+      next.disabled = track.scrollLeft >= maxScroll - 8;
+    };
+
+    prev.addEventListener('click', () => {
+      track.scrollBy({ left: -getStep(), behavior: 'smooth' });
+      trackEvent('carousel_navigation', { direction: 'previous' });
+    });
+    next.addEventListener('click', () => {
+      track.scrollBy({ left: getStep(), behavior: 'smooth' });
+      trackEvent('carousel_navigation', { direction: 'next' });
+    });
+
+    let ticking = false;
+    track.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        updateArrows();
+        ticking = false;
+      });
+    }, { passive: true });
+
+    wrapper._refreshCarousel = () => {
+      window.setTimeout(() => {
+        updateArrows();
+      }, 30);
+    };
+
+    if ('ResizeObserver' in window) {
+      const resizeObserver = new ResizeObserver(updateArrows);
+      resizeObserver.observe(track);
+    }
+
+    window.addEventListener('resize', updateArrows, { passive: true });
+    window.setTimeout(() => {
+      if (track.classList.contains('package-comparison')) centerRecommendedInTrack(track, 'auto');
+      updateArrows();
+    }, 120);
+  });
+}
+
+function refreshCarouselsWithin(container) {
+  if (!container) return;
+  qsa('.carousel-mobile-wrap', container).forEach(wrapper => wrapper._refreshCarousel?.());
+  qsa('.carousel-track-mobile', container).forEach(track => centerRecommendedInTrack(track, 'smooth'));
+}
+
 function wireServiceDetails() {
   qsa('.service-toggle').forEach(button => {
     button.setAttribute('aria-expanded', 'false');
@@ -90,10 +184,46 @@ function wireServiceDetails() {
         target.hidden = false;
         button.setAttribute('aria-expanded', 'true');
         trackEvent('view_service', { service: button.dataset.target.replace('-detail', '') });
-        window.setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+        window.setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          refreshCarouselsWithin(target);
+        }, 90);
       }
     });
   });
+}
+
+function wireSmartFloatingCta() {
+  const initialCta = qs('.hero-actions .js-wa');
+  const floatingCta = qs('.mobile-cta');
+  if (!initialCta || !floatingCta) return;
+
+  floatingCta.classList.add('smart-cta');
+  floatingCta.setAttribute('aria-hidden', 'true');
+
+  const sync = () => {
+    const rect = initialCta.getBoundingClientRect();
+    const hasScrolledPastInitialCta = rect.bottom < 0;
+    floatingCta.classList.toggle('is-visible', hasScrolledPastInitialCta);
+    floatingCta.setAttribute('aria-hidden', String(!hasScrolledPastInitialCta));
+  };
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(sync, { threshold: [0, 0.25, 1] });
+    observer.observe(initialCta);
+  }
+
+  let scrollQueued = false;
+  window.addEventListener('scroll', () => {
+    if (scrollQueued) return;
+    scrollQueued = true;
+    requestAnimationFrame(() => {
+      sync();
+      scrollQueued = false;
+    });
+  }, { passive: true });
+  window.addEventListener('resize', sync, { passive: true });
+  sync();
 }
 
 function wireOrientador() {
@@ -280,7 +410,9 @@ function init() {
   wireConsent();
   wireMenu();
   wireWhatsAppLinks();
+  wireMobileCarousels();
   wireServiceDetails();
+  wireSmartFloatingCta();
   wireOrientador();
   wireHeroOrbit();
   trackPackageVisibility();
