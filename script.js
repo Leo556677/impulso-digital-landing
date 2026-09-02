@@ -1,8 +1,3 @@
-const brandAssetsStyles = document.createElement('link');
-brandAssetsStyles.rel = 'stylesheet';
-brandAssetsStyles.href = 'brand-assets.css';
-document.head.appendChild(brandAssetsStyles);
-
 const IMPULSO = {
   phone: '51910838451',
   metaPixelId: '1202350998538131',
@@ -82,8 +77,8 @@ function wireMenu() {
 }
 
 function wireServiceDetails() {
-  const toggles = qsa('.service-toggle');
-  toggles.forEach(button => {
+  qsa('.service-toggle').forEach(button => {
+    button.setAttribute('aria-expanded', 'false');
     button.addEventListener('click', () => {
       const targetId = button.dataset.target;
       const target = document.getElementById(targetId);
@@ -97,9 +92,7 @@ function wireServiceDetails() {
         target.hidden = false;
         button.setAttribute('aria-expanded', 'true');
         trackEvent('view_service', { service: targetId.replace('-detail', '') });
-        window.setTimeout(() => {
-          target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 70);
+        window.setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
       }
     });
   });
@@ -115,7 +108,7 @@ function wireOrientador() {
   const price = qs('#recommend-price');
   const wa = qs('#recommend-wa');
   const back = qs('#wizard-back');
-  if (!modal || !openButton) return;
+  if (!modal || !openButton || !question || !result) return;
 
   const open = () => {
     modal.setAttribute('aria-hidden', 'false');
@@ -152,6 +145,7 @@ function wireOrientador() {
         trackEvent('complete_orientation', { recommendation: key });
         trackEvent('click_whatsapp', { source: `orientador-${key}`, interest: data.interest });
       };
+
       question.hidden = true;
       result.hidden = false;
       trackEvent('select_service', { recommendation: key });
@@ -164,12 +158,56 @@ function wireOrientador() {
   });
 }
 
+function wireHeroOrbit() {
+  const stage = qs('#hero-orbit');
+  if (!stage) return;
+  const cards = qsa('[data-orbit-card]', stage);
+  if (cards.length !== 4) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let frameId = null;
+
+  const positionCards = time => {
+    const rect = stage.getBoundingClientRect();
+    const compact = rect.width < 520;
+    const radiusX = compact ? Math.min(rect.width * .37, 175) : Math.min(rect.width * .35, 205);
+    const radiusY = compact ? 145 : 178;
+    const speed = reduceMotion ? 0 : 0.00012;
+    const base = reduceMotion ? 0 : time * speed;
+
+    cards.forEach((card, index) => {
+      const angle = base + index * (Math.PI * 2 / cards.length) - Math.PI / 2;
+      const x = Math.cos(angle) * radiusX;
+      const y = Math.sin(angle) * radiusY;
+      card.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+    });
+
+    stage.classList.add('orbit-ready');
+    if (!reduceMotion) frameId = requestAnimationFrame(positionCards);
+  };
+
+  frameId = requestAnimationFrame(positionCards);
+  window.addEventListener('resize', () => {
+    if (reduceMotion) positionCards(0);
+  }, { passive: true });
+
+  document.addEventListener('visibilitychange', () => {
+    if (reduceMotion) return;
+    if (document.hidden && frameId) {
+      cancelAnimationFrame(frameId);
+      frameId = null;
+    } else if (!document.hidden && !frameId) {
+      frameId = requestAnimationFrame(positionCards);
+    }
+  });
+}
+
 function setYear() {
   const year = qs('#year');
   if (year) year.textContent = String(new Date().getFullYear());
 }
 
-// ---------- Analítica con consentimiento ----------
+/* ---------- Analítica con consentimiento ---------- */
 const ANALYTICS_KEY = 'impulso_analytics_consent_v1';
 let analyticsEnabled = false;
 
@@ -178,7 +216,7 @@ function getConsent() {
 }
 
 function saveConsent(value) {
-  try { localStorage.setItem(ANALYTICS_KEY, value); } catch { /* no-op */ }
+  try { localStorage.setItem(ANALYTICS_KEY, value); } catch { /* sin almacenamiento */ }
 }
 
 function loadMetaPixel() {
@@ -194,7 +232,7 @@ function loadMetaPixel() {
 
 function loadTikTokPixel() {
   if (window.ttq) return;
-  !function (w, d, t) {
+  !function(w,d,t){
     w.TiktokAnalyticsObject=t;
     const ttq=w[t]=w[t]||[];
     ttq.methods=['page','track','identify','instances','debug','on','off','once','ready','alias','group','enableCookie','disableCookie','holdConsent','revokeConsent','grantConsent'];
@@ -202,9 +240,11 @@ function loadTikTokPixel() {
     for(let i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
     ttq.load=function(id){
       const script=d.createElement('script');
-      script.type='text/javascript';script.async=true;
+      script.type='text/javascript';
+      script.async=true;
       script.src=`https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=${id}&lib=${t}`;
-      const first=d.getElementsByTagName('script')[0];first.parentNode.insertBefore(script,first);
+      const first=d.getElementsByTagName('script')[0];
+      first.parentNode.insertBefore(script,first);
     };
     ttq.load(IMPULSO.tiktokPixelId);
     ttq.page();
@@ -219,13 +259,13 @@ function enableAnalytics() {
 
 function trackEvent(name, params = {}) {
   if (!analyticsEnabled) return;
-
   const safeParams = { ...params };
-  // No añadir nombres, teléfonos, correos, mensajes privados ni datos sensibles a safeParams.
+
   if (window.fbq) {
     if (name === 'click_whatsapp') window.fbq('track', 'Contact', safeParams);
     else window.fbq('trackCustom', name, safeParams);
   }
+
   if (window.ttq && typeof window.ttq.track === 'function') {
     if (name === 'click_whatsapp') window.ttq.track('Contact', safeParams);
     else window.ttq.track(name, safeParams);
@@ -262,6 +302,7 @@ function trackPackageVisibility() {
   const section = qs('#paquetes');
   if (!section) return;
   let tracked = false;
+
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting && !tracked) {
@@ -271,6 +312,7 @@ function trackPackageVisibility() {
       }
     });
   }, { threshold: .35 });
+
   observer.observe(section);
 }
 
@@ -281,6 +323,7 @@ function init() {
   wireWhatsAppLinks();
   wireServiceDetails();
   wireOrientador();
+  wireHeroOrbit();
   trackPackageVisibility();
 }
 
