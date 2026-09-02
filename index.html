@@ -4,13 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Impulso Digital: landing pages, identidad visual, creativos para redes y sistemas de citas orientados a WhatsApp para emprendedores y pequeños negocios en Perú." />
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="theme-color" content="#E6007E" />
+  <meta name="robots" content="index,follow" />
+
   <title>Impulso Digital | Web, Marca, Creativos y Agenda para WhatsApp</title>
+  <link rel="canonical" href="https://impulso-digital-landing.vercel.app/" />
+
+  <!-- Favicon / identidad del navegador -->
+  <link rel="icon" type="image/png" href="./img/logo-impulso-digital.png" />
+  <link rel="shortcut icon" type="image/png" href="./img/logo-impulso-digital.png" />
+  <link rel="apple-touch-icon" href="./img/logo-impulso-digital.png" />
+
+  <!-- Vista previa al compartir en WhatsApp, Facebook y otras redes -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_PE" />
+  <meta property="og:site_name" content="Impulso Digital" />
+  <meta property="og:title" content="Impulso Digital | Todo en un solo lugar" />
+  <meta property="og:description" content="Landing pages, identidad visual, creativos para redes y agenda orientada a WhatsApp para pequeños negocios en Perú. Cotiza por WhatsApp." />
+  <meta property="og:url" content="https://impulso-digital-landing.vercel.app/" />
+  <meta property="og:image" content="https://impulso-digital-landing.vercel.app/img/logo-impulso-digital.png" />
+  <meta property="og:image:alt" content="Logo de Impulso Digital" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Impulso Digital | Todo en un solo lugar" />
+  <meta name="twitter:description" content="Web, marca, creativos para redes y agenda orientada a WhatsApp para pequeños negocios en Perú." />
+  <meta name="twitter:image" content="https://impulso-digital-landing.vercel.app/img/logo-impulso-digital.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="brand-assets.css" />
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -18,13 +41,8 @@
   <header class="site-header" id="inicio">
     <div class="container nav-wrap">
       <a class="brand" href="#inicio" aria-label="Impulso Digital - Inicio">
-        <span class="brand-mark" aria-hidden="true">
-          <span class="brand-rocket">↑</span>
-        </span>
-        <span class="brand-copy">
-          <strong>IMPULSO</strong>
-          <span>DIGITAL</span>
-        </span>
+        <span class="brand-mark" aria-hidden="true"><span class="brand-rocket">↑</span></span>
+        <span class="brand-copy"><strong>IMPULSO</strong><span>DIGITAL</span></span>
       </a>
 
       <button class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menú">
@@ -61,18 +79,18 @@
           </div>
         </div>
 
-        <div class="hero-visual" aria-label="Ecosistema de servicios de Impulso Digital">
+        <div class="hero-visual" id="hero-orbit" aria-label="Ecosistema de servicios de Impulso Digital">
           <div class="orbit orbit-lg"></div>
           <div class="orbit orbit-sm"></div>
-          <div class="hero-core">
+          <div class="hero-core" aria-label="Impulso Digital">
             <div class="hero-core-icon">↑</div>
             <strong>TODO EN</strong>
             <span>UN SOLO LUGAR</span>
           </div>
-          <div class="float-card fc-web"><span>🌐</span><strong>Landing</strong><small>Presencia web</small></div>
-          <div class="float-card fc-brand"><span>✦</span><strong>Marca</strong><small>Identidad visual</small></div>
-          <div class="float-card fc-social"><span>▣</span><strong>Creativos</strong><small>FB · IG · TikTok</small></div>
-          <div class="float-card fc-agenda"><span>✓</span><strong>Agenda</strong><small>Citas + WhatsApp</small></div>
+          <div class="float-card fc-web" data-orbit-card><span>🌐</span><strong>Landing</strong><small>Presencia web</small></div>
+          <div class="float-card fc-brand" data-orbit-card><span>✦</span><strong>Marca</strong><small>Identidad visual</small></div>
+          <div class="float-card fc-social" data-orbit-card><span>▣</span><strong>Creativos</strong><small>FB · IG · TikTok</small></div>
+          <div class="float-card fc-agenda" data-orbit-card><span>✓</span><strong>Agenda</strong><small>Citas + WhatsApp</small></div>
         </div>
       </div>
     </section>
@@ -113,47 +131,47 @@
 
         <div class="service-grid">
           <article class="service-card">
-            <div class="service-art art-web"><span>🌐</span></div>
+            <div class="service-art"><img src="./img/servicio-landing.png" alt="Landing + dominio de Impulso Digital" loading="lazy" /></div>
             <div class="service-body">
               <span class="service-kicker">IMPULSO WEB</span>
               <h3>Landing Page</h3>
               <p>Una página clara para presentar tu negocio, explicar tus servicios y facilitar el contacto.</p>
               <div class="price-line">Desde <strong>S/790</strong> <small>pago único</small></div>
-              <button class="text-link service-toggle" data-target="web-detail">Ver opciones <span>↓</span></button>
+              <button class="service-cta service-toggle" data-target="web-detail">Ver opciones <span aria-hidden="true">⌄</span></button>
             </div>
           </article>
 
           <article class="service-card">
-            <div class="service-art art-brand"><span>✦</span></div>
+            <div class="service-art"><img src="./img/servicio-marca.png" alt="Logo + identidad de Impulso Digital" loading="lazy" /></div>
             <div class="service-body">
               <span class="service-kicker">IMPULSO MARCA</span>
               <h3>Logo + Identidad</h3>
               <p>Una base visual coherente para que tu negocio se vea profesional y reconocible.</p>
               <div class="price-line">Desde <strong>S/590</strong> <small>pago único</small></div>
-              <button class="text-link service-toggle" data-target="brand-detail">Ver opciones <span>↓</span></button>
+              <button class="service-cta service-toggle" data-target="brand-detail">Ver opciones <span aria-hidden="true">⌄</span></button>
             </div>
           </article>
 
           <article class="service-card">
-            <div class="service-art art-social"><span>▣</span></div>
+            <div class="service-art"><img src="./img/servicio-social.png" alt="Creativos para redes de Impulso Digital" loading="lazy" /></div>
             <div class="service-body">
               <span class="service-kicker">IMPULSO SOCIAL</span>
               <h3>Creativos para redes</h3>
-              <p>Piezas visuales para Facebook, Instagram y formatos para TikTok usando IA, diseño asistido y material del cliente.</p>
+              <p>Piezas visuales para Facebook, Instagram y formatos para TikTok creadas con herramientas de diseño asistido y material del cliente.</p>
               <div class="price-line">Desde <strong>S/420</strong> <small>pack de 6</small></div>
-              <button class="text-link service-toggle" data-target="social-detail">Ver packs <span>↓</span></button>
+              <button class="service-cta service-toggle" data-target="social-detail">Ver packs <span aria-hidden="true">⌄</span></button>
             </div>
           </article>
 
           <article class="service-card">
-            <div class="service-art art-agenda"><span>✓</span></div>
+            <div class="service-art"><img src="./img/servicio-agenda.png" alt="Citas y recordatorios orientados a WhatsApp" loading="lazy" /></div>
             <div class="service-body">
               <span class="service-kicker">IMPULSO AGENDA</span>
               <h3>Citas + recordatorios</h3>
               <p>Organiza citas, confirmaciones, recordatorios e información del cliente en un sistema orientado a WhatsApp.</p>
               <div class="price-line"><strong>S/790</strong> <small>implementación</small></div>
               <div class="monthly-note">Agenda: S/149/mes</div>
-              <button class="text-link service-toggle" data-target="agenda-detail">Conocer Agenda <span>↓</span></button>
+              <button class="service-cta service-toggle" data-target="agenda-detail">Conocer Agenda <span aria-hidden="true">⌄</span></button>
             </div>
           </article>
         </div>
@@ -163,12 +181,12 @@
             <div class="detail-heading"><span>IMPULSO WEB</span><h3>Dos niveles según cuánta información necesita tu negocio.</h3></div>
             <div class="plan-grid two">
               <article class="plan-card">
-                <div><span class="plan-tag">ESENCIAL</span><h4>Impulso Web Esencial</h4><p class="plan-price">S/790</p><small>Pago único</small></div>
+                <div class="plan-head"><span class="plan-tag">ESENCIAL</span><h4>Impulso Web Esencial</h4><p class="plan-price">S/790</p><small>Pago único</small></div>
                 <ul><li>1 landing page</li><li>Hasta 6 bloques o secciones</li><li>Adaptada a celular y computadora</li><li>Servicios y formas de contacto</li><li>Botones a WhatsApp y/o redes</li><li>Formulario sencillo cuando corresponda</li><li>Hasta 2 rondas de cambios</li></ul>
                 <a class="btn btn-outline js-wa" href="#" data-source="web-esencial" data-interest="Impulso Web Esencial - S/790">Consultar este plan</a>
               </article>
-              <article class="plan-card accent-border">
-                <div><span class="plan-tag">MÁS COMPLETA</span><h4>Impulso Web Plus</h4><p class="plan-price">S/1,190</p><small>Pago único</small></div>
+              <article class="plan-card plan-featured">
+                <div class="plan-head"><span class="plan-tag">MÁS COMPLETA</span><h4>Impulso Web Plus</h4><p class="plan-price">S/1,190</p><small>Pago único</small></div>
                 <ul><li>1 landing page</li><li>Hasta 10 bloques o secciones</li><li>Más espacio para servicios o categorías</li><li>Preguntas frecuentes y proceso de trabajo</li><li>Galería cuando corresponda</li><li>Más puntos de contacto</li><li>Formulario más completo cuando corresponda</li><li>Hasta 3 rondas de cambios</li></ul>
                 <a class="btn btn-primary js-wa" href="#" data-source="web-plus" data-interest="Impulso Web Plus - S/1,190">Consultar este plan</a>
               </article>
@@ -180,12 +198,12 @@
             <div class="detail-heading"><span>IMPULSO MARCA</span><h3>Desde un logo funcional hasta una base visual completa.</h3></div>
             <div class="plan-grid two">
               <article class="plan-card">
-                <div><span class="plan-tag">LOGO</span><h4>Logo Profesional</h4><p class="plan-price">S/590</p><small>Pago único</small></div>
+                <div class="plan-head"><span class="plan-tag">LOGO</span><h4>Logo Profesional</h4><p class="plan-price">S/590</p><small>Pago único</small></div>
                 <ul><li>Hasta 2 conceptos iniciales</li><li>Hasta 2 rondas de cambios sobre la opción elegida</li><li>Logo principal</li><li>Variantes básicas para uso digital</li><li>Archivos finales de uso común según el proyecto</li></ul>
                 <a class="btn btn-outline js-wa" href="#" data-source="logo" data-interest="Logo Profesional - S/590">Consultar Logo</a>
               </article>
-              <article class="plan-card accent-border">
-                <div><span class="plan-tag">IDENTIDAD</span><h4>Impulso Marca</h4><p class="plan-price">S/990</p><small>Pago único</small></div>
+              <article class="plan-card plan-featured">
+                <div class="plan-head"><span class="plan-tag">IDENTIDAD</span><h4>Impulso Marca</h4><p class="plan-price">S/990</p><small>Pago único</small></div>
                 <ul><li>Logo</li><li>Paleta de colores</li><li>Tipografías recomendadas</li><li>Variantes necesarias</li><li>Miniguía de identidad</li><li>Aplicación visual básica para redes según alcance</li></ul>
                 <a class="btn btn-primary js-wa" href="#" data-source="marca" data-interest="Impulso Marca - S/990">Consultar Identidad</a>
               </article>
@@ -195,12 +213,12 @@
 
           <div class="detail-panel" id="social-detail" hidden>
             <div class="detail-heading"><span>IMPULSO SOCIAL</span><h3>Elige el volumen de piezas que realmente necesitas.</h3></div>
-            <div class="plan-grid three">
-              <article class="plan-card compact"><span class="plan-tag">PACK 6</span><h4>6 creativos</h4><p class="plan-price">S/420</p><a class="btn btn-outline js-wa" href="#" data-source="social-6" data-interest="Pack 6 creativos - S/420">Consultar</a></article>
-              <article class="plan-card compact accent-border"><span class="plan-tag">PACK 12</span><h4>12 creativos</h4><p class="plan-price">S/720</p><a class="btn btn-primary js-wa" href="#" data-source="social-12" data-interest="Pack 12 creativos - S/720">Consultar</a></article>
-              <article class="plan-card compact"><span class="plan-tag">PACK 20</span><h4>20 creativos</h4><p class="plan-price">S/1,100</p><a class="btn btn-outline js-wa" href="#" data-source="social-20" data-interest="Pack 20 creativos - S/1,100">Consultar</a></article>
+            <div class="plan-grid three social-plans">
+              <article class="plan-card compact"><div class="plan-head"><span class="plan-tag">PACK 6</span><h4>6 creativos</h4><p class="plan-price">S/420</p></div><a class="btn btn-outline js-wa" href="#" data-source="social-6" data-interest="Pack 6 creativos - S/420">Consultar</a></article>
+              <article class="plan-card compact plan-featured"><div class="plan-head"><span class="plan-tag">PACK 12</span><h4>12 creativos</h4><p class="plan-price">S/720</p></div><a class="btn btn-primary js-wa" href="#" data-source="social-12" data-interest="Pack 12 creativos - S/720">Consultar</a></article>
+              <article class="plan-card compact"><div class="plan-head"><span class="plan-tag">PACK 20</span><h4>20 creativos</h4><p class="plan-price">S/1,100</p></div><a class="btn btn-outline js-wa" href="#" data-source="social-20" data-interest="Pack 20 creativos - S/1,100">Consultar</a></article>
             </div>
-            <p class="detail-note"><strong>Método:</strong> inteligencia artificial + material proporcionado por el cliente + diseño asistido + ajustes en Canva cuando sea necesario. No incluye sesión fotográfica presencial. Las adaptaciones adicionales por formato se definen antes de iniciar.</p>
+            <p class="detail-note"><strong>Método:</strong> herramientas de diseño asistido + material proporcionado por el cliente + ajustes en Canva cuando sea necesario. No incluye sesión fotográfica presencial. Las adaptaciones adicionales por formato se definen antes de iniciar.</p>
           </div>
 
           <div class="detail-panel" id="agenda-detail" hidden>
@@ -220,38 +238,32 @@
       </div>
     </section>
 
-    <section class="packages section-space section-dark" id="paquetes">
+    <section class="packages section-space" id="paquetes">
       <div class="container">
-        <div class="section-heading light">
+        <div class="section-heading center">
           <span class="eyebrow">PAQUETES</span>
           <h2>Combina varias necesidades en un solo proyecto.</h2>
           <p>Los paquetes agrupan servicios con un alcance claro. No significan servicios ilimitados.</p>
         </div>
 
         <div class="package-grid">
-          <article class="package-card">
-            <span class="package-name">IMPULSO PRESENCIA</span>
-            <h3>S/2,390</h3>
-            <p class="billing">Pago único</p>
+          <article class="package-card package-presencia">
+            <div class="package-top"><span class="package-name">IMPULSO PRESENCIA</span><h3>S/2,390</h3><p class="billing">Pago único</p></div>
             <ul><li>Impulso Marca</li><li>Impulso Web Plus</li><li>6 creativos</li></ul>
             <div class="package-note">Sin mensualidad obligatoria.</div>
-            <a class="btn btn-inverse js-wa" href="#" data-source="package-presencia" data-interest="Paquete Impulso Presencia - S/2,390">Consultar Presencia</a>
+            <a class="btn btn-outline js-wa" href="#" data-source="package-presencia" data-interest="Paquete Impulso Presencia - S/2,390">Consultar Presencia</a>
           </article>
 
-          <article class="package-card">
-            <span class="package-name">IMPULSO CONVERSIÓN</span>
-            <h3>S/2,490</h3>
-            <p class="billing">Implementación</p>
+          <article class="package-card package-conversion">
+            <div class="package-top"><span class="package-name">IMPULSO CONVERSIÓN</span><h3>S/2,490</h3><p class="billing">Implementación</p></div>
             <ul><li>Impulso Web Plus</li><li>12 creativos</li><li>Implementación de Impulso Agenda</li></ul>
             <div class="package-note"><strong>Agenda: S/149/mes</strong><br />La mensualidad corresponde solo a Agenda.</div>
-            <a class="btn btn-inverse js-wa" href="#" data-source="package-conversion" data-interest="Paquete Impulso Conversión - S/2,490 + Agenda S/149/mes">Consultar Conversión</a>
+            <a class="btn btn-outline js-wa" href="#" data-source="package-conversion" data-interest="Paquete Impulso Conversión - S/2,490 + Agenda S/149/mes">Consultar Conversión</a>
           </article>
 
-          <article class="package-card package-featured">
+          <article class="package-card package-featured package-360">
             <span class="badge">MÁS COMPLETO</span>
-            <span class="package-name">IMPULSO 360</span>
-            <h3>S/3,390</h3>
-            <p class="billing">Implementación</p>
+            <div class="package-top"><span class="package-name">IMPULSO 360</span><h3>S/3,390</h3><p class="billing">Implementación</p></div>
             <ul><li>Impulso Marca</li><li>Impulso Web Plus</li><li>12 creativos</li><li>Implementación de Impulso Agenda</li></ul>
             <div class="package-note"><strong>Agenda: S/149/mes</strong><br />La mensualidad corresponde solo a Agenda.</div>
             <a class="btn btn-primary js-wa" href="#" data-source="package-360" data-interest="Paquete Impulso 360 - S/3,390 + Agenda S/149/mes">Consultar 360</a>
@@ -278,15 +290,15 @@
     <section class="ai-section section-space section-soft">
       <div class="container ai-grid">
         <div>
-          <span class="eyebrow">TRANSPARENCIA</span>
-          <h2>Creamos con IA, pero no trabajamos en automático.</h2>
-          <p>Utilizamos inteligencia artificial, diseño asistido y herramientas digitales para acelerar parte del proceso creativo. Cuando nos proporcionas fotografías, logos o material de tu negocio, podemos integrarlos y optimizarlos cuando técnicamente sea posible.</p>
+          <span class="eyebrow">CÓMO PRODUCIMOS LOS CREATIVOS</span>
+          <h2>Diseño asistido, dirección y corrección en cada pieza.</h2>
+          <p>Utilizamos herramientas de diseño asistido y recursos digitales para desarrollar las piezas. Cuando nos proporcionas fotografías, logos o material de tu negocio, podemos integrarlos y optimizarlos cuando técnicamente sea posible.</p>
           <p class="small-note">Los servicios de creativos no incluyen sesión fotográfica presencial. La calidad final también depende de las características del material original proporcionado.</p>
         </div>
         <div class="ai-card">
           <div><span>1</span><strong>Necesidad</strong></div>
           <div><span>2</span><strong>Dirección</strong></div>
-          <div><span>3</span><strong>IA + diseño</strong></div>
+          <div><span>3</span><strong>Diseño asistido</strong></div>
           <div><span>4</span><strong>Corrección</strong></div>
           <div><span>5</span><strong>Pieza final</strong></div>
         </div>
@@ -304,8 +316,8 @@
         <div class="accordion" id="faq-list">
           <details><summary>¿La landing incluye dominio?</summary><p>No automáticamente. La creación de la landing y el registro de un dominio son conceptos diferentes. Si deseas dominio propio, se detalla y cotiza por separado cuando corresponda.</p></details>
           <details><summary>¿Una landing me garantiza más ventas?</summary><p>No. La landing ayuda a presentar mejor tu negocio y facilitar el contacto, pero las ventas también dependen de la oferta, tráfico, precio, seguimiento y otros factores.</p></details>
-          <details><summary>¿Los creativos incluyen sesión fotográfica?</summary><p>No. Trabajamos con inteligencia artificial, diseño asistido y material proporcionado por el cliente. No incluye desplazamiento al negocio ni producción fotográfica presencial tradicional.</p></details>
-          <details><summary>Si usan IA, ¿qué estoy pagando?</summary><p>No vendemos acceso a una herramienta. El servicio incluye definir qué comunicar, dirigir la pieza, seleccionar, corregir, adaptar el formato y entregar un resultado preparado para el uso acordado.</p></details>
+          <details><summary>¿Los creativos incluyen sesión fotográfica?</summary><p>No. Trabajamos con herramientas de diseño asistido y material proporcionado por el cliente. No incluye desplazamiento al negocio ni producción fotográfica presencial tradicional.</p></details>
+          <details><summary>¿Cómo se crean los creativos?</summary><p>El servicio incluye definir qué comunicar, dirigir la pieza, trabajar con herramientas de diseño asistido, seleccionar, corregir, adaptar el formato y entregar un resultado preparado para el uso acordado.</p></details>
           <details><summary>¿Puedo pedir cambios ilimitados?</summary><p>No. Cada servicio tiene rondas de cambios definidas. Si necesitas reducir presupuesto, preferimos reducir alcance antes que mantener el mismo trabajo a un precio que no corresponda.</p></details>
           <details><summary>¿Los archivos editables del logo están incluidos?</summary><p>No automáticamente. Canva, PSD, AI, SVG u otros editables deben acordarse antes de iniciar para confirmar si forman parte de ese proyecto.</p></details>
           <details><summary>¿Los S/149 mensuales de Conversión y 360 son por todo el paquete?</summary><p>No. Los S/149 mensuales corresponden únicamente a la continuidad de Impulso Agenda. La landing, identidad y creativos incluidos en la implementación no generan esa mensualidad.</p></details>
@@ -334,7 +346,7 @@
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
-        <a class="brand footer-brand" href="#inicio">
+        <a class="brand footer-brand" href="#inicio" aria-label="Impulso Digital - Inicio">
           <span class="brand-mark" aria-hidden="true"><span class="brand-rocket">↑</span></span>
           <span class="brand-copy"><strong>IMPULSO</strong><span>DIGITAL</span></span>
         </a>
