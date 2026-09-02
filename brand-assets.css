@@ -1,0 +1,75 @@
+/* Activos visuales oficiales de Impulso Digital — 2026-09-02 */
+
+/* Header: reemplaza el isotipo generado por CSS por el logo exacto aportado por el usuario. */
+.brand {
+  width: 112px !important;
+  min-width: 112px !important;
+  height: 72px !important;
+  min-height: 72px !important;
+  display: block !important;
+  background-image: url('./img/logo-impulso-digital.png') !important;
+  background-repeat: no-repeat !important;
+  background-position: left center !important;
+  background-size: contain !important;
+}
+.brand > * {
+  display: none !important;
+}
+
+/* Hero: el centro del ecosistema usa el logo maestro exacto. */
+.hero-core {
+  background-color: #ffffff !important;
+  background-image: url('./img/logo-impulso-digital.png') !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 76% auto !important;
+  color: transparent !important;
+}
+.hero-core > * {
+  visibility: hidden !important;
+}
+
+/* Tarjetas principales de servicios: piezas aprobadas por el usuario. */
+.service-art {
+  width: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  min-height: 0 !important;
+  background-color: #ffffff !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: cover !important;
+  overflow: hidden !important;
+}
+.service-art > * {
+  display: none !important;
+}
+.art-web {
+  background-image: url('./img/servicio-landing.png') !important;
+}
+.art-brand {
+  background-image: url('./img/servicio-marca.png') !important;
+}
+.art-social {
+  background-image: url('./img/servicio-social.png') !important;
+}
+.art-agenda {
+  background-image: url('./img/servicio-agenda.png') !important;
+}
+
+/* Evita que la imagen quede excesivamente recortada en pantallas pequeñas. */
+@media (max-width: 760px) {
+  .brand {
+    width: 86px !important;
+    min-width: 86px !important;
+    height: 60px !important;
+    min-height: 60px !important;
+  }
+
+  .service-art {
+    background-size: contain !important;
+  }
+
+  .hero-core {
+    background-size: 82% auto !important;
+  }
+}
