@@ -375,19 +375,73 @@ function trackEvent(name, params = {}) {
   }
 }
 
+function clearTrackingCookies() {
+  ['_fbp', '_fbc', '_ttp'].forEach(name => {
+    const expired = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
+    document.cookie = expired;
+    document.cookie = `${name}=; Max-Age=0; path=/impulso-digital-landing/; SameSite=Lax`;
+  });
+}
+
+function disableAnalytics({ reload = false } = {}) {
+  const wasAccepted = getConsent() === 'accepted' || analyticsEnabled;
+  analyticsEnabled = false;
+  try { if (window.fbq) window.fbq('consent', 'revoke'); } catch { /* sin acción */ }
+  try { if (window.ttq && typeof window.ttq.revokeConsent === 'function') window.ttq.revokeConsent(); } catch { /* sin acción */ }
+  clearTrackingCookies();
+  saveConsent('rejected');
+  if (reload && wasAccepted) window.setTimeout(() => window.location.reload(), 80);
+}
+
 function wireConsent() {
   const banner = qs('#analytics-consent');
   const accept = qs('#accept-analytics');
   const reject = qs('#reject-analytics');
+  const preferences = qs('#privacy-preferences');
+  const status = qs('#analytics-current-status');
   if (!banner) return;
 
-  const consent = getConsent();
-  if (consent === 'accepted') { enableAnalytics(); return; }
-  if (consent === 'rejected') return;
+  const updateStatus = () => {
+    const consent = getConsent();
+    if (!status) return;
+    status.textContent = consent === 'accepted'
+      ? 'Estado actual: analítica aceptada.'
+      : consent === 'rejected'
+        ? 'Estado actual: solo funciones esenciales.'
+        : 'Estado actual: todavía no has elegido.';
+  };
 
-  banner.hidden = false;
-  accept?.addEventListener('click', () => { saveConsent('accepted'); banner.hidden = true; enableAnalytics(); });
-  reject?.addEventListener('click', () => { saveConsent('rejected'); banner.hidden = true; });
+  const openPreferences = () => {
+    updateStatus();
+    banner.hidden = false;
+    banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+
+  accept?.addEventListener('click', () => {
+    saveConsent('accepted');
+    banner.hidden = true;
+    enableAnalytics();
+  });
+
+  reject?.addEventListener('click', () => {
+    const shouldReload = getConsent() === 'accepted' || analyticsEnabled;
+    disableAnalytics({ reload: shouldReload });
+    banner.hidden = true;
+  });
+
+  preferences?.addEventListener('click', openPreferences);
+
+  const consent = getConsent();
+  if (consent === 'accepted') {
+    enableAnalytics();
+    updateStatus();
+    return;
+  }
+  if (consent === 'rejected') {
+    updateStatus();
+    return;
+  }
+  openPreferences();
 }
 
 function trackPackageVisibility() {
