@@ -29,9 +29,18 @@ jobs:
               '910838451': '903396082',
           }
           allowed = {'.html','.js','.md','.txt','.csv','.yml','.yaml','.xml','.css'}
+
+          def eligible(p):
+              return (
+                  p.is_file()
+                  and '.git' not in p.parts
+                  and '.github' not in p.parts
+                  and p.suffix.lower() in allowed
+              )
+
           changed = []
           for p in Path('.').rglob('*'):
-              if not p.is_file() or '.git' in p.parts or p.suffix.lower() not in allowed:
+              if not eligible(p):
                   continue
               try:
                   s = p.read_text(encoding='utf-8')
@@ -43,19 +52,19 @@ jobs:
               if new != s:
                   p.write_text(new, encoding='utf-8')
                   changed.append(str(p))
+
           print('Archivos modificados:')
           print('\n'.join(changed) if changed else 'Ninguno')
 
-          old_patterns = tuple(replacements.keys())
           leftovers = []
           for p in Path('.').rglob('*'):
-              if not p.is_file() or '.git' in p.parts or p.suffix.lower() not in allowed:
+              if not eligible(p):
                   continue
               try:
                   s = p.read_text(encoding='utf-8')
               except UnicodeDecodeError:
                   continue
-              for old in old_patterns:
+              for old in replacements:
                   if old in s:
                       leftovers.append(f'{p}: {old}')
           if leftovers:
