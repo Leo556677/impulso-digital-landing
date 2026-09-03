@@ -1,5 +1,5 @@
 const IMPULSO = {
-  phone: '51910838451',
+  phone: '51903396082',
   metaPixelId: '1202350998538131',
   tiktokPixelId: 'D4PSPVRC77UDLT7UQ0N0',
   whatsappBaseText: 'Hola, vengo desde la web de Impulso Digital y quiero información sobre sus servicios.',

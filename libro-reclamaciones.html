@@ -34,7 +34,7 @@
         <span><strong>RUC</strong>10704415376</span>
         <span><strong>Tipo</strong>Persona Natural con Negocio</span>
         <span><strong>Domicilio fiscal</strong>A.H. El Progreso Sector 3, Mz. C1, Lote 09, Carabayllo, Lima, Lima, Perú</span>
-        <span><strong>Canal de recepción</strong>WhatsApp +51 910 838 451</span>
+        <span><strong>Canal de recepción</strong>WhatsApp +51 903 396 082</span>
         <span><strong>Banco de datos inscrito</strong>QUEJAS Y RECLAMOS · PN-2026-261</span>
       </div>
     </section>
@@ -54,7 +54,7 @@
           <label for="correlativo">N.° correlativo de Hoja *</label>
           <input id="correlativo" name="correlativo" required pattern="LR-[0-9]{6}" placeholder="Ej.: LR-000001" autocomplete="off" />
           <p class="help">Debe tener el formato <strong>LR-000001</strong>, <strong>LR-000002</strong>, etc. No inventes un número: solicítalo primero al proveedor.</p>
-          <div class="correlative-actions"><a class="btn secondary" id="request-number" href="https://wa.me/51910838451?text=Hola%2C%20deseo%20registrar%20una%20Hoja%20en%20el%20Libro%20de%20Reclamaciones%20de%20Impulso%20Digital.%20Por%20favor%2C%20ind%C3%ADqueme%20el%20siguiente%20n%C3%BAmero%20correlativo%20disponible." target="_blank" rel="noopener">Solicitar número correlativo</a></div>
+          <div class="correlative-actions"><a class="btn secondary" id="request-number" href="https://wa.me/51903396082?text=Hola%2C%20deseo%20registrar%20una%20Hoja%20en%20el%20Libro%20de%20Reclamaciones%20de%20Impulso%20Digital.%20Por%20favor%2C%20ind%C3%ADqueme%20el%20siguiente%20n%C3%BAmero%20correlativo%20disponible." target="_blank" rel="noopener">Solicitar número correlativo</a></div>
         </div>
         <div class="radio-row" style="margin-top:18px">
           <label class="radio-card"><input type="radio" name="tipo" value="RECLAMO" required /> Reclamo</label>
@@ -215,7 +215,7 @@
       sendWa.addEventListener('click', () => {
         if (!preparedText) return;
         const intro = 'Hola, remito la siguiente Hoja del Libro de Reclamaciones de Impulso Digital. Solicito confirmación de recepción y conservación del mismo número correlativo.\n\n';
-        const url = `https://wa.me/51910838451?text=${encodeURIComponent(intro + preparedText)}`;
+        const url = `https://wa.me/51903396082?text=${encodeURIComponent(intro + preparedText)}`;
         window.open(url, '_blank', 'noopener');
       });
 

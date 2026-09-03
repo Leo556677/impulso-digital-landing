@@ -20,7 +20,7 @@ La rama `main` y la landing pública no se modifican hasta aprobación final.
 - Añadir `robots.txt` y `sitemap.xml`.
 
 ## Datos comerciales usados
-- WhatsApp: +51 910 838 451.
+- WhatsApp: +51 903 396 082.
 - Atención: lunes a viernes, 09:00–21:00.
 - CTA: COTIZA POR WHATSAPP.
 - Web temporal: https://impulso-digital-landing.vercel.app/
