@@ -13,14 +13,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    :root{--pink:#E6007E;--coral:#F2385A;--orange:#FF6A00;--ink:#171922;--muted:#626777;--soft:#f7f7fa;--line:#e7e7ee;--ok:#107c41}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Montserrat,Arial,sans-serif;color:var(--ink);line-height:1.55;background:#fff}.wrap{width:min(980px,calc(100% - 32px));margin:auto}.top{padding:24px 0;border-bottom:1px solid var(--line);background:#fff}.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);font-weight:800}.brand img{width:58px;height:58px;border-radius:50%;object-fit:cover}.hero{padding:64px 0 34px;background:linear-gradient(135deg,#fff 0%,#fff4f9 65%,#fff8f2 100%)}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.08;margin:0 0 14px}.eyebrow{color:var(--pink);font-weight:800;letter-spacing:.08em}.content{padding:34px 0 80px}.provider,.notice,.result{border:1px solid var(--line);border-radius:22px;padding:22px;margin:18px 0}.provider{background:var(--soft)}.notice{background:#fff8f2;border-color:#ffd7bb}.result{display:none;background:#f2fbf6;border-color:#cdebd9}.result.show{display:block}.provider-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px}.provider-grid strong{display:block;font-size:.77rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.form-card{border:1px solid var(--line);border-radius:26px;padding:26px;margin-top:24px;box-shadow:0 18px 45px rgba(23,25,34,.07)}fieldset{border:0;padding:0;margin:0 0 30px}legend{font-weight:800;font-size:1.12rem;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.full{grid-column:1/-1}label{display:block;font-weight:700;font-size:.9rem;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid #d8d9e1;border-radius:14px;padding:13px 14px;font:inherit;color:var(--ink);background:#fff}textarea{min-height:120px;resize:vertical}input:focus,select:focus,textarea:focus{outline:3px solid rgba(230,0,126,.12);border-color:var(--pink)}.radio-row{display:flex;gap:12px;flex-wrap:wrap}.radio-card{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-weight:700}.radio-card input{width:auto}.help{color:var(--muted);font-size:.86rem;margin-top:6px}.minor-fields{display:none}.minor-fields.show{display:grid}.check{display:flex;align-items:flex-start;gap:10px}.check input{width:auto;margin-top:5px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.btn{appearance:none;border:0;border-radius:999px;padding:14px 20px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.primary{background:linear-gradient(90deg,var(--pink),var(--coral),var(--orange));color:#fff}.secondary{background:#fff;border:1px solid #cfd0d8;color:var(--ink)}.tertiary{background:#fff4f9;color:var(--pink)}.small{font-size:.85rem}.deadline{font-weight:800;color:var(--pink)}a{color:var(--pink)}.back{display:inline-block;margin-top:24px;font-weight:700}footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:.92rem}.status-code{font-size:1.15rem;font-weight:800;color:var(--ok);word-break:break-all}.print-copy{white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px;font-size:.88rem;max-height:340px;overflow:auto}@media(max-width:680px){.grid,.provider-grid{grid-template-columns:1fr}.full{grid-column:auto}.form-card{padding:19px}.actions .btn{width:100%}}@media print{.top,.hero,.notice,.actions,.back,footer{display:none!important}.content{padding:0}.form-card{box-shadow:none;border:0;padding:0}.wrap{width:100%}.provider{break-inside:avoid}.result{display:block!important}.print-copy{max-height:none;overflow:visible;border:0;padding:0}.help{display:none}}
+    :root{--pink:#E6007E;--coral:#F2385A;--orange:#FF6A00;--ink:#171922;--muted:#626777;--soft:#f7f7fa;--line:#e7e7ee;--ok:#107c41;--blue:#1466b8}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Montserrat,Arial,sans-serif;color:var(--ink);line-height:1.6;background:#fff}.wrap{width:min(980px,calc(100% - 32px));margin:auto}.top{padding:24px 0;border-bottom:1px solid var(--line);background:#fff}.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);font-weight:800}.brand img{width:58px;height:58px;border-radius:50%;object-fit:cover}.hero{padding:64px 0 34px;background:linear-gradient(135deg,#fff 0%,#fff4f9 65%,#fff8f2 100%)}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.08;margin:0 0 14px}.eyebrow{color:var(--pink);font-weight:800;letter-spacing:.08em}.content{padding:34px 0 80px}.provider,.notice,.result,.official-notice{border:1px solid var(--line);border-radius:22px;padding:22px;margin:18px 0}.provider{background:var(--soft)}.notice{background:#fff8f2;border-color:#ffd7bb}.result{display:none;background:#f2fbf6;border-color:#cdebd9}.result.show{display:block}.provider-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px}.provider-grid strong{display:block;font-size:.77rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.official-notice{display:flex;align-items:center;gap:20px;border:3px solid var(--blue);background:#fff;color:var(--blue)}.official-notice svg{width:78px;height:62px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2}.official-notice strong{display:block;font-size:clamp(1.35rem,3vw,2rem);line-height:1.1;text-transform:uppercase}.official-notice span{display:block;color:#26364a;margin-top:7px}.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:24px 0}.step{border:1px solid var(--line);border-radius:18px;padding:18px;background:#fff}.step b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fff1f7;color:var(--pink);margin-bottom:10px}.form-card{border:1px solid var(--line);border-radius:26px;padding:26px;margin-top:24px;box-shadow:0 18px 45px rgba(23,25,34,.07)}fieldset{border:0;padding:0;margin:0 0 30px}legend{font-weight:800;font-size:1.12rem;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.full{grid-column:1/-1}label{display:block;font-weight:700;font-size:.9rem;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid #d8d9e1;border-radius:14px;padding:13px 14px;font:inherit;color:var(--ink);background:#fff}textarea{min-height:120px;resize:vertical}input:focus,select:focus,textarea:focus{outline:3px solid rgba(230,0,126,.12);border-color:var(--pink)}.radio-row{display:flex;gap:12px;flex-wrap:wrap}.radio-card{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-weight:700}.radio-card input{width:auto}.help{color:var(--muted);font-size:.86rem;margin-top:6px}.minor-fields{display:none}.minor-fields.show{display:grid}.check{display:flex;align-items:flex-start;gap:10px}.check input{width:auto;margin-top:5px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.btn{appearance:none;border:0;border-radius:999px;padding:14px 20px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.primary{background:linear-gradient(90deg,var(--pink),var(--coral),var(--orange));color:#fff}.secondary{background:#fff;border:1px solid #cfd0d8;color:var(--ink)}.tertiary{background:#fff4f9;color:var(--pink)}.deadline{font-weight:800;color:var(--pink)}a{color:var(--pink)}.back{display:inline-block;margin-top:24px;font-weight:700}footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:.92rem}.status-code{font-size:1.25rem;font-weight:800;color:var(--ok);word-break:break-all}.print-copy{white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px;font-size:.88rem;max-height:380px;overflow:auto}.warning{color:#8a3d00;font-weight:700}.correlative-box{border:2px solid rgba(230,0,126,.22);border-radius:18px;padding:18px;background:#fff8fc}.correlative-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}@media(max-width:760px){.steps{grid-template-columns:1fr}}@media(max-width:680px){.grid,.provider-grid{grid-template-columns:1fr}.full{grid-column:auto}.form-card{padding:19px}.actions .btn,.correlative-actions .btn{width:100%}.official-notice{align-items:flex-start}.official-notice svg{width:58px;height:50px}}@media print{.top,.hero,.notice,.actions,.back,footer,.steps,.correlative-actions{display:none!important}.content{padding:0}.form-card{box-shadow:none;border:0;padding:0}.wrap{width:100%}.provider,.official-notice{break-inside:avoid}.result{display:block!important}.print-copy{max-height:none;overflow:visible;border:0;padding:0}.help{display:none}}
   </style>
 </head>
 <body>
   <header class="top"><div class="wrap"><a class="brand" href="./"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital" /><span>IMPULSO DIGITAL</span></a></div></header>
-  <section class="hero"><div class="wrap"><span class="eyebrow">ATENCIÓN AL CONSUMIDOR</span><h1>Libro de Reclamaciones.</h1><p>Registra aquí una queja o reclamo relacionado con un servicio de Impulso Digital.</p></div></section>
+  <section class="hero"><div class="wrap"><span class="eyebrow">ATENCIÓN AL CONSUMIDOR</span><h1>Libro de Reclamaciones.</h1><p>Registra una queja o reclamo relacionado con un servicio de Impulso Digital.</p></div></section>
   <main class="content"><div class="wrap">
+
+    <section class="official-notice" aria-label="Aviso del Libro de Reclamaciones virtual">
+      <svg viewBox="0 0 80 64" aria-hidden="true"><path d="M7 10h25c5 0 8 3 8 8v37c0-5-3-8-8-8H7z"/><path d="M73 10H48c-5 0-8 3-8 8v37c0-5 3-8 8-8h25z"/><path d="M15 20h16M15 28h16M49 20h16M49 28h16"/></svg>
+      <div><strong>Libro de Reclamaciones</strong><span>Impulso Digital cuenta con un <b>Libro de Reclamaciones virtual</b> a disposición de sus consumidores. Utiliza esta página para registrar una queja o reclamo.</span></div>
+    </section>
+
     <section class="provider" aria-label="Identificación del proveedor">
       <div class="provider-grid">
         <span><strong>Proveedor</strong>SALAS RONDINEL JOSEPH ARIEL</span>
@@ -32,12 +38,24 @@
       </div>
     </section>
 
-    <div class="notice"><strong>Cómo funciona este Libro virtual</strong><p>Este sitio está alojado en GitHub Pages y no tiene una base de datos propia. Completa la hoja, genera tu copia y luego pulsa <strong>Enviar por WhatsApp</strong>. El registro se considera remitido a Impulso Digital cuando envías el mensaje en WhatsApp. Conserva la copia o captura de tu envío para seguimiento. El proveedor debe atender reclamos y quejas dentro del plazo legal aplicable de <span class="deadline">15 días hábiles no prorrogables</span>.</p></div>
+    <div class="steps" aria-label="Cómo registrar una hoja">
+      <div class="step"><b>1</b><strong>Solicita el correlativo</strong><p>Pide al proveedor el siguiente número disponible del Libro.</p></div>
+      <div class="step"><b>2</b><strong>Completa la hoja</strong><p>Ingresa ese número y llena los campos obligatorios.</p></div>
+      <div class="step"><b>3</b><strong>Envía y conserva copia</strong><p>Remite la hoja por WhatsApp y guarda/imprime tu copia.</p></div>
+    </div>
+
+    <div class="notice"><strong>Importante sobre el número correlativo</strong><p>GitHub Pages es una web estática y no puede mantener por sí sola un contador global confiable entre todos los consumidores. Por eso esta página <strong>ya no genera códigos por fecha/hora</strong>. El número de Hoja debe ser correlativo y es asignado por Impulso Digital antes de preparar el registro.</p></div>
 
     <form class="form-card" id="claims-form" novalidate>
       <fieldset>
-        <legend>1. Tipo de comunicación</legend>
-        <div class="radio-row">
+        <legend>1. Número de Hoja y tipo de comunicación</legend>
+        <div class="correlative-box">
+          <label for="correlativo">N.° correlativo de Hoja *</label>
+          <input id="correlativo" name="correlativo" required pattern="LR-[0-9]{6}" placeholder="Ej.: LR-000001" autocomplete="off" />
+          <p class="help">Debe tener el formato <strong>LR-000001</strong>, <strong>LR-000002</strong>, etc. No inventes un número: solicítalo primero al proveedor.</p>
+          <div class="correlative-actions"><a class="btn secondary" id="request-number" href="https://wa.me/51910838451?text=Hola%2C%20deseo%20registrar%20una%20Hoja%20en%20el%20Libro%20de%20Reclamaciones%20de%20Impulso%20Digital.%20Por%20favor%2C%20ind%C3%ADqueme%20el%20siguiente%20n%C3%BAmero%20correlativo%20disponible." target="_blank" rel="noopener">Solicitar número correlativo</a></div>
+        </div>
+        <div class="radio-row" style="margin-top:18px">
           <label class="radio-card"><input type="radio" name="tipo" value="RECLAMO" required /> Reclamo</label>
           <label class="radio-card"><input type="radio" name="tipo" value="QUEJA" required /> Queja</label>
         </div>
@@ -82,20 +100,26 @@
       </fieldset>
 
       <div class="actions">
-        <button class="btn primary" type="submit">Preparar registro</button>
+        <button class="btn primary" type="submit">Preparar Hoja</button>
         <button class="btn secondary" id="send-wa" type="button" disabled>Enviar por WhatsApp</button>
         <button class="btn secondary" id="print-copy" type="button" disabled>Imprimir / guardar PDF</button>
         <button class="btn tertiary" id="download-copy" type="button" disabled>Descargar copia</button>
       </div>
-      <p class="help">No cierres esta página hasta enviar el mensaje por WhatsApp y conservar tu copia.</p>
+      <p class="help">La reclamación queda remitida al proveedor cuando envías efectivamente el mensaje por WhatsApp. Conserva tu copia y el comprobante del envío.</p>
     </form>
 
     <section class="result" id="result" aria-live="polite">
-      <strong>Registro preparado</strong>
-      <p>Código de seguimiento generado:</p>
+      <strong>Hoja preparada</strong>
+      <p>Número correlativo:</p>
       <div class="status-code" id="tracking-code"></div>
-      <p class="help">Este código identifica la hoja preparada. Impulso Digital podrá asignar o confirmar su correlativo interno al recibirla.</p>
+      <p class="help">Este es el número correlativo que te proporcionó Impulso Digital. Debe coincidir con el registro privado del proveedor.</p>
       <div class="print-copy" id="copy-text"></div>
+    </section>
+
+    <section class="provider">
+      <strong>Archivo y respuesta del proveedor</strong>
+      <p>Impulso Digital debe registrar internamente la Hoja con el mismo número correlativo, conservar una copia en un archivo privado durante <strong>al menos 2 años</strong>, documentar la fecha de recepción y la respuesta enviada, y atender el reclamo o queja dentro del plazo máximo aplicable de <span class="deadline">15 días hábiles no prorrogables</span>.</p>
+      <p class="warning">Las reclamaciones reales no deben guardarse en este repositorio público de GitHub.</p>
     </section>
 
     <section class="provider">
@@ -103,7 +127,7 @@
       <p>Este espacio se completa durante la atención del reclamo o queja. La presentación del reclamo no impide acudir a otras vías de solución de controversias ni constituye requisito para acceder a ellas.</p>
     </section>
 
-    <p>Para información oficial sobre el Libro de Reclamaciones y protección al consumidor, puedes consultar el portal de Indecopi.</p>
+    <p>Para información oficial y para generar formatos de referencia, consulta <a href="https://consumidor.indecopi.gob.pe/tulibro/" target="_blank" rel="noopener">“Tu Libro de Reclamaciones” de Indecopi</a>.</p>
     <a class="back" href="./">← Volver a Impulso Digital</a>
   </div></main>
   <footer><div class="wrap">© 2026 Impulso Digital · RUC 10704415376 · Perú</div></footer>
@@ -124,12 +148,6 @@
       let preparedText = '';
       let trackingCode = '';
 
-      const two = n => String(n).padStart(2, '0');
-      const makeCode = () => {
-        const d = new Date();
-        return `LR-${d.getFullYear()}${two(d.getMonth()+1)}${two(d.getDate())}-${two(d.getHours())}${two(d.getMinutes())}${two(d.getSeconds())}-${String(d.getMilliseconds()).padStart(3,'0')}`;
-      };
-
       const field = id => document.getElementById(id).value.trim();
       const selectedType = () => form.querySelector('input[name="tipo"]:checked')?.value || '';
 
@@ -142,16 +160,16 @@
       form.addEventListener('submit', event => {
         event.preventDefault();
         if (!form.reportValidity()) return;
-        trackingCode = makeCode();
+        trackingCode = field('correlativo').toUpperCase();
         const now = new Date();
         const type = selectedType();
         const amount = field('monto') || 'No indicado';
         const serviceDate = field('fecha') || 'No indicada';
         const representative = minor.checked ? `${field('representante')} | Documento: ${field('doc-representante')}` : 'No aplica';
         preparedText = [
-          'LIBRO DE RECLAMACIONES - IMPULSO DIGITAL',
-          `Código de seguimiento: ${trackingCode}`,
-          `Fecha y hora de registro: ${now.toLocaleString('es-PE')}`,
+          'HOJA DEL LIBRO DE RECLAMACIONES - IMPULSO DIGITAL',
+          `N.° correlativo: ${trackingCode}`,
+          `Fecha y hora de preparación: ${now.toLocaleString('es-PE')}`,
           '',
           'PROVEEDOR',
           'SALAS RONDINEL JOSEPH ARIEL',
@@ -174,15 +192,15 @@
           `Monto: S/ ${amount}`,
           `Fecha de operación/servicio: ${serviceDate}`,
           '',
-          'DETALLE',
+          'DETALLE DEL RECLAMO / QUEJA',
           field('detalle'),
           '',
-          'PEDIDO DEL CONSUMIDOR',
+          'PEDIDO CONCRETO DEL CONSUMIDOR',
           field('pedido'),
           '',
           'ACCIONES/OBSERVACIONES DEL PROVEEDOR: Pendiente de atención.',
           '',
-          'Plazo de atención informado: 15 días hábiles no prorrogables.'
+          'Plazo máximo informado: 15 días hábiles no prorrogables.'
         ].join('\n');
         codeEl.textContent = trackingCode;
         copyEl.textContent = preparedText;
@@ -195,7 +213,7 @@
 
       sendWa.addEventListener('click', () => {
         if (!preparedText) return;
-        const intro = 'Hola, deseo registrar esta hoja en el Libro de Reclamaciones de Impulso Digital.\n\n';
+        const intro = 'Hola, remito la siguiente Hoja del Libro de Reclamaciones de Impulso Digital. Solicito confirmación de recepción y conservación del mismo número correlativo.\n\n';
         const url = `https://wa.me/51910838451?text=${encodeURIComponent(intro + preparedText)}`;
         window.open(url, '_blank', 'noopener');
       });
