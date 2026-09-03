@@ -393,23 +393,6 @@ function disableAnalytics({ reload = false } = {}) {
   if (reload && wasAccepted) window.setTimeout(() => window.location.reload(), 80);
 }
 
-function clearTrackingCookies() {
-  ['_fbp', '_fbc', '_ttp'].forEach(name => {
-    const expired = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
-    document.cookie = expired;
-    document.cookie = `${name}=; Max-Age=0; path=/impulso-digital-landing/; SameSite=Lax`;
-  });
-}
-
-function disableAnalytics({ reload = false } = {}) {
-  const wasAccepted = getConsent() === 'accepted' || analyticsEnabled;
-  analyticsEnabled = false;
-  try { if (window.fbq) window.fbq('consent', 'revoke'); } catch { /* sin acción */ }
-  try { if (window.ttq && typeof window.ttq.revokeConsent === 'function') window.ttq.revokeConsent(); } catch { /* sin acción */ }
-  clearTrackingCookies();
-  saveConsent('rejected');
-  if (reload && wasAccepted) window.setTimeout(() => window.location.reload(), 80);
-}
 
 function wireConsent() {
   const banner = qs('#analytics-consent');
@@ -448,6 +431,9 @@ function wireConsent() {
   });
 
   preferences?.addEventListener('click', openPreferences);
+
+  const requestedPreferences = window.location.hash === '#privacy-preferences';
+  if (requestedPreferences) window.setTimeout(openPreferences, 0);
 
   const consent = getConsent();
   if (consent === 'accepted') {
