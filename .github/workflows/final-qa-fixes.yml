@@ -1,0 +1,84 @@
+name: QA final pre-apelacion
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Aplicar correcciones QA
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # 1) script.js: quitar duplicado de revocacion y hacer funcional el hash de preferencias.
+          p = Path('script.js')
+          s = p.read_text(encoding='utf-8')
+          block = """function clearTrackingCookies() {
+            ['_fbp', '_fbc', '_ttp'].forEach(name => {
+              const expired = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
+              document.cookie = expired;
+              document.cookie = `${name}=; Max-Age=0; path=/impulso-digital-landing/; SameSite=Lax`;
+            });
+          }
+
+          function disableAnalytics({ reload = false } = {}) {
+            const wasAccepted = getConsent() === 'accepted' || analyticsEnabled;
+            analyticsEnabled = false;
+            try { if (window.fbq) window.fbq('consent', 'revoke'); } catch { /* sin acción */ }
+            try { if (window.ttq && typeof window.ttq.revokeConsent === 'function') window.ttq.revokeConsent(); } catch { /* sin acción */ }
+            clearTrackingCookies();
+            saveConsent('rejected');
+            if (reload && wasAccepted) window.setTimeout(() => window.location.reload(), 80);
+          }
+          """
+          first = s.find(block)
+          second = s.find(block, first + len(block)) if first != -1 else -1
+          if second != -1:
+              s = s[:second] + s[second + len(block):]
+
+          needle = "  preferences?.addEventListener('click', openPreferences);\n\n  const consent = getConsent();"
+          replacement = "  preferences?.addEventListener('click', openPreferences);\n\n  const requestedPreferences = window.location.hash === '#privacy-preferences';\n  if (requestedPreferences) window.setTimeout(openPreferences, 0);\n\n  const consent = getConsent();"
+          if needle in s and 'requestedPreferences' not in s:
+              s = s.replace(needle, replacement, 1)
+          p.write_text(s, encoding='utf-8')
+
+          # 2) Libro: mostrar el codigo oficial del banco QUEJAS Y RECLAMOS.
+          p = Path('libro-reclamaciones.html')
+          s = p.read_text(encoding='utf-8')
+          needle = '<span><strong>Canal de recepción</strong>WhatsApp +51 910 838 451</span>'
+          repl = needle + '\n        <span><strong>Banco de datos inscrito</strong>QUEJAS Y RECLAMOS · PN-2026-261</span>'
+          if needle in s and 'PN-2026-261' not in s:
+              s = s.replace(needle, repl, 1)
+          p.write_text(s, encoding='utf-8')
+
+          # 3) Open Graph: declarar dimensiones reales del logo para ayudar a crawlers sociales.
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          needle = '  <meta property="og:image:type" content="image/png" />'
+          repl = needle + '\n  <meta property="og:image:width" content="1254" />\n  <meta property="og:image:height" content="1254" />'
+          if needle in s and 'og:image:width' not in s:
+              s = s.replace(needle, repl, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit y push
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "Sin cambios"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add script.js libro-reclamaciones.html index.html
+          git commit -m "fix: cerrar QA final de privacidad y previews"
+          git push origin main
