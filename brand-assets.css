@@ -522,3 +522,21 @@ button.choice-action { cursor:pointer; }
 .site-footer{margin-top:60px!important}.footer-grid p,.footer-grid a,.footer-grid span{font-size:.86rem!important;line-height:1.55}.footer-grid strong{font-size:.98rem}
 @media(max-width:1020px){.compare-card.recommended{transform:none!important}}
 @media(max-width:760px){.service-body p{min-height:0!important;font-size:.94rem!important}.service-topline{align-items:flex-start}.service-billing-chip{font-size:.62rem}.carousel-track-mobile>.compare-card.recommended{border-width:3px!important;box-shadow:0 24px 58px rgba(230,0,126,.22)!important}.compare-card li,.agenda-features li{font-size:.93rem!important}.info-tip::after{right:50%;transform:translate(50%,6px);width:min(270px,76vw)}.info-tip:hover::after,.info-tip:focus::after{transform:translate(50%,0)}.info-tip::before{right:5px}.site-footer{margin-top:36px!important}}
+
+
+/* ---------- LEGAL / PRIVACY CONTROLS 2026-09-02 ---------- */
+.footer-preference-button{
+  appearance:none;border:0;background:transparent;padding:0;color:#626777;
+  font:inherit;font-size:.86rem;line-height:1.55;text-align:left;cursor:pointer;
+}
+.footer-preference-button:hover,.footer-preference-button:focus{color:#E6007E;text-decoration:underline;outline:none}
+.footer-complaints-notice{
+  display:flex!important;align-items:center;gap:10px;margin-top:12px;padding:10px 12px!important;
+  border:2px solid #1466b8;border-radius:12px;background:#fff;color:#1466b8!important;
+  text-decoration:none!important;max-width:265px;line-height:1.15!important;
+}
+.footer-complaints-notice svg{width:42px;height:34px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.footer-complaints-notice span{display:block}.footer-complaints-notice b{display:block;font-size:.76rem;text-transform:uppercase;letter-spacing:.025em}.footer-complaints-notice small{display:block;margin-top:4px;color:#555861;font-size:.66rem;line-height:1.25}
+.footer-complaints-notice:hover,.footer-complaints-notice:focus{box-shadow:0 8px 24px rgba(20,102,184,.12);transform:translateY(-1px);outline:none}
+.consent-status{margin:.45rem 0 0!important;font-size:.78rem!important;font-weight:800;color:#E6007E}
+@media(max-width:760px){.footer-complaints-notice{max-width:100%}.footer-preference-button{font-size:.86rem}}
