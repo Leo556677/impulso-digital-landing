@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <meta name="theme-color" content="#E6007E" />
+  <title>Estado del pago | Impulso Digital</title>
+  <link rel="icon" type="image/png" href="./img/logo-impulso-digital.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--pink:#E6007E;--coral:#F2385A;--orange:#FF6A00;--ink:#171922;--muted:#626777;--soft:#f7f7fa;--line:#e7e7ee}
+    *{box-sizing:border-box}body{margin:0;font-family:Montserrat,Arial,sans-serif;color:var(--ink);background:linear-gradient(135deg,#fff 0%,#fff6fa 100%);min-height:100vh}.wrap{width:min(720px,calc(100% - 32px));margin:auto}.top{padding:24px 0;border-bottom:1px solid var(--line);background:white}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);font-weight:800}.brand img{width:50px;height:50px;border-radius:50%;object-fit:cover}.main{padding:70px 0}.card{background:white;border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:0 16px 50px rgba(23,25,34,.07)}.eyebrow{color:var(--pink);font-weight:800;letter-spacing:.08em;font-size:.82rem}h1{font-size:clamp(2rem,6vw,3rem);line-height:1.08;margin:10px 0 16px}.lead{color:var(--muted);line-height:1.7}.status{display:inline-flex;margin:10px 0 18px;padding:.45rem .75rem;border-radius:999px;background:#fff1f7;color:var(--pink);font-weight:800}.btn{display:inline-flex;margin-top:16px;align-items:center;justify-content:center;border-radius:999px;padding:12px 18px;text-decoration:none;font-weight:800;background:linear-gradient(90deg,var(--pink),var(--coral),var(--orange));color:white}.small{margin-top:20px;color:var(--muted);font-size:.9rem;line-height:1.6}
+  </style>
+</head>
+<body>
+  <header class="top"><div class="wrap"><a class="brand" href="./"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital" /><span>IMPULSO DIGITAL</span></a></div></header>
+  <main class="main"><div class="wrap"><section class="card">
+    <div class="eyebrow">PAGO</div>
+    <h1 id="title">Estamos verificando el resultado.</h1>
+    <div class="status" id="status">Verificación en curso</div>
+    <p class="lead" id="message">El estado definitivo del pago se confirma directamente con el proveedor. Esta pantalla no modifica ni confirma pagos por sí sola.</p>
+    <a class="btn" href="./">Volver a Impulso Digital</a>
+    <p class="small">Si regresaste desde Mercado Pago, puedes cerrar esta página. La confirmación válida se registra mediante el backend y las notificaciones firmadas del proveedor.</p>
+  </section></div></main>
+  <script>
+    const r = new URLSearchParams(location.search).get('resultado');
+    const title = document.getElementById('title');
+    const status = document.getElementById('status');
+    const message = document.getElementById('message');
+    if (r === 'aprobado') {
+      title.textContent = 'Pago enviado para confirmación.';
+      status.textContent = 'Aprobado por el checkout';
+      message.textContent = 'Estamos esperando la confirmación autoritativa del proveedor en el backend antes de marcar el pago como pagado.';
+    } else if (r === 'pendiente') {
+      title.textContent = 'El pago quedó pendiente.';
+      status.textContent = 'Pendiente';
+      message.textContent = 'Algunos medios requieren pasos adicionales. El sistema actualizará el estado cuando el proveedor confirme el resultado.';
+    } else if (r === 'fallido') {
+      title.textContent = 'El pago no se completó.';
+      status.textContent = 'No completado';
+      message.textContent = 'Puedes volver a intentarlo desde un nuevo enlace de pago válido. El sistema no marcará este intento como pagado.';
+    }
+  </script>
+</body>
+</html>
