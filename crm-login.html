@@ -4,153 +4,82 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow,noarchive" />
+  <meta name="theme-color" content="#E6007E" />
   <title>Acceso CRM · Impulso Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #07090d;
-      --panel: #10141b;
-      --panel-2: #151b24;
-      --text: #f5f7fa;
-      --muted: #a8b0bd;
-      --line: #283140;
-      --accent: #30d158;
-      --danger: #ff6b6b;
-      --ok: #6ee7a0;
+      --magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;
+      --white:#FFFFFF;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;
+      --danger:#C62828;--ok:#18A957;
+      --gradient:linear-gradient(135deg,var(--magenta) 0%,var(--coral) 52%,var(--orange) 100%);
+      --shadow:0 18px 55px rgba(38,38,38,.10);
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
+      margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
       background:
-        radial-gradient(circle at 15% 10%, rgba(48,209,88,.12), transparent 30%),
-        radial-gradient(circle at 90% 90%, rgba(64,156,255,.10), transparent 28%),
-        var(--bg);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        radial-gradient(circle at 15% 10%,rgba(230,0,126,.10),transparent 30%),
+        radial-gradient(circle at 90% 90%,rgba(255,106,0,.10),transparent 28%),
+        var(--gray);
+      color:var(--charcoal);
+      font-family:'Montserrat',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     }
-    .shell { width: min(100%, 460px); }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-    .brand img {
-      width: 42px;
-      height: 42px;
-      object-fit: contain;
-      border-radius: 10px;
-    }
-    .brand strong { display: block; font-size: 16px; letter-spacing: .02em; }
-    .brand span { color: var(--muted); font-size: 12px; }
+    .shell { width:min(100%,460px); }
+    .brand { display:flex;align-items:center;gap:12px;margin-bottom:18px; }
+    .brand-logo { width:54px;height:54px;border-radius:50%;padding:2px;background:var(--gradient);box-shadow:0 8px 24px rgba(230,0,126,.16); }
+    .brand-logo span { display:grid;width:100%;height:100%;place-items:center;border-radius:50%;background:#fff;overflow:hidden; }
+    .brand-logo img { width:100%;height:100%;object-fit:cover; }
+    .brand strong { display:block;font-family:'Anton',sans-serif;font-size:1.35rem;font-weight:400;line-height:1; }
+    .brand small { display:block;margin-top:5px;color:var(--magenta);font-size:11px;font-weight:800;letter-spacing:.12em; }
     .card {
-      background: linear-gradient(180deg, rgba(21,27,36,.96), rgba(16,20,27,.98));
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 28px;
-      box-shadow: 0 28px 80px rgba(0,0,0,.35);
+      background:rgba(255,255,255,.97);border:1px solid var(--gray2);border-radius:24px;padding:28px;
+      box-shadow:var(--shadow);
     }
-    h1 { margin: 0 0 8px; font-size: 27px; }
-    .lead { margin: 0 0 24px; color: var(--muted); line-height: 1.55; }
-    label { display: block; margin: 14px 0 7px; font-size: 13px; font-weight: 650; }
+    .card::before { content:'';display:block;width:52px;height:4px;border-radius:99px;background:var(--gradient);margin-bottom:20px; }
+    h1 { margin:0 0 8px;font-family:'Anton',sans-serif;font-size:2rem;font-weight:400;letter-spacing:-.01em; }
+    .lead { margin:0 0 24px;color:var(--muted);line-height:1.55; }
+    label { display:block;margin:14px 0 7px;font-size:13px;font-weight:700; }
     input {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 12px 13px;
-      background: #0b0f15;
-      color: var(--text);
-      outline: none;
-      font: inherit;
+      width:100%;border:1px solid #dcdce3;border-radius:12px;padding:12px 13px;background:#fff;color:var(--charcoal);
+      outline:none;font:inherit;
     }
-    input:focus { border-color: #4d9cff; box-shadow: 0 0 0 3px rgba(77,156,255,.12); }
-    .password-wrap { position: relative; }
-    .password-wrap input { padding-right: 48px; }
+    input:focus { border-color:var(--magenta);box-shadow:0 0 0 3px rgba(230,0,126,.10); }
+    .password-wrap { position:relative; }
+    .password-wrap input { padding-right:48px; }
     .password-toggle {
-      position: absolute;
-      top: 50%;
-      right: 8px;
-      transform: translateY(-50%);
-      width: 36px;
-      height: 36px;
-      margin: 0;
-      padding: 0;
-      border: 0;
-      border-radius: 9px;
-      background: transparent;
-      color: var(--muted);
-      display: grid;
-      place-items: center;
-      font-size: 18px;
-      line-height: 1;
+      position:absolute;top:50%;right:8px;transform:translateY(-50%);width:36px;height:36px;margin:0;padding:0;border:0;
+      border-radius:9px;background:transparent;color:var(--muted);display:grid;place-items:center;font-size:18px;line-height:1;
     }
-    .password-toggle:hover,
-    .password-toggle:focus-visible {
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      outline: none;
-    }
+    .password-toggle:hover,.password-toggle:focus-visible { background:#f4f4f6;color:var(--charcoal);outline:none; }
     button {
-      width: 100%;
-      margin-top: 18px;
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font: inherit;
-      font-weight: 750;
-      cursor: pointer;
-      background: var(--accent);
-      color: #061009;
+      width:100%;margin-top:18px;border:0;border-radius:12px;padding:12px 14px;font:inherit;font-weight:800;cursor:pointer;
+      background:var(--gradient);color:#fff;box-shadow:0 10px 24px rgba(230,0,126,.18);
     }
-    button:disabled { opacity: .55; cursor: wait; }
-    button.secondary {
-      margin-top: 12px;
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--line);
-    }
+    button:disabled { opacity:.55;cursor:wait; }
+    button.secondary { margin-top:12px;background:#fff;color:var(--charcoal);border:1px solid #dcdce3;box-shadow:none; }
     .status {
-      display: none;
-      margin-top: 16px;
-      padding: 11px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      line-height: 1.45;
-      background: rgba(255,107,107,.10);
-      border: 1px solid rgba(255,107,107,.28);
-      color: #ffb3b3;
+      display:none;margin-top:16px;padding:11px 12px;border-radius:10px;font-size:13px;line-height:1.45;
+      background:#fff2f2;border:1px solid #f2caca;color:var(--danger);
     }
-    .status.ok {
-      background: rgba(110,231,160,.09);
-      border-color: rgba(110,231,160,.26);
-      color: var(--ok);
-    }
-    .tenant {
-      display: none;
-      margin-top: 18px;
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(255,255,255,.025);
-    }
-    .tenant small { color: var(--muted); }
-    .tenant strong { display: block; margin-top: 5px; font-size: 17px; }
-    .tenant code { display: inline-block; margin-top: 8px; color: #b9c7da; font-size: 12px; }
-    .foot { margin-top: 16px; color: var(--muted); font-size: 11px; line-height: 1.5; text-align: center; }
-    [hidden] { display: none !important; }
+    .status.ok { background:#effaf4;border-color:#c7ead5;color:#0f7a3d; }
+    .tenant { display:none;margin-top:18px;padding:16px;border:1px solid var(--gray2);border-radius:14px;background:var(--gray); }
+    .tenant small { color:var(--muted); }
+    .tenant strong { display:block;margin-top:5px;font-size:17px; }
+    .tenant code { display:inline-block;margin-top:8px;color:var(--magenta);font-size:12px;font-weight:800; }
+    .foot { margin-top:16px;color:var(--muted);font-size:11px;line-height:1.5;text-align:center; }
+    [hidden] { display:none !important; }
   </style>
 </head>
 <body>
   <main class="shell">
     <div class="brand">
-      <img src="./img/logo-impulso-digital.png" alt="Impulso Digital" />
+      <span class="brand-logo"><span><img src="./img/logo-impulso-digital.png" alt="Impulso Digital" /></span></span>
       <div>
         <strong>IMPULSO DIGITAL</strong>
-        <span>CRM multiempresa · acceso interno</span>
+        <small>CRM MULTIEMPRESA</small>
       </div>
     </div>
 
@@ -191,7 +120,6 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
 
     const SUPABASE_URL = 'https://xnlzsgulskqyecfgzhwa.supabase.co';
-    // Publishable key: diseñada por Supabase para clientes públicos. No es service_role ni secret key.
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
@@ -246,8 +174,6 @@
     async function resolveAuthorizedTenant(user) {
       setStatus('Validando acceso al negocio…', true);
 
-      // No se consulta auth.users desde el navegador. La autorización sale de
-      // usuarios_negocio y las políticas RLS basadas en auth.uid().
       const { data: memberships, error: membershipError } = await supabase
         .from('usuarios_negocio')
         .select('negocio_id, rol');
@@ -272,7 +198,6 @@
         throw new Error('RLS no permitió resolver ningún negocio para esta sesión.');
       }
 
-      // Bootstrap actual: el primer administrador debe resolver exactamente un tenant.
       if (businesses.length !== 1 || memberships.length !== 1) {
         throw new Error('Validación de bootstrap fallida: se esperaba exactamente un negocio autorizado.');
       }
