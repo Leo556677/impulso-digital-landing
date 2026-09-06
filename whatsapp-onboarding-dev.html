@@ -110,6 +110,7 @@
     let sessionInfo = null;
     let sdkReady = false;
     let submitting = false;
+    let waitTimer = null;
 
     function setResult(value) {
       result.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
@@ -117,6 +118,16 @@
 
     function maybeEnable() {
       signupBtn.disabled = !(negocioId && sdkReady && !submitting);
+    }
+
+    function isTrustedFacebookOrigin(origin) {
+      try {
+        const url = new URL(origin);
+        return url.protocol === 'https:' &&
+          (url.hostname === 'facebook.com' || url.hostname.endsWith('.facebook.com'));
+      } catch {
+        return false;
+      }
     }
 
     async function resolveSession() {
@@ -160,7 +171,8 @@
     };
 
     window.addEventListener('message', (event) => {
-      if (event.origin !== 'https://www.facebook.com' && event.origin !== 'https://web.facebook.com') return;
+      if (!isTrustedFacebookOrigin(event.origin)) return;
+
       try {
         const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
         if (!data || data.type !== 'WA_EMBEDDED_SIGNUP') return;
@@ -168,17 +180,38 @@
         if (data.event === 'FINISH') {
           const wabaId = String(data.data?.waba_id ?? '');
           const phoneNumberId = String(data.data?.phone_number_id ?? '');
+
+          if (!wabaId || !phoneNumberId) {
+            setResult('Meta envió FINISH, pero faltó WABA ID o Phone Number ID. No se enviará nada al backend.');
+            return;
+          }
+
           sessionInfo = { waba_id: wabaId, phone_number_id: phoneNumberId };
+
+          if (waitTimer) {
+            clearTimeout(waitTimer);
+            waitTimer = null;
+          }
+
           if (wabaId === BLOCKED_REAL_WABA_ID || phoneNumberId === BLOCKED_REAL_PHONE_NUMBER_ID) {
             setResult('BLOQUEADO: se detectó el activo REAL. No se enviará nada al backend.');
             oauthCode = null;
             sessionInfo = null;
             return;
           }
+
+          setResult('IDs de PRUEBA recibidos. Preparando validación segura en backend…');
           trySubmit();
-        } else {
-          setResult({ event: data.event || null, current_step: data.data?.current_step || null });
+          return;
         }
+
+        if (data.event === 'CANCEL') {
+          const step = data.data?.current_step || null;
+          setResult({ event: 'CANCEL', current_step: step });
+          return;
+        }
+
+        setResult({ event: data.event || null, current_step: data.data?.current_step || null });
       } catch (_) {}
     });
 
@@ -188,8 +221,17 @@
         setResult('Meta no devolvió autorización o el flujo fue cancelado.');
         return;
       }
+
       oauthCode = String(code);
       setResult('Código OAuth recibido de Meta. Esperando IDs del Embedded Signup…');
+
+      if (waitTimer) clearTimeout(waitTimer);
+      waitTimer = setTimeout(() => {
+        if (oauthCode && !sessionInfo) {
+          setResult('Código OAuth recibido, pero Meta todavía no entregó WABA ID + Phone Number ID. No se envió nada al backend. Vuelve a abrir Embedded Signup para continuar el diagnóstico.');
+        }
+      }, 7000);
+
       trySubmit();
     }
 
@@ -216,6 +258,10 @@
         oauthCode = null;
         sessionInfo = null;
         submitting = false;
+        if (waitTimer) {
+          clearTimeout(waitTimer);
+          waitTimer = null;
+        }
         maybeEnable();
       }
     }
@@ -223,6 +269,10 @@
     signupBtn.addEventListener('click', () => {
       oauthCode = null;
       sessionInfo = null;
+      if (waitTimer) {
+        clearTimeout(waitTimer);
+        waitTimer = null;
+      }
       setResult('Abriendo Embedded Signup de Meta…');
       FB.login(fbLoginCallback, {
         config_id: CONFIG_ID,
