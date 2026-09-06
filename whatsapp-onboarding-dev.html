@@ -48,7 +48,7 @@
     a.btn{border:1px solid #dedee4;color:var(--charcoal);background:#fff}
     a.btn:hover{border-color:var(--magenta);color:var(--magenta)}
     pre{white-space:pre-wrap;word-break:break-word;background:#262626;color:#fff;border-radius:14px;padding:16px;min-height:80px;border:0}
-    code{color:#fff}.footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}
+    .footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}
     @media(max-width:600px){body{padding:18px}.card{padding:20px}.brand-logo{width:48px;height:48px}}
   </style>
 </head>
@@ -74,7 +74,7 @@
       <h2>2. Embedded Signup de Meta</h2>
       <p><strong class="danger">PROHIBIDO usar el número real +51 903 396 082.</strong></p>
       <button id="signupBtn" type="button" disabled>Conectar WhatsApp Business de PRUEBA</button>
-      <p class="muted">El backend también bloquea explícitamente la WABA y el Phone Number ID reales.</p>
+      <p class="muted">El backend obtiene y valida el activo de PRUEBA desde Supabase. No confía en IDs enviados por el navegador.</p>
     </section>
 
     <section class="card">
@@ -93,8 +93,6 @@
     const APP_ID = '860468763590445';
     const CONFIG_ID = '1581941380393885';
     const GRAPH_VERSION = 'v26.0';
-    const BLOCKED_REAL_WABA_ID = '482578634949575';
-    const BLOCKED_REAL_PHONE_NUMBER_ID = '492828200591020';
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
@@ -106,11 +104,8 @@
     const result = document.getElementById('result');
 
     let negocioId = null;
-    let oauthCode = null;
-    let sessionInfo = null;
     let sdkReady = false;
     let submitting = false;
-    let waitTimer = null;
 
     function setResult(value) {
       result.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
@@ -118,16 +113,6 @@
 
     function maybeEnable() {
       signupBtn.disabled = !(negocioId && sdkReady && !submitting);
-    }
-
-    function isTrustedFacebookOrigin(origin) {
-      try {
-        const url = new URL(origin);
-        return url.protocol === 'https:' &&
-          (url.hostname === 'facebook.com' || url.hostname.endsWith('.facebook.com'));
-      } catch {
-        return false;
-      }
     }
 
     async function resolveSession() {
@@ -177,9 +162,7 @@
         return;
       }
 
-      const existing = document.getElementById('facebook-jssdk');
-      if (existing) return;
-
+      if (document.getElementById('facebook-jssdk')) return;
       const sdk = document.createElement('script');
       sdk.id = 'facebook-jssdk';
       sdk.src = 'https://connect.facebook.net/es_LA/sdk.js';
@@ -191,61 +174,49 @@
       };
       sdk.onerror = () => {
         setResult('No se pudo cargar el SDK de Meta. Revisa conexión/bloqueadores del navegador y vuelve a intentar.');
-        maybeEnable();
       };
       document.head.appendChild(sdk);
 
       setTimeout(() => {
         if (!sdkReady) {
-          setResult('El SDK de Meta aún no terminó de cargar. Si el botón sigue deshabilitado, revisaremos bloqueo del navegador sin tocar WhatsApp.');
+          setResult('El SDK de Meta aún no terminó de cargar. Si el botón sigue deshabilitado, revisaremos el navegador sin tocar WhatsApp.');
         }
       }, 8000);
     }
 
-    window.addEventListener('message', (event) => {
-      if (!isTrustedFacebookOrigin(event.origin)) return;
+    async function sendCodeToBackend(code) {
+      submitting = true;
+      maybeEnable();
+      setResult('Código OAuth recibido. Verificando en backend si autoriza la WABA de PRUEBA…');
 
       try {
-        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-        if (!data || data.type !== 'WA_EMBEDDED_SIGNUP') return;
+        const { data, error } = await supabase.functions.invoke('whatsapp-embedded-signup', {
+          body: { negocio_id: negocioId, code }
+        });
 
-        if (data.event === 'FINISH') {
-          const wabaId = String(data.data?.waba_id ?? '');
-          const phoneNumberId = String(data.data?.phone_number_id ?? '');
+        if (error) {
+          let detail = null;
+          try {
+            if (error.context && typeof error.context.json === 'function') {
+              detail = await error.context.json();
+            }
+          } catch (_) {}
 
-          if (!wabaId || !phoneNumberId) {
-            setResult('Meta envió FINISH, pero faltó WABA ID o Phone Number ID. No se enviará nada al backend.');
+          if (detail) {
+            setResult(detail);
             return;
           }
-
-          sessionInfo = { waba_id: wabaId, phone_number_id: phoneNumberId };
-
-          if (waitTimer) {
-            clearTimeout(waitTimer);
-            waitTimer = null;
-          }
-
-          if (wabaId === BLOCKED_REAL_WABA_ID || phoneNumberId === BLOCKED_REAL_PHONE_NUMBER_ID) {
-            setResult('BLOQUEADO: se detectó el activo REAL. No se enviará nada al backend.');
-            oauthCode = null;
-            sessionInfo = null;
-            return;
-          }
-
-          setResult('IDs de PRUEBA recibidos. Preparando validación segura en backend…');
-          trySubmit();
-          return;
+          throw error;
         }
 
-        if (data.event === 'CANCEL') {
-          const step = data.data?.current_step || null;
-          setResult({ event: 'CANCEL', current_step: step });
-          return;
-        }
-
-        setResult({ event: data.event || null, current_step: data.data?.current_step || null });
-      } catch (_) {}
-    });
+        setResult(data);
+      } catch (error) {
+        setResult(`Error: ${error?.message || 'No se pudo completar la validación.'}`);
+      } finally {
+        submitting = false;
+        maybeEnable();
+      }
+    }
 
     function fbLoginCallback(response) {
       const code = response?.authResponse?.code;
@@ -253,58 +224,10 @@
         setResult('Meta no devolvió autorización o el flujo fue cancelado.');
         return;
       }
-
-      oauthCode = String(code);
-      setResult('Código OAuth recibido de Meta. Esperando IDs del Embedded Signup…');
-
-      if (waitTimer) clearTimeout(waitTimer);
-      waitTimer = setTimeout(() => {
-        if (oauthCode && !sessionInfo) {
-          setResult('Código OAuth recibido, pero Meta todavía no entregó WABA ID + Phone Number ID. No se envió nada al backend. Vuelve a abrir Embedded Signup para continuar el diagnóstico.');
-        }
-      }, 7000);
-
-      trySubmit();
-    }
-
-    async function trySubmit() {
-      if (!oauthCode || !sessionInfo || !negocioId || submitting) return;
-      submitting = true;
-      maybeEnable();
-      setResult('Validando autorización en backend seguro…');
-
-      try {
-        const { data, error } = await supabase.functions.invoke('whatsapp-embedded-signup', {
-          body: {
-            negocio_id: negocioId,
-            code: oauthCode,
-            waba_id: sessionInfo.waba_id,
-            phone_number_id: sessionInfo.phone_number_id
-          }
-        });
-        if (error) throw error;
-        setResult(data);
-      } catch (error) {
-        setResult(`Error: ${error?.message || 'No se pudo completar la prueba.'}`);
-      } finally {
-        oauthCode = null;
-        sessionInfo = null;
-        submitting = false;
-        if (waitTimer) {
-          clearTimeout(waitTimer);
-          waitTimer = null;
-        }
-        maybeEnable();
-      }
+      sendCodeToBackend(String(code));
     }
 
     signupBtn.addEventListener('click', () => {
-      oauthCode = null;
-      sessionInfo = null;
-      if (waitTimer) {
-        clearTimeout(waitTimer);
-        waitTimer = null;
-      }
       setResult('Abriendo Embedded Signup de Meta…');
       FB.login(fbLoginCallback, {
         config_id: CONFIG_ID,
