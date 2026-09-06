@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <meta name="theme-color" content="#E6007E" />
+  <title>Bandeja CRM · Impulso Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;
+      --white:#fff;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;--line:#DDDDE3;
+      --ok:#18A957;--danger:#C62828;--gradient:linear-gradient(135deg,var(--magenta),var(--coral) 52%,var(--orange));
+      --shadow:0 18px 55px rgba(38,38,38,.10);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--gray);color:var(--charcoal);font-family:'Montserrat',system-ui,sans-serif;min-height:100vh}
+    button{font:inherit}
+    .app{min-height:100vh;display:grid;grid-template-rows:auto 1fr}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 22px;background:#fff;border-bottom:1px solid var(--gray2);position:sticky;top:0;z-index:10}
+    .brand{display:flex;align-items:center;gap:11px}.brand img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--magenta)}
+    .brand strong{display:block;font-family:'Anton',sans-serif;font-size:1.25rem;font-weight:400}.brand small{display:block;color:var(--magenta);font-weight:800;font-size:10px;letter-spacing:.1em;margin-top:3px}
+    .session{display:flex;align-items:center;gap:10px}.tenant{font-size:12px;text-align:right}.tenant strong{display:block}.tenant span{color:var(--muted)}
+    .logout{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:700;cursor:pointer}
+    main{width:min(1500px,100%);margin:0 auto;padding:18px;display:grid;grid-template-columns:360px minmax(0,1fr);gap:16px;min-height:0}
+    .panel{background:#fff;border:1px solid var(--gray2);border-radius:20px;box-shadow:var(--shadow);min-height:0;overflow:hidden}
+    .sidebar{display:grid;grid-template-rows:auto 1fr;max-height:calc(100vh - 104px)}
+    .sidebar-head{padding:18px;border-bottom:1px solid var(--gray2)}
+    h1,h2{font-family:'Anton',sans-serif;font-weight:400;margin:0}.sidebar-head h1{font-size:1.7rem}.eyebrow{font-size:11px;color:var(--magenta);font-weight:800;letter-spacing:.1em;margin-bottom:4px}.count{margin-top:6px;color:var(--muted);font-size:12px}
+    .conversation-list{overflow:auto;padding:8px}
+    .conversation{width:100%;text-align:left;border:0;background:#fff;border-radius:14px;padding:13px;cursor:pointer;display:grid;gap:7px;color:inherit}
+    .conversation:hover{background:#faf8fa}.conversation.active{background:#fff2f8;box-shadow:inset 0 0 0 1px rgba(230,0,126,.16)}
+    .conversation-top{display:flex;justify-content:space-between;gap:10px}.contact-name{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.time{font-size:10px;color:var(--muted);white-space:nowrap}.preview{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .meta{display:flex;gap:6px;flex-wrap:wrap}.pill{font-size:10px;font-weight:700;padding:4px 7px;border-radius:99px;background:var(--gray);color:var(--muted)}.pill.state{background:#eef9f2;color:#13733c}.pill.tag{background:#fff0f7;color:#9b0057}
+    .thread{display:grid;grid-template-rows:auto 1fr;max-height:calc(100vh - 104px)}
+    .thread-head{padding:18px 20px;border-bottom:1px solid var(--gray2);display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.thread-head h2{font-size:1.65rem}.thread-sub{font-size:12px;color:var(--muted);margin-top:5px}.readonly{font-size:10px;font-weight:800;color:#8a5400;background:#fff6df;padding:7px 9px;border-radius:99px;white-space:nowrap}
+    .messages{overflow:auto;padding:22px;background:linear-gradient(180deg,#fafafa,#f6f6f8);display:flex;flex-direction:column;gap:10px}
+    .message{max-width:min(74%,720px);padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--gray2);align-self:flex-start;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+    .message.out{align-self:flex-end;background:#fff0f7;border-color:#f3c9df}.message .body{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.5}.message .msg-meta{margin-top:5px;font-size:9px;color:var(--muted);display:flex;gap:7px;justify-content:flex-end}
+    .empty{height:100%;display:grid;place-items:center;text-align:center;padding:32px;color:var(--muted)}.empty strong{display:block;color:var(--charcoal);font-family:'Anton',sans-serif;font-size:1.5rem;font-weight:400;margin-bottom:5px}
+    .status{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#262626;color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;box-shadow:var(--shadow);z-index:30}.status.error{background:var(--danger)}
+    [hidden]{display:none!important}
+    @media(max-width:820px){header{align-items:flex-start}.tenant{display:none}main{grid-template-columns:1fr;padding:10px}.sidebar{max-height:42vh}.thread{max-height:none;min-height:52vh}.message{max-width:88%}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <img src="./img/logo-impulso-digital.png" alt="Impulso Digital" />
+        <div><strong>IMPULSO DIGITAL</strong><small>CRM · BANDEJA</small></div>
+      </div>
+      <div class="session">
+        <div class="tenant"><strong id="tenantName">Validando…</strong><span id="sessionLabel">Sesión protegida por RLS</span></div>
+        <button class="logout" id="logoutBtn" type="button">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <main>
+      <aside class="panel sidebar">
+        <div class="sidebar-head">
+          <div class="eyebrow">MVP · SOLO LECTURA</div>
+          <h1>Conversaciones</h1>
+          <div class="count" id="conversationCount">Cargando…</div>
+        </div>
+        <div class="conversation-list" id="conversationList"></div>
+      </aside>
+
+      <section class="panel thread">
+        <div class="thread-head">
+          <div><h2 id="threadTitle">Selecciona una conversación</h2><div class="thread-sub" id="threadSubtitle">Los datos visibles dependen de tu membresía y RLS.</div></div>
+          <span class="readonly">SIN ESCRITURA</span>
+        </div>
+        <div class="messages" id="messages">
+          <div class="empty" id="emptyState"><div><strong>Bandeja protegida por tenant</strong>Selecciona una conversación para ver sus mensajes.</div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="status" id="status" hidden></div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+
+    const SUPABASE_URL = 'https://xnlzsgulskqyecfgzhwa.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false} });
+
+    const els = {
+      tenantName:document.getElementById('tenantName'),sessionLabel:document.getElementById('sessionLabel'),logoutBtn:document.getElementById('logoutBtn'),
+      conversationCount:document.getElementById('conversationCount'),conversationList:document.getElementById('conversationList'),
+      threadTitle:document.getElementById('threadTitle'),threadSubtitle:document.getElementById('threadSubtitle'),messages:document.getElementById('messages'),status:document.getElementById('status')
+    };
+
+    let state = { conversations:[], contacts:new Map(), messages:new Map(), selectedId:null };
+
+    const fmtDate = (value) => value ? new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(value)) : '—';
+    const textOr = (value,fallback='Sin nombre') => typeof value === 'string' && value.trim() ? value.trim() : fallback;
+
+    function showStatus(message,error=false){ els.status.textContent=message; els.status.classList.toggle('error',error); els.status.hidden=!message; if(message) setTimeout(()=>{els.status.hidden=true},4500); }
+    function el(tag,className,text){ const node=document.createElement(tag); if(className) node.className=className; if(text!==undefined) node.textContent=text; return node; }
+
+    async function requireTenant(){
+      const { data:{ session } } = await supabase.auth.getSession();
+      if(!session?.user){ location.replace('./crm-login.html'); return null; }
+
+      const { data:memberships,error:membershipError } = await supabase.from('usuarios_negocio').select('negocio_id,rol');
+      if(membershipError) throw membershipError;
+      if(!memberships || memberships.length!==1) throw new Error('La sesión no resolvió exactamente una membresía autorizada.');
+
+      const membership=memberships[0];
+      const { data:businesses,error:businessError } = await supabase.from('negocios').select('id,nombre,slug').eq('id',membership.negocio_id);
+      if(businessError) throw businessError;
+      if(!businesses || businesses.length!==1) throw new Error('RLS no resolvió exactamente un negocio autorizado.');
+
+      const business=businesses[0];
+      els.tenantName.textContent=business.nombre;
+      els.sessionLabel.textContent=`${membership.rol} · ${business.slug}`;
+      return { session,membership,business };
+    }
+
+    async function loadInbox(){
+      const tenant=await requireTenant();
+      if(!tenant) return;
+
+      const { data:conversations,error:convError } = await supabase
+        .from('conversaciones')
+        .select('id,contacto_id,estado,asignado_a,iniciada_at,ultimo_mensaje_at')
+        .order('ultimo_mensaje_at',{ascending:false,nullsFirst:false});
+      if(convError) throw convError;
+      state.conversations=conversations||[];
+
+      const contactIds=[...new Set(state.conversations.map(x=>x.contacto_id).filter(Boolean))];
+      if(contactIds.length){
+        const { data:contacts,error:contactError } = await supabase
+          .from('contactos')
+          .select('id,nombre,telefono_e164,etiquetas,notas')
+          .in('id',contactIds);
+        if(contactError) throw contactError;
+        state.contacts=new Map((contacts||[]).map(x=>[x.id,x]));
+      }
+
+      const conversationIds=state.conversations.map(x=>x.id);
+      if(conversationIds.length){
+        const { data:messages,error:msgError } = await supabase
+          .from('mensajes')
+          .select('id,conversacion_id,direccion,tipo,contenido,estado,fecha_mensaje,created_at')
+          .in('conversacion_id',conversationIds)
+          .order('fecha_mensaje',{ascending:true,nullsFirst:false})
+          .limit(500);
+        if(msgError) throw msgError;
+        state.messages=new Map();
+        for(const msg of messages||[]){
+          if(!state.messages.has(msg.conversacion_id)) state.messages.set(msg.conversacion_id,[]);
+          state.messages.get(msg.conversacion_id).push(msg);
+        }
+      }
+
+      renderList();
+      if(state.conversations.length) selectConversation(state.conversations[0].id);
+      else renderEmptyInbox();
+    }
+
+    function renderList(){
+      els.conversationList.replaceChildren();
+      els.conversationCount.textContent=`${state.conversations.length} conversación${state.conversations.length===1?'':'es'} visible${state.conversations.length===1?'':'s'} por RLS`;
+
+      for(const conv of state.conversations){
+        const contact=state.contacts.get(conv.contacto_id)||{};
+        const messages=state.messages.get(conv.id)||[];
+        const last=messages[messages.length-1];
+        const button=el('button','conversation'); button.type='button'; button.dataset.id=conv.id;
+        const top=el('div','conversation-top'); top.append(el('span','contact-name',textOr(contact.nombre,textOr(contact.telefono_e164,'Contacto'))),el('span','time',fmtDate(conv.ultimo_mensaje_at||last?.fecha_mensaje)));
+        const preview=el('div','preview',textOr(last?.contenido,last?.tipo?`[${last.tipo}]`:'Sin mensajes'));
+        const meta=el('div','meta'); meta.append(el('span','pill state',textOr(conv.estado,'sin estado')));
+        for(const tag of Array.isArray(contact.etiquetas)?contact.etiquetas.slice(0,3):[]) meta.append(el('span','pill tag',String(tag)));
+        button.append(top,preview,meta); button.addEventListener('click',()=>selectConversation(conv.id)); els.conversationList.append(button);
+      }
+    }
+
+    function selectConversation(id){
+      state.selectedId=id;
+      for(const node of els.conversationList.querySelectorAll('.conversation')) node.classList.toggle('active',node.dataset.id===id);
+      const conv=state.conversations.find(x=>x.id===id); if(!conv) return;
+      const contact=state.contacts.get(conv.contacto_id)||{};
+      els.threadTitle.textContent=textOr(contact.nombre,textOr(contact.telefono_e164,'Contacto'));
+      const parts=[textOr(contact.telefono_e164,'Sin teléfono'),`estado: ${textOr(conv.estado,'—')}`];
+      if(Array.isArray(contact.etiquetas)&&contact.etiquetas.length) parts.push(`etiquetas: ${contact.etiquetas.join(', ')}`);
+      els.threadSubtitle.textContent=parts.join(' · ');
+      renderMessages(state.messages.get(id)||[]);
+    }
+
+    function renderMessages(items){
+      els.messages.replaceChildren();
+      if(!items.length){ const box=el('div','empty'); const inner=el('div'); inner.append(el('strong','', 'Sin mensajes'),document.createTextNode('Esta conversación todavía no tiene mensajes visibles.')); box.append(inner); els.messages.append(box); return; }
+      for(const msg of items){
+        const card=el('article',`message ${msg.direccion==='saliente'?'out':''}`);
+        card.append(el('div','body',textOr(msg.contenido,msg.tipo?`[${msg.tipo}]`:'Mensaje sin contenido textual')));
+        const meta=el('div','msg-meta'); meta.append(el('span','',textOr(msg.direccion,'—')),el('span','',textOr(msg.estado,'—')),el('span','',fmtDate(msg.fecha_mensaje||msg.created_at))); card.append(meta); els.messages.append(card);
+      }
+      requestAnimationFrame(()=>{ els.messages.scrollTop=els.messages.scrollHeight; });
+    }
+
+    function renderEmptyInbox(){
+      els.threadTitle.textContent='Sin conversaciones';
+      els.threadSubtitle.textContent='RLS no devolvió conversaciones para esta sesión.';
+      els.messages.replaceChildren(); const box=el('div','empty'); const inner=el('div'); inner.append(el('strong','', 'Bandeja vacía'),document.createTextNode('Cuando existan conversaciones autorizadas aparecerán aquí.')); box.append(inner); els.messages.append(box);
+    }
+
+    els.logoutBtn.addEventListener('click',async()=>{ await supabase.auth.signOut(); location.replace('./crm-login.html'); });
+
+    try{ await loadInbox(); }catch(error){ console.error(error); showStatus(error?.message||'No se pudo cargar la bandeja.',true); els.conversationCount.textContent='Error al cargar'; }
+  </script>
+</body>
+</html>
