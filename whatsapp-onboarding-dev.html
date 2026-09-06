@@ -10,55 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    :root{
-      --magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;
-      --white:#FFFFFF;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;
-      --ok:#18A957;--danger:#C62828;--warn:#9A6700;
-      --gradient:linear-gradient(135deg,var(--magenta) 0%,var(--coral) 52%,var(--orange) 100%);
-      --shadow:0 18px 55px rgba(38,38,38,.10);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;min-height:100vh;padding:28px;
-      color:var(--charcoal);font-family:'Montserrat',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-      background:
-        radial-gradient(circle at 12% 8%,rgba(230,0,126,.10),transparent 28%),
-        radial-gradient(circle at 88% 92%,rgba(255,106,0,.10),transparent 30%),
-        var(--gray);
-    }
-    .wrap{width:min(820px,100%);margin:auto}
-    .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;text-decoration:none;color:var(--charcoal)}
-    .brand-logo{width:54px;height:54px;border-radius:50%;padding:2px;background:var(--gradient);box-shadow:0 8px 24px rgba(230,0,126,.16)}
-    .brand-logo span{display:grid;width:100%;height:100%;place-items:center;border-radius:50%;background:#fff;overflow:hidden}
-    .brand-logo img{width:100%;height:100%;object-fit:cover}
-    .brand-copy strong{display:block;font-family:'Anton',sans-serif;font-size:1.45rem;font-weight:400;line-height:1}
-    .brand-copy small{display:block;margin-top:5px;color:var(--magenta);font-weight:800;letter-spacing:.12em}
-    h1,h2{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:-.01em;color:var(--charcoal)}
-    h1{font-size:clamp(2rem,5vw,3rem);margin:.4rem 0 .75rem}
-    h2{margin-top:0;font-size:1.55rem}
-    .lead{color:var(--muted);line-height:1.65;margin-bottom:26px}
-    .tag{display:inline-block;padding:7px 11px;border-radius:999px;background:#FFF2E9;color:#A94200;font-weight:800;font-size:12px;letter-spacing:.06em}
-    .card{background:rgba(255,255,255,.96);border:1px solid var(--gray2);border-radius:22px;padding:24px;margin:16px 0;box-shadow:var(--shadow)}
-    .card::before{content:'';display:block;width:46px;height:4px;border-radius:99px;background:var(--gradient);margin-bottom:16px}
-    .ok{color:var(--ok);font-weight:800}.danger{color:var(--danger)}.muted{color:var(--muted)}
-    button,a.btn{display:inline-block;border:0;border-radius:12px;padding:12px 17px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
-    button{background:var(--gradient);color:#fff;box-shadow:0 10px 24px rgba(230,0,126,.18)}
-    button:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(230,0,126,.24)}
-    button:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}
-    a.btn{border:1px solid #dedee4;color:var(--charcoal);background:#fff}
-    a.btn:hover{border-color:var(--magenta);color:var(--magenta)}
-    pre{white-space:pre-wrap;word-break:break-word;background:#262626;color:#fff;border-radius:14px;padding:16px;min-height:80px;border:0}
-    .footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}
-    @media(max-width:600px){body{padding:18px}.card{padding:20px}.brand-logo{width:48px;height:48px}}
+    :root{--magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;--white:#FFFFFF;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;--ok:#18A957;--danger:#C62828;--gradient:linear-gradient(135deg,var(--magenta) 0%,var(--coral) 52%,var(--orange) 100%);--shadow:0 18px 55px rgba(38,38,38,.10)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px;color:var(--charcoal);font-family:'Montserrat',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:radial-gradient(circle at 12% 8%,rgba(230,0,126,.10),transparent 28%),radial-gradient(circle at 88% 92%,rgba(255,106,0,.10),transparent 30%),var(--gray)}.wrap{width:min(820px,100%);margin:auto}.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;text-decoration:none;color:var(--charcoal)}.brand-logo{width:54px;height:54px;border-radius:50%;padding:2px;background:var(--gradient);box-shadow:0 8px 24px rgba(230,0,126,.16)}.brand-logo span{display:grid;width:100%;height:100%;place-items:center;border-radius:50%;background:#fff;overflow:hidden}.brand-logo img{width:100%;height:100%;object-fit:cover}.brand-copy strong{display:block;font-family:'Anton',sans-serif;font-size:1.45rem;font-weight:400;line-height:1}.brand-copy small{display:block;margin-top:5px;color:var(--magenta);font-weight:800;letter-spacing:.12em}h1,h2{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:-.01em;color:var(--charcoal)}h1{font-size:clamp(2rem,5vw,3rem);margin:.4rem 0 .75rem}h2{margin-top:0;font-size:1.55rem}.lead{color:var(--muted);line-height:1.65;margin-bottom:26px}.tag{display:inline-block;padding:7px 11px;border-radius:999px;background:#FFF2E9;color:#A94200;font-weight:800;font-size:12px;letter-spacing:.06em}.card{background:rgba(255,255,255,.96);border:1px solid var(--gray2);border-radius:22px;padding:24px;margin:16px 0;box-shadow:var(--shadow)}.card::before{content:'';display:block;width:46px;height:4px;border-radius:99px;background:var(--gradient);margin-bottom:16px}.ok{color:var(--ok);font-weight:800}.danger{color:var(--danger)}.muted{color:var(--muted)}button,a.btn{display:inline-block;border:0;border-radius:12px;padding:12px 17px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}button{background:var(--gradient);color:#fff;box-shadow:0 10px 24px rgba(230,0,126,.18)}button:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(230,0,126,.24)}button:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}a.btn{border:1px solid #dedee4;color:var(--charcoal);background:#fff}a.btn:hover{border-color:var(--magenta);color:var(--magenta)}pre{white-space:pre-wrap;word-break:break-word;background:#262626;color:#fff;border-radius:14px;padding:16px;min-height:80px;border:0}.footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}@media(max-width:600px){body{padding:18px}.card{padding:20px}.brand-logo{width:48px;height:48px}}
   </style>
 </head>
 <body>
   <main class="wrap">
-    <a class="brand" href="./" aria-label="Volver a Impulso Digital">
-      <span class="brand-logo"><span><img src="./img/logo-impulso-digital.png" alt="Impulso Digital" /></span></span>
-      <span class="brand-copy"><strong>IMPULSO DIGITAL</strong><small>CRM + WHATSAPP</small></span>
-    </a>
-
+    <a class="brand" href="./" aria-label="Volver a Impulso Digital"><span class="brand-logo"><span><img src="./img/logo-impulso-digital.png" alt="Impulso Digital" /></span></span><span class="brand-copy"><strong>IMPULSO DIGITAL</strong><small>CRM + WHATSAPP</small></span></a>
     <span class="tag">DESARROLLO · NO PRODUCCIÓN</span>
     <h1>WhatsApp Embedded Signup · DEV</h1>
     <p class="lead">Prueba autenticada del flujo multiempresa. Esta página NO reemplaza la página que Meta está revisando.</p>
@@ -74,12 +32,12 @@
       <h2>2. Embedded Signup de Meta</h2>
       <p><strong class="danger">PROHIBIDO usar el número real +51 903 396 082.</strong></p>
       <button id="signupBtn" type="button" disabled>Conectar WhatsApp Business de PRUEBA</button>
-      <p class="muted">El backend obtiene y valida el activo de PRUEBA desde Supabase. No confía en IDs enviados por el navegador.</p>
+      <p class="muted">DEV usa un callback OAuth fijo y el backend valida únicamente el activo de PRUEBA registrado en Supabase.</p>
     </section>
 
     <section class="card">
       <h2>3. Resultado seguro</h2>
-      <pre id="result">Esperando sesión y SDK de Meta…</pre>
+      <pre id="result">Esperando sesión…</pre>
     </section>
 
     <p class="footer">TEMPORAL · Desarrollo técnico de Impulso Digital. Sin credenciales privadas en frontend.</p>
@@ -93,6 +51,8 @@
     const APP_ID = '860468763590445';
     const CONFIG_ID = '1581941380393885';
     const GRAPH_VERSION = 'v26.0';
+    const CALLBACK_URL = 'https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
+    const OWN_ORIGIN = 'https://leo556677.github.io';
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
@@ -104,7 +64,7 @@
     const result = document.getElementById('result');
 
     let negocioId = null;
-    let sdkReady = false;
+    let oauthPopup = null;
     let submitting = false;
 
     function setResult(value) {
@@ -112,7 +72,13 @@
     }
 
     function maybeEnable() {
-      signupBtn.disabled = !(negocioId && sdkReady && !submitting);
+      signupBtn.disabled = !(negocioId && !submitting);
+    }
+
+    function randomState() {
+      const bytes = new Uint8Array(24);
+      crypto.getRandomValues(bytes);
+      return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
     }
 
     async function resolveSession() {
@@ -123,92 +89,35 @@
         return;
       }
 
-      const { data: memberships, error: membershipError } = await supabase
-        .from('usuarios_negocio')
-        .select('negocio_id, rol');
-
+      const { data: memberships, error: membershipError } = await supabase.from('usuarios_negocio').select('negocio_id, rol');
       if (membershipError) throw membershipError;
-      if (!memberships || memberships.length !== 1) {
-        throw new Error('DEV exige exactamente una membresía autorizada.');
-      }
-      if (memberships[0].rol !== 'admin') {
-        throw new Error('Solo el administrador puede probar este onboarding.');
-      }
+      if (!memberships || memberships.length !== 1) throw new Error('DEV exige exactamente una membresía autorizada.');
+      if (memberships[0].rol !== 'admin') throw new Error('Solo el administrador puede probar este onboarding.');
 
       negocioId = memberships[0].negocio_id;
-      const { data: businesses, error: businessError } = await supabase
-        .from('negocios')
-        .select('id,nombre,slug')
-        .eq('id', negocioId)
-        .single();
+      const { data: business, error: businessError } = await supabase.from('negocios').select('id,nombre,slug').eq('id', negocioId).single();
       if (businessError) throw businessError;
 
       sessionStatus.innerHTML = '<span class="ok">Sesión válida.</span>';
-      tenantStatus.textContent = `${businesses.nombre} · admin · ${businesses.slug}`;
+      tenantStatus.textContent = `${business.nombre} · admin · ${business.slug}`;
+      setResult('Listo. Callback OAuth fijo configurado en DEV.');
       maybeEnable();
     }
 
-    window.fbAsyncInit = function () {
-      if (sdkReady || !window.FB) return;
-      FB.init({ appId: APP_ID, cookie: true, xfbml: true, version: GRAPH_VERSION });
-      sdkReady = true;
-      setResult('SDK de Meta cargado. Esperando iniciar Embedded Signup.');
-      maybeEnable();
-    };
-
-    function loadFacebookSdk() {
-      if (window.FB) {
-        window.fbAsyncInit();
-        return;
-      }
-
-      if (document.getElementById('facebook-jssdk')) return;
-      const sdk = document.createElement('script');
-      sdk.id = 'facebook-jssdk';
-      sdk.src = 'https://connect.facebook.net/es_LA/sdk.js';
-      sdk.async = true;
-      sdk.defer = true;
-      sdk.crossOrigin = 'anonymous';
-      sdk.onload = () => {
-        if (window.FB && !sdkReady) window.fbAsyncInit();
-      };
-      sdk.onerror = () => {
-        setResult('No se pudo cargar el SDK de Meta. Revisa conexión/bloqueadores del navegador y vuelve a intentar.');
-      };
-      document.head.appendChild(sdk);
-
-      setTimeout(() => {
-        if (!sdkReady) {
-          setResult('El SDK de Meta aún no terminó de cargar. Si el botón sigue deshabilitado, revisaremos el navegador sin tocar WhatsApp.');
-        }
-      }, 8000);
-    }
-
-    async function sendCodeToBackend(code) {
+    async function submitCode(code) {
+      if (!code || !negocioId || submitting) return;
       submitting = true;
       maybeEnable();
-      setResult('Código OAuth recibido. Verificando en backend si autoriza la WABA de PRUEBA…');
+      setResult('Código OAuth recibido. Validando autorización en backend seguro…');
 
       try {
-        const { data, error } = await supabase.functions.invoke('whatsapp-embedded-signup', {
-          body: { negocio_id: negocioId, code }
-        });
-
+        const { data, error } = await supabase.functions.invoke('whatsapp-embedded-signup', { body: { negocio_id: negocioId, code } });
         if (error) {
           let detail = null;
-          try {
-            if (error.context && typeof error.context.json === 'function') {
-              detail = await error.context.json();
-            }
-          } catch (_) {}
-
-          if (detail) {
-            setResult(detail);
-            return;
-          }
+          try { if (error.context && typeof error.context.json === 'function') detail = await error.context.json(); } catch (_) {}
+          if (detail) { setResult(detail); return; }
           throw error;
         }
-
         setResult(data);
       } catch (error) {
         setResult(`Error: ${error?.message || 'No se pudo completar la validación.'}`);
@@ -218,23 +127,45 @@
       }
     }
 
-    function fbLoginCallback(response) {
-      const code = response?.authResponse?.code;
-      if (!code) {
-        setResult('Meta no devolvió autorización o el flujo fue cancelado.');
+    window.addEventListener('message', (event) => {
+      if (event.origin !== OWN_ORIGIN) return;
+      if (oauthPopup && event.source !== oauthPopup) return;
+      const data = event.data;
+      if (!data || data.type !== 'IMPULSO_META_OAUTH_CALLBACK') return;
+
+      const expectedState = sessionStorage.getItem('impulso_meta_oauth_state');
+      sessionStorage.removeItem('impulso_meta_oauth_state');
+      if (!expectedState || !data.state || data.state !== expectedState) {
+        setResult('Respuesta OAuth rechazada: state inválido. No se envió nada al backend.');
         return;
       }
-      sendCodeToBackend(String(code));
-    }
+      if (data.error) {
+        setResult({ ok: false, error: data.error, detalle: data.error_description || data.error_reason || null });
+        return;
+      }
+      if (!data.code) {
+        setResult('Meta no devolvió código OAuth. No se envió nada al backend.');
+        return;
+      }
+      submitCode(String(data.code));
+    });
 
     signupBtn.addEventListener('click', () => {
-      setResult('Abriendo Embedded Signup de Meta…');
-      FB.login(fbLoginCallback, {
-        config_id: CONFIG_ID,
-        response_type: 'code',
-        override_default_response_type: true,
-        extras: { setup: {}, sessionInfoVersion: '2' }
-      });
+      const state = randomState();
+      sessionStorage.setItem('impulso_meta_oauth_state', state);
+
+      const oauth = new URL(`https://www.facebook.com/${GRAPH_VERSION}/dialog/oauth`);
+      oauth.searchParams.set('client_id', APP_ID);
+      oauth.searchParams.set('config_id', CONFIG_ID);
+      oauth.searchParams.set('display', 'popup');
+      oauth.searchParams.set('redirect_uri', CALLBACK_URL);
+      oauth.searchParams.set('response_type', 'code');
+      oauth.searchParams.set('state', state);
+      oauth.searchParams.set('extras', JSON.stringify({ setup: {}, sessionInfoVersion: '2' }));
+
+      setResult('Abriendo Embedded Signup de Meta con callback OAuth fijo…');
+      oauthPopup = window.open(oauth.toString(), 'impulso_meta_signup', 'width=760,height=760,resizable=yes,scrollbars=yes');
+      if (!oauthPopup) setResult('El navegador bloqueó la ventana emergente. Permite pop-ups para este sitio y vuelve a intentar.');
     });
 
     try {
@@ -244,8 +175,6 @@
       tenantStatus.textContent = error?.message || 'Error de autorización.';
       setResult('No se habilitará Embedded Signup hasta resolver la sesión.');
     }
-
-    loadFacebookSdk();
   </script>
 </body>
 </html>
