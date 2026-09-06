@@ -2,7 +2,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const $=id=>document.getElementById(id);
 let negocioId=null,canEdit=false,config=null,resources=[],schedules=[],services=[],links=[];
-let resourceEditId=null,scheduleEditId=null,linkEditKey=null,pendingConfirm=null;
+let resourceEditId=null,scheduleEditId=null,linkEditKey=null,pendingConfirm=null,activeReviewTab='rules';
 const days=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const esc=v=>String(v??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]));
 function msg(t,ok=false){const e=$('status');e.textContent=t||'';e.className=`status ${t?'show':''} ${ok?'ok':''}`.trim()}
@@ -49,21 +49,32 @@ function render(){
   renderReview();
 }
 
-function renderReview(){
+function reviewData(){
   const rulesRows=config?[[statePill(config.activa?'ACTIVA':'INACTIVA',Boolean(config.activa)),`${esc(config.intervalo_inicio_min)} min`,`${esc(config.anticipacion_min)} min`,`${esc(config.horizonte_dias)} días`,actionButtons('config',{})]]:[];
-  $('rulesTable').innerHTML=table(['Estado','Inicio cada','Anticipación','Horizonte','Acciones'],rulesRows,'Todavía no guardaste reglas de reserva.');
-
   const resourceRows=resources.map(r=>[esc(r.nombre),esc(r.tipo==='persona'?'Persona':'Recurso'),statePill(r.activo?'ACTIVO':'INACTIVO',Boolean(r.activo)),actionButtons('resource',{id:r.id})]);
-  $('resourcesTable').innerHTML=table(['Nombre','Tipo','Estado','Acciones'],resourceRows,'Aún no hay personas o recursos activos.');
-
   const scheduleRows=schedules.map(h=>[esc(resourceName(h.recurso_id)),esc(days[h.dia_semana]),esc(String(h.hora_inicio).slice(0,5)),esc(String(h.hora_fin).slice(0,5)),actionButtons('schedule',{id:h.id})]);
-  $('schedulesTable').innerHTML=table(['Quién atiende','Día','Desde','Hasta','Acciones'],scheduleRows,'Aún no hay horarios registrados.');
-
   const linkRows=links.map(l=>[esc(serviceName(l.servicio_id)),esc(resourceName(l.recurso_id)),statePill('ASIGNADO',true),actionButtons('link',{servicio:l.servicio_id,recurso:l.recurso_id})]);
-  $('linksTable').innerHTML=table(['Servicio','Quién atiende','Estado','Acciones'],linkRows,'Todavía no hay servicios asignados.');
-
-  document.querySelectorAll('.js-edit').forEach(b=>b.addEventListener('click',handleEdit));
-  document.querySelectorAll('.js-delete').forEach(b=>b.addEventListener('click',handleDelete));
+  return {
+    rules:{title:'Reglas de reserva',copy:'Configuración general de disponibilidad.',headers:['Estado','Inicio cada','Anticipación','Horizonte','Acciones'],rows:rulesRows,empty:'Todavía no guardaste reglas de reserva.',count:config?1:0},
+    resources:{title:'Quién atiende',copy:'Personas o recursos activos de tu agenda.',headers:['Nombre','Tipo','Estado','Acciones'],rows:resourceRows,empty:'Aún no hay personas o recursos activos.',count:resources.length},
+    schedules:{title:'Horarios registrados',copy:'Días y rangos disponibles para cada persona o recurso.',headers:['Quién atiende','Día','Desde','Hasta','Acciones'],rows:scheduleRows,empty:'Aún no hay horarios registrados.',count:schedules.length},
+    links:{title:'Servicios asignados',copy:'Qué servicio puede realizar cada persona o recurso.',headers:['Servicio','Quién atiende','Estado','Acciones'],rows:linkRows,empty:'Todavía no hay servicios asignados.',count:links.length}
+  };
+}
+function renderReview(){
+  const data=reviewData();
+  if(!data[activeReviewTab])activeReviewTab='rules';
+  $('rulesCount').textContent=data.rules.count;
+  $('resourcesCount').textContent=data.resources.count;
+  $('schedulesCount').textContent=data.schedules.count;
+  $('linksCount').textContent=data.links.count;
+  document.querySelectorAll('.review-tab').forEach(b=>{const on=b.dataset.reviewTab===activeReviewTab;b.classList.toggle('active',on);b.setAttribute('aria-selected',on?'true':'false')});
+  const current=data[activeReviewTab];
+  $('reviewCategoryTitle').textContent=current.title;
+  $('reviewCategoryCopy').textContent=current.copy;
+  $('reviewTable').innerHTML=table(current.headers,current.rows,current.empty);
+  document.querySelectorAll('#reviewTable .js-edit').forEach(b=>b.addEventListener('click',handleEdit));
+  document.querySelectorAll('#reviewTable .js-delete').forEach(b=>b.addEventListener('click',handleDelete));
 }
 
 function handleEdit(e){const b=e.currentTarget,kind=b.dataset.kind;
@@ -81,17 +92,18 @@ function handleDelete(e){const b=e.currentTarget,kind=b.dataset.kind;
 }
 
 $('configForm').addEventListener('submit',async e=>{e.preventDefault();if(!canEdit)return;const payload={negocio_id:negocioId,intervalo_inicio_min:Number($('intervalo').value),anticipacion_min:Number($('anticipacion').value),horizonte_dias:Number($('horizonte').value),activa:$('activa').checked};if(!Number.isFinite(payload.intervalo_inicio_min)||payload.intervalo_inicio_min<5)return msg('Indica un intervalo válido.');if(!Number.isFinite(payload.anticipacion_min)||payload.anticipacion_min<0)return msg('Indica una anticipación válida.');if(!Number.isFinite(payload.horizonte_dias)||payload.horizonte_dias<1)return msg('Indica un horizonte válido.');msg('Guardando reglas…',true);const {error}=await sb.from('configuracion_agenda').upsert(payload,{onConflict:'negocio_id'});if(error)return msg('No pudimos guardar las reglas.');msg('Reglas guardadas.',true);await load();flashReview()});
-$('resourceForm').addEventListener('submit',async e=>{e.preventDefault();if(!canEdit)return;const nombre=$('resourceName').value.trim();if(!nombre)return msg('Escribe el nombre de la persona o recurso.');const payload={negocio_id:negocioId,nombre,tipo:$('resourceType').value,activo:true};msg(resourceEditId?'Guardando cambios…':'Agregando recurso…',true);let q=resourceEditId?await sb.from('recursos_agenda').update({nombre:payload.nombre,tipo:payload.tipo}).eq('id',resourceEditId).eq('negocio_id',negocioId):await sb.from('recursos_agenda').insert(payload);if(q.error)return msg(resourceEditId?'No pudimos guardar los cambios del recurso.':'No pudimos agregar el recurso.');resetResourceForm();msg(resourceEditId?'Recurso actualizado.':'Recurso agregado.',true);await load();flashReview()});
-$('scheduleForm').addEventListener('submit',async e=>{e.preventDefault();if(!canEdit)return;const recurso_id=$('scheduleResource').value,start=$('start').value,end=$('end').value,dia=Number($('day').value);if(!recurso_id)return msg('Elige quién atenderá este horario.');if(!Number.isFinite(dia))return msg('Elige un día válido.');if(!start||!end)return msg('Completa la hora de inicio y fin.');if(end<=start)return msg('La hora de fin debe ser posterior a la hora de inicio.');const payload={negocio_id:negocioId,recurso_id,dia_semana:dia,hora_inicio:start,hora_fin:end,activo:true};msg(scheduleEditId?'Guardando cambios…':'Agregando horario…',true);let q=scheduleEditId?await sb.from('horarios_agenda').update({recurso_id:payload.recurso_id,dia_semana:payload.dia_semana,hora_inicio:payload.hora_inicio,hora_fin:payload.hora_fin}).eq('id',scheduleEditId).eq('negocio_id',negocioId):await sb.from('horarios_agenda').insert(payload);if(q.error)return msg(scheduleEditId?'No pudimos guardar los cambios del horario.':'No pudimos agregar el horario.');resetScheduleForm();msg(scheduleEditId?'Horario actualizado.':'Horario agregado.',true);await load();flashReview()});
-$('assignBtn').addEventListener('click',async()=>{if(!canEdit)return;const recurso_id=$('assignResource').value,servicioSel=$('assignService').value;if(!recurso_id)return msg('Elige quién atenderá los servicios.');msg(linkEditKey?'Guardando cambios…':'Guardando asignación…',true);if(servicioSel==='__all__' && !linkEditKey){const rows=services.map(s=>({negocio_id:negocioId,servicio_id:s.id,recurso_id}));const {error}=await sb.from('servicios_recursos').upsert(rows,{onConflict:'negocio_id,servicio_id,recurso_id',ignoreDuplicates:true});if(error)return msg('No pudimos asignar los servicios.');resetAssignForm();msg('Servicios asignados.',true);await load();flashReview();return}
+$('resourceForm').addEventListener('submit',async e=>{e.preventDefault();if(!canEdit)return;const wasEditing=Boolean(resourceEditId),nombre=$('resourceName').value.trim();if(!nombre)return msg('Escribe el nombre de la persona o recurso.');const payload={negocio_id:negocioId,nombre,tipo:$('resourceType').value,activo:true};msg(resourceEditId?'Guardando cambios…':'Agregando recurso…',true);let q=resourceEditId?await sb.from('recursos_agenda').update({nombre:payload.nombre,tipo:payload.tipo}).eq('id',resourceEditId).eq('negocio_id',negocioId):await sb.from('recursos_agenda').insert(payload);if(q.error)return msg(resourceEditId?'No pudimos guardar los cambios del recurso.':'No pudimos agregar el recurso.');resetResourceForm();msg(wasEditing?'Recurso actualizado.':'Recurso agregado.',true);await load();flashReview()});
+$('scheduleForm').addEventListener('submit',async e=>{e.preventDefault();if(!canEdit)return;const wasEditing=Boolean(scheduleEditId),recurso_id=$('scheduleResource').value,start=$('start').value,end=$('end').value,dayRaw=$('day').value;if(!recurso_id)return msg('Elige quién atenderá este horario.');if(dayRaw==='')return msg('Elige un día válido.');const dia=Number(dayRaw);if(!Number.isFinite(dia))return msg('Elige un día válido.');if(!start||!end)return msg('Completa la hora de inicio y fin.');if(end<=start)return msg('La hora de fin debe ser posterior a la hora de inicio.');const payload={negocio_id:negocioId,recurso_id,dia_semana:dia,hora_inicio:start,hora_fin:end,activo:true};msg(scheduleEditId?'Guardando cambios…':'Agregando horario…',true);let q=scheduleEditId?await sb.from('horarios_agenda').update({recurso_id:payload.recurso_id,dia_semana:payload.dia_semana,hora_inicio:payload.hora_inicio,hora_fin:payload.hora_fin}).eq('id',scheduleEditId).eq('negocio_id',negocioId):await sb.from('horarios_agenda').insert(payload);if(q.error)return msg(scheduleEditId?'No pudimos guardar los cambios del horario.':'No pudimos agregar el horario.');resetScheduleForm();msg(wasEditing?'Horario actualizado.':'Horario agregado.',true);await load();flashReview()});
+$('assignBtn').addEventListener('click',async()=>{if(!canEdit)return;const wasEditing=Boolean(linkEditKey),recurso_id=$('assignResource').value,servicioSel=$('assignService').value;if(!recurso_id)return msg('Elige quién atenderá los servicios.');msg(linkEditKey?'Guardando cambios…':'Guardando asignación…',true);if(servicioSel==='__all__' && !linkEditKey){const rows=services.map(s=>({negocio_id:negocioId,servicio_id:s.id,recurso_id}));const {error}=await sb.from('servicios_recursos').upsert(rows,{onConflict:'negocio_id,servicio_id,recurso_id',ignoreDuplicates:true});if(error)return msg('No pudimos asignar los servicios.');resetAssignForm();msg('Servicios asignados.',true);await load();flashReview();return}
   const servicio_id=servicioSel==='__all__'&&linkEditKey?linkEditKey.servicio_id:servicioSel;
   if(!servicio_id)return msg('Elige un servicio.');
   if(linkEditKey && (String(linkEditKey.servicio_id)!==String(servicio_id) || String(linkEditKey.recurso_id)!==String(recurso_id))){const del=await sb.from('servicios_recursos').delete().eq('negocio_id',negocioId).eq('servicio_id',linkEditKey.servicio_id).eq('recurso_id',linkEditKey.recurso_id);if(del.error)return msg('No pudimos preparar la reasignación.');}
-  const {error}=await sb.from('servicios_recursos').upsert([{negocio_id:negocioId,servicio_id,recurso_id}],{onConflict:'negocio_id,servicio_id,recurso_id',ignoreDuplicates:true});if(error)return msg('No pudimos guardar la asignación.');resetAssignForm();msg(linkEditKey?'Asignación actualizada.':'Asignación guardada.',true);await load();flashReview()});
+  const {error}=await sb.from('servicios_recursos').upsert([{negocio_id:negocioId,servicio_id,recurso_id}],{onConflict:'negocio_id,servicio_id,recurso_id',ignoreDuplicates:true});if(error)return msg('No pudimos guardar la asignación.');resetAssignForm();msg(wasEditing?'Asignación actualizada.':'Asignación guardada.',true);await load();flashReview()});
 
 $('cancelResourceEdit').addEventListener('click',()=>{resetResourceForm();msg('Edición cancelada.',true)});
 $('cancelScheduleEdit').addEventListener('click',()=>{resetScheduleForm();msg('Edición cancelada.',true)});
 $('cancelAssignEdit').addEventListener('click',()=>{resetAssignForm();msg('Edición cancelada.',true)});
 $('clearConfigEdit').addEventListener('click',()=>scrollToEl($('savedReview')));
+document.querySelectorAll('.review-tab').forEach(b=>b.addEventListener('click',()=>{activeReviewTab=b.dataset.reviewTab||'rules';renderReview()}));
 
 try{if(await resolve())await load()}catch(e){msg(e.message||'No pudimos cargar tu agenda.')}
