@@ -9,15 +9,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--p:#E6007E;--c:#F2385A;--o:#FF6A00;--ink:#25252A;--m:#676B78;--bg:#F6F6F8;--line:#E4E4EA;--ok:#147A42;--warn:#7A5200;--danger:#B42318;--grad:linear-gradient(135deg,var(--p),var(--c) 52%,var(--o));--shadow:0 16px 44px rgba(28,28,33,.08)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Montserrat,system-ui,sans-serif}.top{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}.topin,.wrap{width:min(1040px,calc(100% - 28px));margin:auto}.topin{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink)}.brand img{width:40px;height:40px;border-radius:50%;border:2px solid var(--p)}.brand strong,h1,h2,.review-title{font-family:Anton,sans-serif;font-weight:400}.back{font-size:12px;font-weight:800;text-decoration:none;color:var(--p);border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 11px}.wrap{margin-top:24px;margin-bottom:54px}h1{font-size:clamp(2.25rem,5vw,3.2rem);line-height:1;margin:0}.lead{color:var(--m);line-height:1.65;font-size:13px;max-width:780px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow)}h2{margin:0 0 8px;font-size:1.65rem}.step{font-size:10px;color:var(--p);font-weight:900;letter-spacing:.08em}.copy{font-size:11px;color:var(--m);line-height:1.55;margin:0 0 14px}label{display:block;font-size:11px;font-weight:800;margin:10px 0 5px}input,select{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}input:focus,select:focus{border-color:rgba(230,0,126,.45);box-shadow:0 0 0 4px rgba(230,0,126,.08)}.inline{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.check{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px}.check input{width:auto}.btn{border:0;border-radius:10px;padding:11px 13px;background:var(--grad);color:#fff;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:transform .2s ease,box-shadow .2s ease}.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(242,56,90,.2)}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:none}.btn:disabled{opacity:.5;cursor:not-allowed}.summary{font-size:11px;color:var(--m);line-height:1.6;border-top:1px solid var(--line);margin-top:13px;padding-top:12px}.status{display:none;margin:14px 0;padding:11px 13px;border-radius:11px;background:#FFF1F0;color:var(--danger);font-size:11px;line-height:1.5}.status.show{display:block}.status.ok{display:block;background:#EAF8EF;color:var(--ok)}.notice{padding:12px;border-radius:12px;background:#FFF6E8;color:var(--warn);font-size:11px;line-height:1.5}.review{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden}.review::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:var(--grad)}.review.flash{animation:flashSaved 1.2s ease}.review-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}.review-title{font-size:1.9rem;margin:0}.review-sub{font-size:11px;color:var(--m);line-height:1.55;margin-top:5px}.saved-pill{display:inline-flex;align-items:center;gap:6px;background:#EAF8EF;color:var(--ok);border-radius:999px;padding:7px 10px;font-size:9px;font-weight:900;white-space:nowrap}.review-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.review-card{border:1px solid var(--line);border-radius:16px;padding:15px;background:#FCFCFE}.review-card h3{margin:0 0 10px;font-size:13px}.review-card .mini{font-size:9px;color:var(--m);margin-top:-5px;margin-bottom:10px}.table-wrap{overflow:auto;border-radius:12px;border:1px solid #ECECF1;background:#fff}.clean-table{width:100%;border-collapse:collapse;min-width:420px}.clean-table th,.clean-table td{text-align:left;padding:10px 11px;border-bottom:1px solid #EFEFF3;font-size:10px;vertical-align:top}.clean-table th{background:#F7F7FA;color:var(--m);font-size:9px;text-transform:uppercase;letter-spacing:.04em}.clean-table tr:last-child td{border-bottom:0}.state{display:inline-flex;align-items:center;padding:5px 7px;border-radius:999px;font-size:8px;font-weight:900;background:#EAF8EF;color:var(--ok)}.state.off{background:#F1F1F4;color:var(--m)}.empty-row{padding:14px;color:var(--m);font-size:10px}.review-foot{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.review-foot .btn{min-width:180px}@keyframes flashSaved{0%{box-shadow:0 0 0 0 rgba(230,0,126,.18)}45%{box-shadow:0 0 0 10px rgba(230,0,126,.08)}100%{box-shadow:var(--shadow)}}
-@media(max-width:780px){.grid,.review-grid{grid-template-columns:1fr}.inline{grid-template-columns:1fr}.card,.review{padding:17px}.topin,.wrap{width:min(100% - 20px,1040px)}.review-head{flex-direction:column}.saved-pill{width:max-content}}
-@media(max-width:520px){.brand strong{font-size:14px}.back{font-size:10px;padding:8px}.clean-table{min-width:560px}.review-foot .btn{width:100%}}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.btn,input,select{transition:none!important}.review.flash{animation:none!important}}
-</style>
+<link rel="stylesheet" href="./cliente-agenda.css">
 </head>
 <body>
+<div id="pageShell">
 <header class="top"><div class="topin"><a class="brand" href="./cliente-panel.html"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><strong>IMPULSO DIGITAL</strong></a><a class="back" href="./cliente-panel.html">← Volver a mi panel</a></div></header>
 <main class="wrap">
   <div style="font-size:11px;color:var(--p);font-weight:900">PASO 4</div>
@@ -25,15 +20,74 @@
   <p class="lead">Dinos quién atiende, cuándo está disponible y qué servicios puede realizar. Con esos datos la agenda calcula horarios reales.</p>
   <div id="notice" class="notice" hidden></div>
   <div class="grid" style="margin-top:14px">
-    <section class="card"><div class="step">1 · REGLAS DE RESERVA</div><h2>Cómo quieres recibir citas</h2><p class="copy">Estos valores controlan cada cuánto puede empezar una cita, con cuánta anticipación pueden reservar y hasta cuántos días mostrar.</p><form id="configForm"><div class="inline"><div><label for="intervalo">Inicio cada (min)</label><input id="intervalo" type="number" min="5" max="240" required placeholder="Ej. 30"></div><div><label for="anticipacion">Anticipación mínima (min)</label><input id="anticipacion" type="number" min="0" max="525600" required placeholder="Ej. 120"></div><div><label for="horizonte">Días hacia adelante</label><input id="horizonte" type="number" min="1" max="365" required placeholder="Ej. 30"></div></div><label class="check"><input id="activa" type="checkbox"> Activar agenda cuando la configuración esté completa</label><button id="saveConfig" class="btn" type="submit" style="margin-top:12px">Guardar reglas</button></form><div id="configSummary" class="summary">Sin configuración guardada.</div></section>
-    <section class="card"><div class="step">2 · QUIÉN ATIENDE</div><h2>Agrega una persona o recurso</h2><p class="copy">Puede ser una persona, una cabina, una sala u otro recurso que tenga horarios propios.</p><form id="resourceForm"><label for="resourceName">Nombre</label><input id="resourceName" required maxlength="120" placeholder="Ej. María / Consultorio 1"><label for="resourceType">Tipo</label><select id="resourceType"><option value="persona">Persona</option><option value="recurso">Recurso</option></select><button id="saveResource" class="btn" type="submit" style="margin-top:12px">Agregar</button></form><div id="resourceSummary" class="summary">Aún no hay recursos.</div></section>
-    <section class="card"><div class="step">3 · DÍAS Y HORAS</div><h2>Agrega un horario</h2><p class="copy">Puedes agregar varios rangos para la misma persona o recurso.</p><form id="scheduleForm"><label for="scheduleResource">Quién atiende</label><select id="scheduleResource" required><option value="">Elige una opción</option></select><label for="day">Día</label><select id="day" required><option value="">Elige un día</option><option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option><option value="4">Jueves</option><option value="5">Viernes</option><option value="6">Sábado</option><option value="0">Domingo</option></select><div class="inline" style="grid-template-columns:1fr 1fr"><div><label for="start">Desde</label><input id="start" type="time" required></div><div><label for="end">Hasta</label><input id="end" type="time" required></div></div><button id="saveSchedule" class="btn" type="submit" style="margin-top:12px">Agregar horario</button></form><div id="scheduleSummary" class="summary">Aún no hay horarios.</div></section>
-    <section class="card"><div class="step">4 · SERVICIOS</div><h2>Relaciona tus servicios</h2><p class="copy">Para ofrecer horarios, cada servicio necesita al menos una persona o recurso que pueda realizarlo.</p><label for="assignResource">Asignar servicios a</label><select id="assignResource"><option value="">Elige una opción</option></select><button id="assignBtn" class="btn" type="button" style="margin-top:12px">Asignar todos mis servicios activos</button><div id="assignSummary" class="summary">Revisando servicios…</div></section>
+    <section class="card">
+      <div class="step">1 · REGLAS DE RESERVA</div>
+      <h2>Cómo quieres recibir citas</h2>
+      <p class="copy">Estos valores controlan cada cuánto puede empezar una cita, con cuánta anticipación pueden reservar y hasta cuántos días mostrar.</p>
+      <form id="configForm">
+        <div class="inline">
+          <div><label for="intervalo">Inicio cada (min)</label><input id="intervalo" type="number" min="5" max="240" required placeholder="Ej. 30"></div>
+          <div><label for="anticipacion">Anticipación mínima (min)</label><input id="anticipacion" type="number" min="0" max="525600" required placeholder="Ej. 120"></div>
+          <div><label for="horizonte">Días hacia adelante</label><input id="horizonte" type="number" min="1" max="365" required placeholder="Ej. 30"></div>
+        </div>
+        <label class="check"><input id="activa" type="checkbox"> Activar agenda cuando la configuración esté completa</label>
+        <div class="form-actions"><button id="saveConfig" class="btn" type="submit">Guardar reglas</button><button id="clearConfigEdit" class="btn secondary" type="button">Ir al resumen</button></div>
+      </form>
+      <div id="configSummary" class="summary">Sin configuración guardada.</div>
+    </section>
+
+    <section class="card">
+      <div class="step">2 · QUIÉN ATIENDE</div>
+      <h2>Agrega una persona o recurso</h2>
+      <p class="copy">Puede ser una persona, una cabina, una sala u otro recurso que tenga horarios propios.</p>
+      <form id="resourceForm">
+        <label for="resourceName">Nombre</label><input id="resourceName" required maxlength="120" placeholder="Ej. María / Consultorio 1">
+        <label for="resourceType">Tipo</label>
+        <select id="resourceType"><option value="persona">Persona</option><option value="recurso">Recurso</option></select>
+        <div class="form-actions"><button id="saveResource" class="btn" type="submit">Agregar</button><button id="cancelResourceEdit" class="btn secondary" type="button" hidden>Cancelar edición</button></div>
+      </form>
+      <div id="resourceSummary" class="summary">Aún no hay recursos.</div>
+    </section>
+
+    <section class="card">
+      <div class="step">3 · DÍAS Y HORAS</div>
+      <h2>Agrega un horario</h2>
+      <p class="copy">Puedes agregar varios rangos para la misma persona o recurso.</p>
+      <form id="scheduleForm">
+        <label for="scheduleResource">Quién atiende</label>
+        <select id="scheduleResource" required><option value="">Elige una opción</option></select>
+        <label for="day">Día</label>
+        <select id="day" required>
+          <option value="">Elige un día</option><option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option><option value="4">Jueves</option><option value="5">Viernes</option><option value="6">Sábado</option><option value="0">Domingo</option>
+        </select>
+        <div class="inline" style="grid-template-columns:1fr 1fr"><div><label for="start">Desde</label><input id="start" type="time" required></div><div><label for="end">Hasta</label><input id="end" type="time" required></div></div>
+        <div class="form-actions"><button id="saveSchedule" class="btn" type="submit">Agregar horario</button><button id="cancelScheduleEdit" class="btn secondary" type="button" hidden>Cancelar edición</button></div>
+      </form>
+      <div id="scheduleSummary" class="summary">Aún no hay horarios.</div>
+    </section>
+
+    <section class="card">
+      <div class="step">4 · SERVICIOS</div>
+      <h2>Relaciona tus servicios</h2>
+      <p class="copy">Para ofrecer horarios, cada servicio necesita al menos una persona o recurso que pueda realizarlo.</p>
+      <label for="assignResource">Asignar servicios a</label>
+      <select id="assignResource"><option value="">Elige una opción</option></select>
+      <label for="assignService">Servicio</label>
+      <select id="assignService"><option value="__all__">Todos mis servicios activos</option></select>
+      <div class="form-actions"><button id="assignBtn" class="btn" type="button">Guardar asignación</button><button id="cancelAssignEdit" class="btn secondary" type="button" hidden>Cancelar edición</button></div>
+      <div id="assignSummary" class="summary">Revisando servicios…</div>
+    </section>
   </div>
+
   <div id="status" class="status" aria-live="polite"></div>
+
   <section id="savedReview" class="review" aria-labelledby="savedTitle">
     <div class="review-head">
-      <div><div class="step">RESUMEN GUARDADO</div><h2 id="savedTitle" class="review-title">Así quedó tu agenda</h2><div class="review-sub">Este resumen se construye con los datos que ya están guardados. Si haces un cambio arriba, aquí podrás comprobar el resultado.</div></div>
+      <div>
+        <div class="step">RESUMEN GUARDADO</div>
+        <h2 id="savedTitle" class="review-title">Así quedó tu agenda</h2>
+        <div class="review-sub">Este resumen se construye con los datos que ya están guardados. Si haces un cambio arriba, aquí podrás comprobar el resultado y también editar o eliminar cada registro.</div>
+      </div>
       <span id="savedState" class="saved-pill">✓ Datos sincronizados</span>
     </div>
     <div class="review-grid">
@@ -45,33 +99,18 @@
     <div class="review-foot"><a class="btn" href="./cliente-panel.html">Volver a mi panel</a><a class="btn secondary" href="./cliente-servicios.html">Revisar mis servicios</a></div>
   </section>
 </main>
-<script type="module">
-import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
-const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-const $=id=>document.getElementById(id);let negocioId=null,canEdit=false,config=null,resources=[],schedules=[],services=[],links=[];const days=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-const esc=v=>String(v??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]));
-function msg(t,ok=false){const e=$('status');e.textContent=t||'';e.className=`status ${t?'show':''} ${ok?'ok':''}`.trim()}
-function flashReview(){const e=$('savedReview');e.classList.remove('flash');void e.offsetWidth;e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),1300)}
-function table(headers,rows,empty){if(!rows.length)return `<div class="empty-row">${esc(empty)}</div>`;return `<div class="table-wrap"><table class="clean-table"><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
-function resourceName(id){return resources.find(r=>String(r.id)===String(id))?.nombre||'Sin identificar'}
-function serviceName(id){return services.find(s=>String(s.id)===String(id))?.nombre||'Servicio no disponible'}
-function renderSaved(){
-  $('rulesTable').innerHTML=config?table(['Estado','Inicio cada','Anticipación','Horizonte'],[[`<span class="state ${config.activa?'':'off'}">${config.activa?'ACTIVA':'INACTIVA'}</span>`,`${Number(config.intervalo_inicio_min)} min`,`${Number(config.anticipacion_min)} min`,`${Number(config.horizonte_dias)} días`]],'Sin configuración guardada.'):'<div class="empty-row">Sin configuración guardada.</div>';
-  $('resourcesTable').innerHTML=table(['Nombre','Tipo','Estado'],resources.map(r=>[esc(r.nombre),esc(r.tipo==='persona'?'Persona':'Recurso'),`<span class="state">ACTIVO</span>`]),'Aún no hay personas o recursos activos.');
-  const ordered=[...schedules].sort((a,b)=>Number(a.dia_semana)-Number(b.dia_semana)||String(a.hora_inicio).localeCompare(String(b.hora_inicio)));
-  $('schedulesTable').innerHTML=table(['Quién atiende','Día','Desde','Hasta'],ordered.map(h=>[esc(resourceName(h.recurso_id)),esc(days[Number(h.dia_semana)]||'—'),esc(String(h.hora_inicio).slice(0,5)),esc(String(h.hora_fin).slice(0,5))]),'Aún no hay horarios registrados.');
-  const linkRows=links.map(l=>[esc(serviceName(l.servicio_id)),esc(resourceName(l.recurso_id)),`<span class="state">ASIGNADO</span>`]);
-  $('linksTable').innerHTML=table(['Servicio','Quién atiende','Estado'],linkRows,'Aún no hay servicios asignados a una persona o recurso.');
-  $('savedState').textContent='✓ Datos sincronizados';
-}
-async function resolve(){const{data:{session}}=await sb.auth.getSession();if(!session){location.replace('./cliente-acceso.html');return false}const{data:m,error}=await sb.from('usuarios_negocio').select('negocio_id,rol');if(error||!m||m.length!==1)throw new Error('No pudimos identificar tu empresa.');negocioId=m[0].negocio_id;canEdit=['admin','propietario'].includes(m[0].rol);return true}
-async function load(){const[cfg,res,hrs,srv,lnk]=await Promise.all([sb.from('configuracion_agenda').select('*').eq('negocio_id',negocioId).maybeSingle(),sb.from('recursos_agenda').select('id,nombre,tipo,activo').eq('negocio_id',negocioId).eq('activo',true).order('created_at'),sb.from('horarios_agenda').select('id,recurso_id,dia_semana,hora_inicio,hora_fin,activo').eq('negocio_id',negocioId).eq('activo',true).order('dia_semana'),sb.from('servicios').select('id,nombre,activo').eq('negocio_id',negocioId).eq('activo',true).order('created_at'),sb.from('servicios_recursos').select('servicio_id,recurso_id').eq('negocio_id',negocioId)]);for(const q of[cfg,res,hrs,srv,lnk])if(q.error)throw q.error;config=cfg.data;resources=res.data||[];schedules=hrs.data||[];services=srv.data||[];links=lnk.data||[];render()}
-function render(){if(config){$('intervalo').value=config.intervalo_inicio_min;$('anticipacion').value=config.anticipacion_min;$('horizonte').value=config.horizonte_dias;$('activa').checked=Boolean(config.activa);$('configSummary').textContent=`Agenda ${config.activa?'activa':'guardada pero inactiva'} · inicio cada ${config.intervalo_inicio_min} min · anticipación ${config.anticipacion_min} min · horizonte ${config.horizonte_dias} días.`}else $('configSummary').textContent='Sin configuración guardada.';const opts=resources.map(r=>`<option value="${esc(r.id)}">${esc(r.nombre)}</option>`).join('');$('scheduleResource').innerHTML='<option value="">Elige una opción</option>'+opts;$('assignResource').innerHTML='<option value="">Elige una opción</option>'+opts;$('resourceSummary').textContent=resources.length?`${resources.length} recurso(s) activo(s): ${resources.map(r=>r.nombre).join(', ')}.`:'Aún no hay recursos.';$('scheduleSummary').textContent=schedules.length?`${schedules.length} horario(s): ${schedules.slice(0,8).map(h=>`${days[h.dia_semana]} ${String(h.hora_inicio).slice(0,5)}–${String(h.hora_fin).slice(0,5)}`).join(' · ')}${schedules.length>8?'…':''}`:'Aún no hay horarios.';const assigned=new Set(links.map(x=>x.servicio_id));$('assignSummary').textContent=services.length?`${assigned.size} de ${services.length} servicio(s) activos tienen al menos una asignación registrada.`:'No hay servicios activos. Agrégalos antes de completar la agenda.';$('assignBtn').disabled=!canEdit||!resources.length||!services.length;if(!services.length){$('notice').hidden=false;$('notice').innerHTML='Antes de terminar la agenda necesitas al menos un servicio activo. <a href="./cliente-servicios.html" style="color:inherit;font-weight:800">Agregar servicios</a>.'}else $('notice').hidden=true;renderSaved()}
-$('configForm').addEventListener('submit',async e=>{e.preventDefault();if(!canEdit)return;const payload={negocio_id:negocioId,intervalo_inicio_min:Number($('intervalo').value),anticipacion_min:Number($('anticipacion').value),horizonte_dias:Number($('horizonte').value),activa:$('activa').checked};const{error}=await sb.from('configuracion_agenda').upsert(payload,{onConflict:'negocio_id'});if(error){msg(error.message);return}msg('Reglas guardadas. El resumen de abajo ya fue actualizado.',true);await load();flashReview()});
-$('resourceForm').addEventListener('submit',async e=>{e.preventDefault();if(!canEdit)return;const name=$('resourceName').value.trim();if(!name){msg('Escribe el nombre de la persona o recurso.');return}const{error}=await sb.from('recursos_agenda').insert({negocio_id:negocioId,nombre:name,tipo:$('resourceType').value,activo:true});if(error){msg(error.message);return}e.target.reset();msg('Persona o recurso agregado. El resumen de abajo ya fue actualizado.',true);await load();flashReview()});
-$('scheduleForm').addEventListener('submit',async e=>{e.preventDefault();if(!canEdit)return;const start=$('start').value,end=$('end').value;if(end<=start){msg('La hora de fin debe ser posterior a la hora de inicio.');return}const{error}=await sb.from('horarios_agenda').insert({negocio_id:negocioId,recurso_id:$('scheduleResource').value,dia_semana:Number($('day').value),hora_inicio:start,hora_fin:end,activo:true});if(error){msg(error.message);return}e.target.reset();msg('Horario agregado. El resumen de abajo ya fue actualizado.',true);await load();flashReview()});
-$('assignBtn').addEventListener('click',async()=>{if(!canEdit)return;const rid=$('assignResource').value;if(!rid){msg('Elige quién atenderá los servicios.');return}const rows=services.map(s=>({negocio_id:negocioId,servicio_id:s.id,recurso_id:rid}));const{error}=await sb.from('servicios_recursos').upsert(rows,{onConflict:'negocio_id,servicio_id,recurso_id',ignoreDuplicates:true});if(error){msg(error.message);return}msg('Servicios asignados. El resumen de abajo ya fue actualizado.',true);await load();flashReview()});
-try{if(await resolve())await load()}catch(e){msg(e.message||'No pudimos cargar tu agenda.')}
-</script>
+</div>
+
+<div id="confirmModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <div class="modal-kicker">Confirmación</div>
+    <h3 id="confirmTitle">¿Seguro que quieres continuar?</h3>
+    <p id="confirmText">Esta acción requiere confirmación.</p>
+    <div class="modal-actions"><button id="confirmCancel" class="btn secondary" type="button">Cancelar</button><button id="confirmAccept" class="btn danger" type="button">Aceptar</button></div>
+  </div>
+</div>
+
+<script type="module" src="./cliente-agenda.js"></script>
 </body>
 </html>
