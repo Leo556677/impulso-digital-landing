@@ -164,11 +164,43 @@
     }
 
     window.fbAsyncInit = function () {
+      if (sdkReady || !window.FB) return;
       FB.init({ appId: APP_ID, cookie: true, xfbml: true, version: GRAPH_VERSION });
       sdkReady = true;
       setResult('SDK de Meta cargado. Esperando iniciar Embedded Signup.');
       maybeEnable();
     };
+
+    function loadFacebookSdk() {
+      if (window.FB) {
+        window.fbAsyncInit();
+        return;
+      }
+
+      const existing = document.getElementById('facebook-jssdk');
+      if (existing) return;
+
+      const sdk = document.createElement('script');
+      sdk.id = 'facebook-jssdk';
+      sdk.src = 'https://connect.facebook.net/es_LA/sdk.js';
+      sdk.async = true;
+      sdk.defer = true;
+      sdk.crossOrigin = 'anonymous';
+      sdk.onload = () => {
+        if (window.FB && !sdkReady) window.fbAsyncInit();
+      };
+      sdk.onerror = () => {
+        setResult('No se pudo cargar el SDK de Meta. Revisa conexión/bloqueadores del navegador y vuelve a intentar.');
+        maybeEnable();
+      };
+      document.head.appendChild(sdk);
+
+      setTimeout(() => {
+        if (!sdkReady) {
+          setResult('El SDK de Meta aún no terminó de cargar. Si el botón sigue deshabilitado, revisaremos bloqueo del navegador sin tocar WhatsApp.');
+        }
+      }, 8000);
+    }
 
     window.addEventListener('message', (event) => {
       if (!isTrustedFacebookOrigin(event.origin)) return;
@@ -289,7 +321,8 @@
       tenantStatus.textContent = error?.message || 'Error de autorización.';
       setResult('No se habilitará Embedded Signup hasta resolver la sesión.');
     }
+
+    loadFacebookSdk();
   </script>
-  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_LA/sdk.js"></script>
 </body>
 </html>
