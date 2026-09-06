@@ -1,0 +1,43 @@
+/* Navegación lateral de configuración — Impulso Digital */
+.setup-workspace{display:grid;grid-template-columns:255px minmax(0,1fr);gap:16px;align-items:start;margin-top:16px}
+.setup-sidebar{position:sticky;top:82px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:12px;box-shadow:var(--shadow);overflow:hidden}
+.setup-sidebar::before{content:'';position:absolute;inset:0 0 auto;height:4px;background:var(--grad)}
+.setup-sidebar-head{padding:12px 10px 10px;display:flex;flex-direction:column;gap:4px}
+.setup-sidebar-kicker{font-size:9px;font-weight:900;letter-spacing:.08em;color:var(--p)}
+.setup-sidebar-head strong{font-family:Anton,sans-serif;font-size:1.35rem;font-weight:400;line-height:1.05}
+.setup-sidebar-head small{font-size:9px;line-height:1.45;color:var(--m)}
+.setup-nav{display:flex;flex-direction:column;gap:7px;margin-top:5px}
+.setup-nav-button{appearance:none;width:100%;border:1px solid transparent;background:#F8F8FA;color:var(--ink);border-radius:14px;padding:11px 10px;display:grid;grid-template-columns:34px minmax(0,1fr) 16px;gap:9px;align-items:center;text-align:left;font:inherit;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}
+.setup-nav-button:hover{background:#fff;border-color:var(--line);transform:translateY(-1px)}
+.setup-nav-button.active{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 10px 24px rgba(242,56,90,.20)}
+.setup-nav-number{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:#fff;color:var(--p);font-size:11px;font-weight:900;box-shadow:0 4px 12px rgba(28,28,33,.08)}
+.setup-nav-copy{min-width:0;display:flex;flex-direction:column;gap:2px}
+.setup-nav-copy b{font-size:10px;line-height:1.25}
+.setup-nav-copy small{font-size:8px;color:var(--m);line-height:1.35}
+.setup-nav-button.active .setup-nav-copy small{color:rgba(255,255,255,.78)}
+.setup-nav-arrow{font-size:21px;line-height:1;color:var(--m);transform:translateY(-1px)}
+.setup-nav-button.active .setup-nav-arrow{color:#fff}
+.setup-detail{min-width:0}
+.setup-detail .form-panels{display:block!important;margin:0!important}
+.setup-detail .form-panel{display:none!important;margin:0;min-height:410px;scroll-margin-top:92px}
+.setup-detail .form-panel.active{display:block!important;animation:setupReveal .18s ease-out}
+.setup-detail .form-panel[hidden]{display:none!important}
+.setup-detail .card{box-shadow:0 18px 48px rgba(28,28,33,.08)}
+.setup-detail .form-panel::before{content:'';display:block;height:3px;margin:-20px -20px 16px;border-radius:20px 20px 0 0;background:var(--grad)}
+@keyframes setupReveal{from{opacity:.45;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+@media(max-width:780px){
+  .setup-workspace{grid-template-columns:1fr;gap:12px}
+  .setup-sidebar{position:static;padding:10px}
+  .setup-sidebar-head{padding-bottom:7px}
+  .setup-nav{flex-direction:row;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:2px}
+  .setup-nav-button{flex:0 0 205px;scroll-snap-align:start}
+  .setup-detail .form-panel{min-height:auto;scroll-margin-top:78px}
+  .setup-detail .form-panel::before{margin:-17px -17px 14px}
+}
+@media(max-width:520px){
+  .setup-sidebar-head strong{font-size:1.2rem}
+  .setup-nav-button{flex-basis:190px;grid-template-columns:30px minmax(0,1fr) 14px;padding:10px 9px}
+  .setup-nav-number{width:29px;height:29px}
+}
+@media(prefers-reduced-motion:reduce){.setup-nav-button{transition:none!important}.setup-detail .form-panel.active{animation:none!important}}
