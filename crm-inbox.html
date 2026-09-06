@@ -25,11 +25,11 @@
     .brand strong{display:block;font-family:'Anton',sans-serif;font-size:1.25rem;font-weight:400}.brand small{display:block;color:var(--magenta);font-weight:800;font-size:10px;letter-spacing:.1em;margin-top:3px}
     .session{display:flex;align-items:center;gap:10px}.tenant{font-size:12px;text-align:right}.tenant strong{display:block}.tenant span{color:var(--muted)}
     .logout{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:700;cursor:pointer}
-    main{width:min(1500px,100%);margin:0 auto;padding:18px;display:grid;grid-template-columns:360px minmax(0,1fr);gap:16px;min-height:0}
+    main{width:min(1720px,100%);margin:0 auto;padding:18px;display:grid;grid-template-columns:330px minmax(0,1fr) 310px;gap:16px;min-height:0}
     .panel{background:#fff;border:1px solid var(--gray2);border-radius:20px;box-shadow:var(--shadow);min-height:0;overflow:hidden}
     .sidebar{display:grid;grid-template-rows:auto 1fr;max-height:calc(100vh - 104px)}
     .sidebar-head{padding:18px;border-bottom:1px solid var(--gray2)}
-    h1,h2{font-family:'Anton',sans-serif;font-weight:400;margin:0}.sidebar-head h1{font-size:1.7rem}.eyebrow{font-size:11px;color:var(--magenta);font-weight:800;letter-spacing:.1em;margin-bottom:4px}.count{margin-top:6px;color:var(--muted);font-size:12px}
+    h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;margin:0}.sidebar-head h1{font-size:1.7rem}.eyebrow{font-size:11px;color:var(--magenta);font-weight:800;letter-spacing:.1em;margin-bottom:4px}.count{margin-top:6px;color:var(--muted);font-size:12px}
     .conversation-list{overflow:auto;padding:8px}
     .conversation{width:100%;text-align:left;border:0;background:#fff;border-radius:14px;padding:13px;cursor:pointer;display:grid;gap:7px;color:inherit}
     .conversation:hover{background:#faf8fa}.conversation.active{background:#fff2f8;box-shadow:inset 0 0 0 1px rgba(230,0,126,.16)}
@@ -40,10 +40,15 @@
     .messages{overflow:auto;padding:22px;background:linear-gradient(180deg,#fafafa,#f6f6f8);display:flex;flex-direction:column;gap:10px}
     .message{max-width:min(74%,720px);padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--gray2);align-self:flex-start;box-shadow:0 4px 14px rgba(0,0,0,.04)}
     .message.out{align-self:flex-end;background:#fff0f7;border-color:#f3c9df}.message .body{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.5}.message .msg-meta{margin-top:5px;font-size:9px;color:var(--muted);display:flex;gap:7px;justify-content:flex-end}
+    .contact-panel{max-height:calc(100vh - 104px);overflow:auto}
+    .contact-head{padding:18px;border-bottom:1px solid var(--gray2)}.contact-head h3{font-size:1.55rem}.contact-head p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.45}
+    .profile{padding:18px;display:grid;gap:14px}.profile-row{padding-bottom:13px;border-bottom:1px solid var(--gray2)}.profile-row:last-child{border-bottom:0;padding-bottom:0}.profile-label{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:5px}.profile-value{font-size:13px;line-height:1.5;overflow-wrap:anywhere}.profile-value.muted{color:var(--muted);font-style:italic}.profile-tags{display:flex;flex-wrap:wrap;gap:6px}.profile-note{white-space:pre-wrap}
     .empty{height:100%;display:grid;place-items:center;text-align:center;padding:32px;color:var(--muted)}.empty strong{display:block;color:var(--charcoal);font-family:'Anton',sans-serif;font-size:1.5rem;font-weight:400;margin-bottom:5px}
+    .contact-empty{padding:24px 18px;color:var(--muted);font-size:12px;line-height:1.5}
     .status{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#262626;color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;box-shadow:var(--shadow);z-index:30}.status.error{background:var(--danger)}
     [hidden]{display:none!important}
-    @media(max-width:820px){header{align-items:flex-start}.tenant{display:none}main{grid-template-columns:1fr;padding:10px}.sidebar{max-height:42vh}.thread{max-height:none;min-height:52vh}.message{max-width:88%}}
+    @media(max-width:1180px){main{grid-template-columns:300px minmax(0,1fr)}.contact-panel{grid-column:1/-1;max-height:none}.profile{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:820px){header{align-items:flex-start}.tenant{display:none}main{grid-template-columns:1fr;padding:10px}.sidebar{max-height:42vh}.thread{max-height:none;min-height:52vh}.contact-panel{grid-column:auto}.profile{grid-template-columns:1fr}.message{max-width:88%}}
   </style>
 </head>
 <body>
@@ -78,6 +83,15 @@
           <div class="empty" id="emptyState"><div><strong>Bandeja protegida por tenant</strong>Selecciona una conversación para ver sus mensajes.</div></div>
         </div>
       </section>
+
+      <aside class="panel contact-panel">
+        <div class="contact-head">
+          <div class="eyebrow">CONTACTO · RLS</div>
+          <h3>Ficha del cliente</h3>
+          <p>Datos del contacto asociado a la conversación seleccionada.</p>
+        </div>
+        <div id="contactProfile" class="contact-empty">Selecciona una conversación para ver la ficha del contacto.</div>
+      </aside>
     </main>
   </div>
 
@@ -93,7 +107,8 @@
     const els = {
       tenantName:document.getElementById('tenantName'),sessionLabel:document.getElementById('sessionLabel'),logoutBtn:document.getElementById('logoutBtn'),
       conversationCount:document.getElementById('conversationCount'),conversationList:document.getElementById('conversationList'),
-      threadTitle:document.getElementById('threadTitle'),threadSubtitle:document.getElementById('threadSubtitle'),messages:document.getElementById('messages'),status:document.getElementById('status')
+      threadTitle:document.getElementById('threadTitle'),threadSubtitle:document.getElementById('threadSubtitle'),messages:document.getElementById('messages'),
+      contactProfile:document.getElementById('contactProfile'),status:document.getElementById('status')
     };
 
     let state = { conversations:[], contacts:new Map(), messages:new Map(), selectedId:null };
@@ -138,7 +153,7 @@
       if(contactIds.length){
         const { data:contacts,error:contactError } = await supabase
           .from('contactos')
-          .select('id,nombre,telefono_e164,etiquetas,notas')
+          .select('id,nombre,telefono_e164,email,etiquetas,notas')
           .in('id',contactIds);
         if(contactError) throw contactError;
         state.contacts=new Map((contacts||[]).map(x=>[x.id,x]));
@@ -192,6 +207,36 @@
       if(Array.isArray(contact.etiquetas)&&contact.etiquetas.length) parts.push(`etiquetas: ${contact.etiquetas.join(', ')}`);
       els.threadSubtitle.textContent=parts.join(' · ');
       renderMessages(state.messages.get(id)||[]);
+      renderContact(contact);
+    }
+
+    function renderContact(contact){
+      els.contactProfile.className='profile';
+      els.contactProfile.replaceChildren();
+
+      const addRow=(label,value,muted=false)=>{
+        const row=el('div','profile-row');
+        row.append(el('span','profile-label',label),el('div',`profile-value${muted?' muted':''}`,value));
+        els.contactProfile.append(row);
+      };
+
+      addRow('Nombre',textOr(contact.nombre,'No registrado'),!textOr(contact.nombre,''));
+      addRow('Teléfono',textOr(contact.telefono_e164,'No registrado'),!textOr(contact.telefono_e164,''));
+      addRow('Email',textOr(contact.email,'No registrado'),!textOr(contact.email,''));
+
+      const tagRow=el('div','profile-row');
+      tagRow.append(el('span','profile-label','Etiquetas'));
+      const tags=el('div','profile-tags');
+      if(Array.isArray(contact.etiquetas)&&contact.etiquetas.length){
+        for(const tag of contact.etiquetas) tags.append(el('span','pill tag',String(tag)));
+      }else{
+        tags.append(el('span','profile-value muted','Sin etiquetas'));
+      }
+      tagRow.append(tags); els.contactProfile.append(tagRow);
+
+      const noteRow=el('div','profile-row');
+      noteRow.append(el('span','profile-label','Notas'),el('div',`profile-value profile-note${textOr(contact.notas,'')?'':' muted'}`,textOr(contact.notas,'Sin notas')));
+      els.contactProfile.append(noteRow);
     }
 
     function renderMessages(items){
@@ -209,6 +254,8 @@
       els.threadTitle.textContent='Sin conversaciones';
       els.threadSubtitle.textContent='RLS no devolvió conversaciones para esta sesión.';
       els.messages.replaceChildren(); const box=el('div','empty'); const inner=el('div'); inner.append(el('strong','', 'Bandeja vacía'),document.createTextNode('Cuando existan conversaciones autorizadas aparecerán aquí.')); box.append(inner); els.messages.append(box);
+      els.contactProfile.className='contact-empty';
+      els.contactProfile.textContent='No hay un contacto seleccionado.';
     }
 
     els.logoutBtn.addEventListener('click',async()=>{ await supabase.auth.signOut(); location.replace('./crm-login.html'); });
