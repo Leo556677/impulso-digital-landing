@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Suscripción | Impulso Digital</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f7f7fa;color:#171922;margin:0;padding:40px}
+    .card{max-width:680px;margin:40px auto;background:#fff;border:1px solid #e7e7ee;border-radius:18px;padding:28px}
+    h1{margin-top:0}.muted{color:#626777}.ok{color:#167a3a}.warn{color:#a45f00}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Suscripción Impulso Digital</h1>
+    <p id="msg" class="muted">Mercado Pago procesó el regreso del checkout.</p>
+    <p class="muted">Esta página es solo informativa. El acceso del negocio se activa únicamente cuando el backend confirma el estado autoritativo de la suscripción/pago con Mercado Pago.</p>
+  </main>
+  <script>
+    const q=new URLSearchParams(location.search);
+    const status=(q.get('status')||q.get('preapproval_status')||'').toLowerCase();
+    const el=document.getElementById('msg');
+    if(['authorized','approved'].includes(status)){el.textContent='La autorización fue recibida. Estamos verificando el estado con Mercado Pago.';el.className='ok';}
+    else if(status){el.textContent='Estado informado por Mercado Pago: '+status+'. El backend realizará la verificación final.';el.className='warn';}
+  </script>
+</body>
+</html>
