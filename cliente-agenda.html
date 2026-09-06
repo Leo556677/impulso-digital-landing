@@ -86,16 +86,28 @@
       <div>
         <div class="step">RESUMEN GUARDADO</div>
         <h2 id="savedTitle" class="review-title">Así quedó tu agenda</h2>
-        <div class="review-sub">Este resumen se construye con los datos que ya están guardados. Si haces un cambio arriba, aquí podrás comprobar el resultado y también editar o eliminar cada registro.</div>
       </div>
       <span id="savedState" class="saved-pill">✓ Datos sincronizados</span>
     </div>
-    <div class="review-grid">
-      <section class="review-card"><h3>Reglas de reserva</h3><div class="mini">Configuración general de disponibilidad</div><div id="rulesTable"></div></section>
-      <section class="review-card"><h3>Quién atiende</h3><div class="mini">Personas o recursos activos</div><div id="resourcesTable"></div></section>
-      <section class="review-card"><h3>Horarios registrados</h3><div class="mini">Días y rangos disponibles</div><div id="schedulesTable"></div></section>
-      <section class="review-card"><h3>Servicios asignados</h3><div class="mini">Qué servicio puede realizar cada persona o recurso</div><div id="linksTable"></div></section>
+
+    <div class="review-tabs" role="tablist" aria-label="Categorías de configuración guardada">
+      <button class="review-tab active" type="button" role="tab" aria-selected="true" data-review-tab="rules"><span>Reglas de reserva</span><span id="rulesCount" class="tab-count">0</span></button>
+      <button class="review-tab" type="button" role="tab" aria-selected="false" data-review-tab="resources"><span>Quién atiende</span><span id="resourcesCount" class="tab-count">0</span></button>
+      <button class="review-tab" type="button" role="tab" aria-selected="false" data-review-tab="schedules"><span>Horarios registrados</span><span id="schedulesCount" class="tab-count">0</span></button>
+      <button class="review-tab" type="button" role="tab" aria-selected="false" data-review-tab="links"><span>Servicios asignados</span><span id="linksCount" class="tab-count">0</span></button>
     </div>
+
+    <section class="review-panel" role="tabpanel" aria-live="polite">
+      <div class="review-panel-head">
+        <div>
+          <div id="reviewCategoryEyebrow" class="review-category-eyebrow">CONFIGURACIÓN GUARDADA</div>
+          <h3 id="reviewCategoryTitle">Reglas de reserva</h3>
+          <div id="reviewCategoryCopy" class="review-category-copy">Configuración general de disponibilidad.</div>
+        </div>
+      </div>
+      <div id="reviewTable"></div>
+    </section>
+
     <div class="review-foot"><a class="btn" href="./cliente-panel.html">Volver a mi panel</a><a class="btn secondary" href="./cliente-servicios.html">Revisar mis servicios</a></div>
   </section>
 </main>
