@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <title>WhatsApp Onboarding DEV · Impulso Digital</title>
+  <style>
+    :root{color-scheme:dark;--bg:#07090d;--panel:#11161e;--line:#293342;--text:#f6f7f9;--muted:#a9b1bf;--ok:#6ee7a0;--warn:#ffd166;--accent:#30d158;--danger:#ff7b7b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;padding:28px}.wrap{width:min(820px,100%);margin:auto}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin:16px 0}h1,h2{margin-top:0}.tag{display:inline-block;padding:6px 10px;border-radius:999px;background:#2b2412;color:var(--warn);font-weight:800;font-size:12px}.ok{color:var(--ok)}.danger{color:var(--danger)}.muted{color:var(--muted)}button,a.btn{display:inline-block;border:0;border-radius:11px;padding:12px 16px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none}button{background:var(--accent);color:#061009}button:disabled{opacity:.5;cursor:not-allowed}a.btn{border:1px solid var(--line);color:var(--text)}pre{white-space:pre-wrap;word-break:break-word;background:#080b10;border:1px solid var(--line);border-radius:12px;padding:14px;min-height:80px}code{color:#c5d4e8}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <span class="tag">DESARROLLO · NO PRODUCCIÓN</span>
+    <h1>WhatsApp Embedded Signup · DEV</h1>
+    <p class="muted">Prueba autenticada del flujo multiempresa. Esta página NO reemplaza la página que Meta está revisando.</p>
+
+    <section class="card">
+      <h2>1. Sesión y negocio</h2>
+      <div id="sessionStatus">Validando sesión…</div>
+      <div id="tenantStatus" class="muted"></div>
+      <p><a class="btn" href="./crm-login.html">Ir al login CRM</a></p>
+    </section>
+
+    <section class="card">
+      <h2>2. Embedded Signup de Meta</h2>
+      <p><strong class="danger">PROHIBIDO usar el número real +51 903 396 082.</strong></p>
+      <button id="signupBtn" type="button" disabled>Conectar WhatsApp Business de PRUEBA</button>
+      <p class="muted">El backend también bloquea explícitamente la WABA y el Phone Number ID reales.</p>
+    </section>
+
+    <section class="card">
+      <h2>3. Resultado seguro</h2>
+      <pre id="result">Esperando sesión y SDK de Meta…</pre>
+    </section>
+  </main>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+
+    const SUPABASE_URL = 'https://xnlzsgulskqyecfgzhwa.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
+    const APP_ID = '860468763590445';
+    const CONFIG_ID = '1581941380393885';
+    const GRAPH_VERSION = 'v26.0';
+    const BLOCKED_REAL_WABA_ID = '482578634949575';
+    const BLOCKED_REAL_PHONE_NUMBER_ID = '492828200591020';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+    });
+
+    const sessionStatus = document.getElementById('sessionStatus');
+    const tenantStatus = document.getElementById('tenantStatus');
+    const signupBtn = document.getElementById('signupBtn');
+    const result = document.getElementById('result');
+
+    let negocioId = null;
+    let oauthCode = null;
+    let sessionInfo = null;
+    let sdkReady = false;
+    let submitting = false;
+
+    function setResult(value) {
+      result.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+    }
+
+    function maybeEnable() {
+      signupBtn.disabled = !(negocioId && sdkReady && !submitting);
+    }
+
+    async function resolveSession() {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session?.user) {
+        sessionStatus.innerHTML = '<span class="danger">Sin sesión CRM activa.</span>';
+        tenantStatus.textContent = 'Inicia sesión primero y vuelve a esta página.';
+        return;
+      }
+
+      const { data: memberships, error: membershipError } = await supabase
+        .from('usuarios_negocio')
+        .select('negocio_id, rol');
+
+      if (membershipError) throw membershipError;
+      if (!memberships || memberships.length !== 1) {
+        throw new Error('DEV exige exactamente una membresía autorizada.');
+      }
+      if (memberships[0].rol !== 'admin') {
+        throw new Error('Solo el administrador puede probar este onboarding.');
+      }
+
+      negocioId = memberships[0].negocio_id;
+      const { data: businesses, error: businessError } = await supabase
+        .from('negocios')
+        .select('id,nombre,slug')
+        .eq('id', negocioId)
+        .single();
+      if (businessError) throw businessError;
+
+      sessionStatus.innerHTML = '<span class="ok">Sesión válida.</span>';
+      tenantStatus.textContent = `${businesses.nombre} · admin · ${businesses.slug}`;
+      maybeEnable();
+    }
+
+    window.fbAsyncInit = function () {
+      FB.init({ appId: APP_ID, cookie: true, xfbml: true, version: GRAPH_VERSION });
+      sdkReady = true;
+      setResult('SDK de Meta cargado. Esperando iniciar Embedded Signup.');
+      maybeEnable();
+    };
+
+    window.addEventListener('message', (event) => {
+      if (event.origin !== 'https://www.facebook.com' && event.origin !== 'https://web.facebook.com') return;
+      try {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        if (!data || data.type !== 'WA_EMBEDDED_SIGNUP') return;
+
+        if (data.event === 'FINISH') {
+          const wabaId = String(data.data?.waba_id ?? '');
+          const phoneNumberId = String(data.data?.phone_number_id ?? '');
+          sessionInfo = { waba_id: wabaId, phone_number_id: phoneNumberId };
+          if (wabaId === BLOCKED_REAL_WABA_ID || phoneNumberId === BLOCKED_REAL_PHONE_NUMBER_ID) {
+            setResult('BLOQUEADO: se detectó el activo REAL. No se enviará nada al backend.');
+            oauthCode = null;
+            sessionInfo = null;
+            return;
+          }
+          trySubmit();
+        } else {
+          setResult({ event: data.event || null, current_step: data.data?.current_step || null });
+        }
+      } catch (_) {}
+    });
+
+    function fbLoginCallback(response) {
+      const code = response?.authResponse?.code;
+      if (!code) {
+        setResult('Meta no devolvió autorización o el flujo fue cancelado.');
+        return;
+      }
+      oauthCode = String(code);
+      setResult('Código OAuth recibido de Meta. Esperando IDs del Embedded Signup…');
+      trySubmit();
+    }
+
+    async function trySubmit() {
+      if (!oauthCode || !sessionInfo || !negocioId || submitting) return;
+      submitting = true;
+      maybeEnable();
+      setResult('Validando autorización en backend seguro…');
+
+      try {
+        const { data, error } = await supabase.functions.invoke('whatsapp-embedded-signup', {
+          body: {
+            negocio_id: negocioId,
+            code: oauthCode,
+            waba_id: sessionInfo.waba_id,
+            phone_number_id: sessionInfo.phone_number_id
+          }
+        });
+        if (error) throw error;
+        setResult(data);
+      } catch (error) {
+        setResult(`Error: ${error?.message || 'No se pudo completar la prueba.'}`);
+      } finally {
+        oauthCode = null;
+        sessionInfo = null;
+        submitting = false;
+        maybeEnable();
+      }
+    }
+
+    signupBtn.addEventListener('click', () => {
+      oauthCode = null;
+      sessionInfo = null;
+      setResult('Abriendo Embedded Signup de Meta…');
+      FB.login(fbLoginCallback, {
+        config_id: CONFIG_ID,
+        response_type: 'code',
+        override_default_response_type: true,
+        extras: { setup: {}, sessionInfoVersion: '2' }
+      });
+    });
+
+    try {
+      await resolveSession();
+    } catch (error) {
+      sessionStatus.innerHTML = '<span class="danger">No se pudo validar la sesión.</span>';
+      tenantStatus.textContent = error?.message || 'Error de autorización.';
+      setResult('No se habilitará Embedded Signup hasta resolver la sesión.');
+    }
+  </script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_LA/sdk.js"></script>
+</body>
+</html>
