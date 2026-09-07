@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#E6007E">
+<title>Operación interna · Impulso Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--p:#e6007e;--c:#f2385a;--o:#ff6a00;--ink:#25252a;--m:#6c6d77;--bg:#f5f5f7;--line:#e4e4ea;--ok:#147a42;--warn:#8a5700;--bad:#b42318;--blue:#315eb4;--grad:linear-gradient(135deg,var(--p),var(--c) 52%,var(--o));--shadow:0 16px 42px rgba(28,28,33,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Montserrat,system-ui,sans-serif}.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}.topin,.wrap{width:min(1240px,calc(100% - 28px));margin:auto}.topin{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}.brand img{width:42px;height:42px;border:2px solid var(--p);border-radius:50%}.brand strong,h1,h2{font-family:Anton,sans-serif;font-weight:400}.brand small{display:block;color:var(--p);font-size:10px;font-weight:800;letter-spacing:.08em}.nav{display:flex;gap:8px}.nav a,.nav button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 11px;color:var(--ink);font:inherit;font-size:11px;font-weight:800;text-decoration:none;cursor:pointer}.nav .primary{background:var(--grad);color:#fff;border:0}.wrap{margin-top:24px;margin-bottom:50px}.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}.eyebrow{font-size:10px;color:var(--p);font-weight:900;letter-spacing:.1em;text-transform:uppercase}.hero h1{font-size:clamp(2.5rem,5vw,4rem);line-height:1;margin:5px 0}.lead{margin:0;color:var(--m);font-size:12px;line-height:1.55}.operator{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px 16px;box-shadow:var(--shadow);min-width:220px}.operator b{display:block;font-size:12px}.operator small{font-size:9px;color:var(--m)}.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}.stat b{display:block;font-size:1.45rem}.stat span{font-size:9px;color:var(--m);line-height:1.4}.stat.good b{color:var(--ok)}.stat.bad b{color:var(--bad)}.actions{display:flex;justify-content:flex-end;margin-bottom:14px}.btn{border:0;border-radius:10px;padding:10px 13px;background:var(--grad);color:#fff;font:inherit;font-weight:800;cursor:pointer}.btn:disabled{opacity:.5;cursor:not-allowed}.card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:18px}.card h2{font-size:1.7rem;margin:0 0 4px}.card .sub{color:var(--m);font-size:10px;margin-bottom:14px}.alerts{display:grid;gap:9px}.alert{border:1px solid #efc9c6;border-left:5px solid var(--bad);background:#fff9f8;border-radius:14px;padding:13px}.alert.warning{border-color:#efd9a8;border-left-color:#c57a00;background:#fffaf0}.alert-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.alert strong{font-size:11px}.alert small{color:var(--m);font-size:8px}.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.tag{font-size:8px;font-weight:900;border-radius:999px;padding:5px 7px;background:#f1f1f5;color:var(--m)}.tag.bad{background:#fff0ef;color:var(--bad)}.tag.blue{background:#eef4ff;color:var(--blue)}.detail{margin-top:9px;padding:9px 10px;background:#fff;border:1px solid var(--line);border-radius:10px;color:var(--m);font-size:9px;line-height:1.5;overflow-wrap:anywhere}.empty{padding:28px;border:1px dashed var(--line);border-radius:14px;text-align:center;color:var(--m);font-size:10px}.status{margin-top:12px;padding:10px 12px;border-radius:10px;background:#fff1f0;color:var(--bad);border:1px solid #f0c7c3;font-size:9px}.foot{text-align:center;color:var(--m);font-size:8px;margin-top:20px}.denied{max-width:620px;margin:80px auto;background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:var(--shadow);text-align:center}.denied h1{font-size:2.5rem;margin:0}.denied p{color:var(--m);font-size:11px;line-height:1.6}
+@media(max-width:980px){.stats{grid-template-columns:repeat(3,1fr)}.hero{align-items:flex-start;flex-direction:column}}@media(max-width:620px){.topin,.wrap{width:min(100% - 20px,1240px)}.stats{grid-template-columns:1fr 1fr}.nav a:not(.primary){display:none}.alert-top{display:grid}}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin"><a class="brand" href="./operacion-interna.html"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><span><strong>IMPULSO DIGITAL</strong><small>OPERACIÓN INTERNA</small></span></a><nav class="nav"><a href="./soporte-interno.html">Soporte</a><a class="primary" href="./crm-inbox.html">Conversaciones</a><button id="logoutBtn">Salir</button></nav></div></header>
+<main id="app" class="wrap" hidden>
+<section class="hero"><div><div class="eyebrow">MONITOREO · PRUEBA</div><h1>Estado de operación</h1><p class="lead">Salud de jobs programados y llamadas internas. Las alertas son internas y no se mezclan con datos de clientes.</p></div><aside class="operator"><b id="roleText">Operador</b><small id="lastRun">Cargando monitor…</small></aside></section>
+<section class="stats">
+<div class="stat good"><b id="cronActive">—</b><span>Jobs cron activos</span></div>
+<div class="stat"><b id="cronFailed">—</b><span>Fallos cron · 24 h</span></div>
+<div class="stat good"><b id="httpOk">—</b><span>HTTP internos OK · 24 h</span></div>
+<div class="stat bad"><b id="timeouts">—</b><span>Timeouts · 24 h</span></div>
+<div class="stat bad"><b id="http5xx">—</b><span>HTTP 5xx · 24 h</span></div>
+<div class="stat bad"><b id="alertsOpen">—</b><span>Alertas abiertas</span></div>
+</section>
+<div class="actions"><button id="refreshBtn" class="btn">Actualizar estado</button></div>
+<section class="card"><h2>Alertas internas</h2><div class="sub">Se muestran timeouts, HTTP 5xx y jobs cron realmente fallidos. Los 401/404 de pruebas manuales no se incluyen.</div><div id="alerts" class="alerts"><div class="empty">Cargando alertas…</div></div><div id="status" class="status" hidden></div></section>
+<p class="foot">DESARROLLO / PRUEBA · Acceso exclusivo para personal interno autorizado de Impulso Digital.</p>
+</main>
+<div id="denied" class="denied" hidden><h1>Acceso restringido</h1><p>Esta pantalla es exclusiva para personal interno autorizado de Impulso Digital.</p><a class="btn" href="./cliente-panel.html">Volver al panel</a></div>
+<script type="module">
+import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}),$=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dt=v=>v?new Intl.DateTimeFormat('es-PE',{dateStyle:'short',timeStyle:'medium',timeZone:'America/Lima'}).format(new Date(v)):'—';
+function showError(t=''){const e=$('status');e.hidden=!t;e.textContent=t}
+function detailText(a){const d=a?.detalle||{};if(a.codigo==='HTTP_TIMEOUT')return d.error_msg||'Timeout sin detalle.';if(a.codigo==='HTTP_5XX')return `HTTP ${d.status_code||'5xx'}`;if(a.codigo==='CRON_FAILED')return `${d.jobname||'Job'} · ${d.return_message||d.status||'falló'}`;return ''}
+function render(data){
+  $('roleText').textContent=data.operator_role==='admin'?'Administrador de plataforma':'Operador de plataforma';
+  $('lastRun').textContent=`Último monitor: ${dt(data.monitor?.last_run_at)}`;
+  $('cronActive').textContent=`${data.cron?.jobs_active??0}/${data.cron?.jobs_total??0}`;
+  $('cronFailed').textContent=data.cron?.failed_24h??0;
+  $('httpOk').textContent=data.http?.ok_24h??0;
+  $('timeouts').textContent=data.http?.timeouts_24h??0;
+  $('http5xx').textContent=data.http?.errors_5xx_24h??0;
+  $('alertsOpen').textContent=data.alerts_open??0;
+  const rows=Array.isArray(data.alerts)?data.alerts:[];
+  $('alerts').innerHTML=rows.length?rows.map(a=>`<article class="alert ${a.severidad==='warning'?'warning':''}"><div class="alert-top"><strong>${esc(a.titulo)}</strong><small>${esc(dt(a.last_seen_at))}</small></div><div class="tags"><span class="tag bad">${esc(a.severidad)}</span><span class="tag blue">${esc(a.origen)}</span><span class="tag">${esc(a.codigo)}</span></div><div class="detail">${esc(detailText(a))}</div></article>`).join(''):'<div class="empty">Sin alertas abiertas. Operación interna sin incidencias detectadas por el monitor.</div>';
+}
+async function load(){const b=$('refreshBtn');b.disabled=true;showError('');try{const{data:{session}}=await sb.auth.getSession();if(!session){location.replace('./cliente-acceso.html');return}const{data,error}=await sb.functions.invoke('operacion-interna-estado',{body:{}});if(error||!data?.ok){if(data?.error==='FORBIDDEN'){$('app').hidden=true;$('denied').hidden=false;return}throw error||new Error(data?.error||'No se pudo cargar.')}render(data)}catch(e){console.error(e);showError('No pudimos cargar el estado de operación.')}finally{b.disabled=false}}
+$('refreshBtn').onclick=load;$('logoutBtn').onclick=async()=>{await sb.auth.signOut();location.replace('./cliente-acceso.html')};$('app').hidden=false;load();
+</script>
+</body>
+</html>
