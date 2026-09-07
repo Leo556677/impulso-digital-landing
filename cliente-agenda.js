@@ -23,7 +23,7 @@ $('confirmAccept').addEventListener('click',async()=>{if(!pendingConfirm)return 
 $('confirmModal').addEventListener('click',e=>{if(e.target.classList.contains('modal-backdrop'))closeConfirm()});
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('confirmModal').classList.contains('show'))closeConfirm()});
 
-async function resolve(){const{data:{session}}=await sb.auth.getSession();if(!session){location.replace('./cliente-acceso.html');return false}const{data:m,error}=await sb.from('usuarios_negocio').select('negocio_id,rol');if(error||!m||m.length!==1)throw new Error('No pudimos identificar tu empresa.');negocioId=m[0].negocio_id;canEdit=['admin','propietario'].includes(m[0].rol);return true}
+async function resolve(){const{data:{session}}=await sb.auth.getSession();if(!session){location.replace('./cliente-acceso.html');return false}const{data:m,error}=await sb.from('usuarios_negocio').select('negocio_id,rol,created_at').order('created_at');if(error||!m?.length)throw new Error('No pudimos identificar una empresa autorizada.');const params=new URLSearchParams(location.search),requested=params.get('negocio'),saved=localStorage.getItem('impulso_negocio_activo'),pick=id=>m.find(x=>String(x.negocio_id)===String(id)),membership=pick(requested)||pick(saved)||m[0];negocioId=membership.negocio_id;canEdit=['admin','propietario'].includes(membership.rol);localStorage.setItem('impulso_negocio_activo',String(negocioId));history.replaceState({},'',`${location.pathname}?negocio=${encodeURIComponent(negocioId)}`);return true}
 async function load(){const [cfg,res,hrs,srv,lnk]=await Promise.all([
   sb.from('configuracion_agenda').select('*').eq('negocio_id',negocioId).maybeSingle(),
   sb.from('recursos_agenda').select('id,nombre,tipo,activo').eq('negocio_id',negocioId).eq('activo',true).order('created_at'),
@@ -45,7 +45,7 @@ function render(){
   const assigned=new Set(links.map(x=>x.servicio_id));
   $('assignSummary').textContent=services.length?`${assigned.size} de ${services.length} servicio(s) activos tienen al menos una asignación registrada.`:'No hay servicios activos. Agrégalos antes de completar la agenda.';
   $('assignBtn').disabled=!canEdit||!resources.length||!services.length;
-  if(!services.length){$('notice').hidden=false;$('notice').innerHTML='Antes de terminar la agenda necesitas al menos un servicio activo. <a href="./cliente-servicios.html" style="color:inherit;font-weight:800">Agregar servicios</a>.'} else $('notice').hidden=true;
+  if(!services.length){$('notice').hidden=false;$('notice').innerHTML=`Antes de terminar la agenda necesitas al menos un servicio activo. <a href="./cliente-servicios.html?negocio=${encodeURIComponent(negocioId)}" style="color:inherit;font-weight:800">Agregar servicios</a>`} else $('notice').hidden=true;
   renderReview();
 }
 
