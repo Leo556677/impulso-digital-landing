@@ -2,6 +2,7 @@ const IMPULSO = {
   phone: '51903396082',
   metaPixelId: '1202350998538131',
   tiktokPixelId: 'D4PSPVRC77UDLT7UQ0N0',
+  metricoolHash: '3bcf3ef6292c032f388af90cb4b618b8',
   whatsappBaseText: 'Hola, vengo desde la web de Impulso Digital y quiero información sobre sus servicios.',
   recommendations: {
     web: {
@@ -356,10 +357,28 @@ function loadTikTokPixel() {
   }(window,document,'ttq');
 }
 
+function loadMetricoolTracker() {
+  if (window.__impulsoMetricoolLoaded) return;
+  window.__impulsoMetricoolLoaded = true;
+  const tracker = document.createElement('script');
+  tracker.type = 'text/javascript';
+  tracker.async = true;
+  tracker.src = 'https://tracker.metricool.com/resources/be.js';
+  tracker.onload = () => {
+    try {
+      if (window.beTracker && typeof window.beTracker.t === 'function') {
+        window.beTracker.t({ hash: IMPULSO.metricoolHash });
+      }
+    } catch { /* no bloquear la web si Metricool no responde */ }
+  };
+  document.head.appendChild(tracker);
+}
+
 function enableAnalytics() {
   analyticsEnabled = true;
   loadMetaPixel();
   loadTikTokPixel();
+  loadMetricoolTracker();
 }
 
 function trackEvent(name, params = {}) {
