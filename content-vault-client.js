@@ -23,8 +23,10 @@ const LABEL_ALIASES = {
 
 const KNOWN_LABELS = new Set(Object.keys(LABEL_ALIASES));
 const PLATFORM_MAP = new Map([['TT','TIKTOK'],['TIKTOK','TIKTOK'],['IG','INSTAGRAM'],['INSTAGRAM','INSTAGRAM'],['FB','FACEBOOK'],['FACEBOOK','FACEBOOK']]);
+const SIMPLE_SECTIONS = new Set(['HOOK','DESARROLLO','PAYOFF','CTA']);
 const clean = (value) => String(value ?? '').trim();
 const upperLabel = (value) => clean(value).toUpperCase().normalize('NFC');
+const norm = (value) => clean(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 
 function splitList(value) {
   if (Array.isArray(value)) return value.map(clean).filter(Boolean);
@@ -53,9 +55,180 @@ function normalizeRehooks(value) {
   return text.split(/\n|\s*→\s*|\s*\|\s*/g).map(clean).filter(Boolean).map((frase,index)=>({orden:index+1,frase}));
 }
 
+function stripOuterQuotes(value) {
+  let text = clean(value);
+  const pairs = [['“','”'],['"','"'],["'","'"],['‘','’']];
+  for (const [a,b] of pairs) {
+    if (text.startsWith(a) && text.endsWith(b) && text.length >= 2) {
+      text = text.slice(a.length, text.length-b.length).trim();
+      break;
+    }
+  }
+  return text;
+}
+
+function simpleHeading(line) {
+  return upperLabel(line)
+    .replace(/^#+\s*/,'')
+    .replace(/^\*\*|\*\*$/g,'')
+    .replace(/:$/,'')
+    .trim();
+}
+
+function parseSimpleSections(source) {
+  const sections = {};
+  let current = null;
+  let buffer = [];
+  const flush = () => {
+    if (!current) return;
+    const value = stripOuterQuotes(buffer.join('\n').trim());
+    if (value) sections[current] = value;
+    current = null;
+    buffer = [];
+  };
+
+  for (const raw of source.split(/\r?\n/)) {
+    const heading = simpleHeading(raw.trim());
+    if (SIMPLE_SECTIONS.has(heading)) {
+      flush();
+      current = heading;
+      continue;
+    }
+    if (current) buffer.push(raw);
+  }
+  flush();
+
+  if (!sections.HOOK || !sections.DESARROLLO) return null;
+  return sections;
+}
+
+function detectService(text) {
+  const n = norm(text);
+  const aliases = [
+    ['TOXINA BOTULÍNICA',['toxina botulinica','botox','bótox']],
+    ['PRP FACIAL',['prp facial','prp','plasma rico en plaquetas']],
+    ['HYDRAFACIAL / LIMPIEZA CON APARATOLOGÍA',['hydrafacial','limpieza con aparatologia','limpieza facial con aparatologia']],
+    ['LIPOSUCCIÓN DE PAPADA',['liposuccion de papada','lipo de papada','lipo papada']],
+    ['BICHECTOMÍA',['bichectomia','bolas de bichat']]
+  ];
+  for (const [service, words] of aliases) {
+    if (words.some((word) => n.includes(norm(word)))) return service;
+  }
+  return '';
+}
+
+function inferObjective(cta, text) {
+  const c = norm(cta);
+  const n = norm(text);
+  if (/agend|reserv|cita/.test(c)) return 'RESERVA';
+  if (/evalu|que corresponde|qué corresponde|tu caso/.test(c)) return 'EVALUACIÓN';
+  if (/coment|dejala abajo|déjala abajo|escribe|comparte|compart|guarda/.test(c)) return 'ALCANCE';
+  if (/confia|confianza|seguridad|criterio medico|criterio médico/.test(n)) return 'CONFIANZA';
+  return 'EDUCACIÓN';
+}
+
+function inferCategory(hook, desarrollo, payoff, cta) {
+  const all = norm([hook,desarrollo,payoff,cta].join(' '));
+  const h = norm(hook);
+  if (/mito|falso|verdad|no es cierto|error comun|error común/.test(all)) return 'C3. MITO / REENCUADRE';
+  if (/vs\b|versus|compar|diferencia entre|mejor que/.test(all)) return 'C8. COMPARACIÓN / DECISIÓN';
+  if (/paso a paso|proceso|como se hace|cómo se hace|durante el procedimiento/.test(all)) return 'C6. PROCESO / DEMOSTRACIÓN';
+  if (/caso|antes y despues|antes y después|resultado real|evolucion|evolución/.test(all)) return 'C5. PRUEBA / RESULTADO / CASO';
+  if (/agend|reserv|cita/.test(norm(cta))) return 'C9. CONVERSIÓN / ACCIÓN';
+  if (/[?¿]/.test(hook) || /para cualquiera|para todos|es para ti|puedo|deberia|debería|miedo|duda|no necesariamente/.test(all)) return 'C7. OBJECIONES / MIEDOS / FAQ';
+  if (/criterio|evaluar|evaluacion|evaluación|indicado|indicación/.test(all)) return 'C4. AUTORIDAD / CRITERIO';
+  return 'C2. EDUCACIÓN / CLARIDAD';
+}
+
+function inferTheme(hook, service, payoff) {
+  const all = norm(`${hook} ${payoff}`);
+  if (/para cualquiera|para todos|es para ti|indicado|indicacion/.test(all)) return 'INDICACIÓN / PARA QUIÉN';
+  if (/natural|congel|expresion|expresión/.test(all)) return 'NATURALIDAD';
+  if (/miedo|duda|objecion|objeción/.test(all)) return 'OBJECIONES';
+  if (/precio|costo|cuesta/.test(all)) return 'PRECIO';
+  if (/dura|duracion|duración|tiempo/.test(all)) return 'DURACIÓN';
+  if (/resultado|cambio|mejora/.test(all)) return 'RESULTADOS';
+  const words = stripOuterQuotes(hook).replace(/[¿?¡!.,;:]/g,' ').split(/\s+/).filter(Boolean).slice(0,7);
+  return words.length ? words.join(' ').toUpperCase() : service;
+}
+
+function inferCtaIntent(cta) {
+  const c = norm(cta);
+  if (!c) return null;
+  if (/agend|reserv|cita/.test(c)) return 'RESERVA';
+  if (/evalu|tu caso|que corresponde/.test(c)) return 'EVALUACIÓN';
+  if (/coment|dejala abajo|déjala abajo|escribe|responde/.test(c)) return 'INTERACCIÓN';
+  if (/guarda/.test(c)) return 'GUARDADO';
+  if (/comparte|compart/.test(c)) return 'COMPARTIR';
+  if (/perfil|bio/.test(c)) return 'PERFIL';
+  if (/sigue|seguime|sígueme/.test(c)) return 'SEGUIR';
+  return 'INTERACCIÓN';
+}
+
+function simpleTags(service, theme, category) {
+  const serviceTag = service
+    .replace('HYDRAFACIAL / LIMPIEZA CON APARATOLOGÍA','HYDRAFACIAL')
+    .replace('LIPOSUCCIÓN DE PAPADA','PAPADA');
+  const cat = clean(category).split('.')[0];
+  return [...new Set([serviceTag, theme, cat].map(clean).filter(Boolean))];
+}
+
+function buildSimplePackage(source, sections) {
+  const servicio = detectService(source);
+  if (!servicio) {
+    throw new Error('No pude reconocer el servicio en el texto. Menciona el servicio dentro del hook o desarrollo para clasificarlo automáticamente.');
+  }
+
+  const hook = sections.HOOK;
+  const desarrollo = sections.DESARROLLO;
+  const payoff = sections.PAYOFF || '';
+  const cta = sections.CTA || '';
+  const objetivo = inferObjective(cta, source);
+  const categoria = inferCategory(hook, desarrollo, payoff, cta);
+  const tema = inferTheme(hook, servicio, payoff);
+  const words = source.split(/\s+/).filter(Boolean).length;
+  const duration = Math.max(10, Math.round(words / 2.25));
+  const angleBase = payoff || hook;
+
+  return {
+    titulo: stripOuterQuotes(hook).replace(/[¿?]/g,'').slice(0,180),
+    servicio,
+    tema,
+    subtema: null,
+    objetivo,
+    temperatura: 'FRÍA',
+    categoria,
+    angulo: angleBase,
+    tesis: payoff || angleBase,
+    objetivo_mental: payoff ? `Comprender que ${payoff.charAt(0).toLowerCase()}${payoff.slice(1)}` : null,
+    publico: `PERSONAS INTERESADAS EN ${servicio}`,
+    etapa_funnel: ['RESERVA','EVALUACIÓN'].includes(objetivo) ? 'DECISIÓN' : 'DESCUBRIMIENTO / CONSIDERACIÓN',
+    formato: /[?¿]/.test(hook) ? 'FAQ' : 'TALKING_HEAD',
+    duracion_seg: duration,
+    hook_verbal: hook,
+    open_loop: hook,
+    payoff: payoff || null,
+    cta_intencion: inferCtaIntent(cta),
+    cta_master: cta || null,
+    master_script: source,
+    plataformas: ['TIKTOK','INSTAGRAM','FACEBOOK'],
+    tags: simpleTags(servicio, tema, categoria),
+    estado: 'APPROVED',
+    metadata: {
+      analysis_source: 'SIMPLE_STRUCTURE_RULES',
+      structure: 'HOOK_DESARROLLO_PAYOFF_CTA',
+      analyzed_at: new Date().toISOString()
+    }
+  };
+}
+
 export function parseRegisterPackage(text) {
   const source = clean(text).replace(/^```(?:text|json)?\s*/i,'').replace(/```$/i,'').trim();
   if (!source) throw new Error('El contenido está vacío.');
+
+  const simple = parseSimpleSections(source);
+  if (simple) return buildSimplePackage(source, simple);
+
   const lines = source.split(/\r?\n/);
   const parsed = {};
   let activeKey = null;
@@ -220,5 +393,6 @@ export async function retireContent(id,negocioId) { return updateContent(id,nego
 export async function logoutContentVault() { await sb.auth.signOut(); location.replace('./cliente-acceso.html'); }
 
 // Integración estable para cualquier generador web de Impulso Digital:
-// const analyzed = await analyzeContentText(texto, context);
-// const saved = await saveContent(analyzed, context);
+// 1) texto HOOK / DESARROLLO / PAYOFF / CTA -> parseo automático sin copiar campo por campo.
+// 2) REGISTER_PACKAGE completo -> se respeta tal cual.
+// 3) texto libre -> se deriva al analizador IA.
