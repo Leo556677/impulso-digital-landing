@@ -1,15 +1,35 @@
-/* Compact horizontal shot rail for Dr. Olano portal */
-#vhero .detail>.visual{width:min(46vw,170px);aspect-ratio:9/16;margin:0 auto 12px;border-radius:14px;box-shadow:0 8px 22px rgba(20,24,32,.12)}
-#shots{display:flex;gap:12px;overflow-x:auto;overflow-y:visible;scroll-snap-type:x mandatory;scroll-padding-left:0;padding:2px 18vw 14px 0;margin:0;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;touch-action:pan-x pan-y}
+/* Stable compact horizontal production rail */
+.compact-video{overflow:hidden}
+.compact-video .video-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;align-items:center;padding:10px}
+.compact-video .vb{padding:0;min-width:0}
+.compact-video .vb h3{font-size:15px;margin:0 0 6px;line-height:1.25}
+.compact-video .meta{gap:8px;flex-wrap:wrap;justify-content:flex-start}
+.compact-video .cta{margin-top:9px}
+.compact-detail{padding:13px 14px;margin-bottom:9px}
+.compact-detail h2{font-size:20px;margin:5px 0 7px}
+.compact-ref{position:relative;width:92px;aspect-ratio:9/16;margin:0;background:#eef0f3;border:1px solid #e1e4e9;border-radius:12px;overflow:hidden;display:grid;place-items:center}
+.compact-ref img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;background:#eef0f3;opacity:0;transition:opacity .12s ease}
+.compact-ref.loaded img{opacity:1}
+.compact-ref .visual-status{padding:8px;text-align:center;color:#7a828d;font-size:9px;line-height:1.25;font-weight:750}
+.compact-ref.failed{background:#f4f4f6}
+#shotsHint{display:none;align-items:center;justify-content:space-between;gap:10px;margin:3px 2px 8px;padding:8px 10px;border:1px solid var(--l);border-radius:12px;background:#fff;font-size:10px;color:var(--m)}
+#shotsHint b{font-size:11px;color:var(--i)}
+#shotsHint span{color:var(--p);font-weight:900;white-space:nowrap}
+#shots{display:flex;align-items:flex-start;gap:10px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding-left:0;padding:2px 18vw 16px 0;margin:0;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;touch-action:pan-x pan-y}
 #shots::-webkit-scrollbar{display:none}
-#shots .shot{flex:0 0:min(78vw,315px);scroll-snap-align:start;margin:0;padding:11px;align-self:flex-start;max-height:calc(100dvh - 165px);overflow-y:auto;overscroll-behavior:contain;box-shadow:0 10px 24px rgba(25,28,35,.08)}
-#shots .shot .visual{width:min(46vw,170px);aspect-ratio:9/16;margin:8px auto 10px;border-radius:14px;background:#121722}
-#shots .shot .visual img{object-fit:contain}
-#shots .shot .ins{grid-template-columns:1fr;gap:6px;margin-top:6px}
-#shots .shot .ib{padding:8px;font-size:11px;line-height:1.35}
-#shots .shot .say{font-size:13px;line-height:1.38;padding:9px;margin-top:7px}
-#shotsHint{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 2px 9px;padding:8px 10px;border-radius:12px;background:#fff;border:1px solid var(--l);font-size:10px;color:var(--m)}
-#shotsHint b{color:var(--i);font-size:11px}
-#shotsHint .arrow{color:var(--p);font-weight:900;white-space:nowrap}
-#shots .shotcount{margin-left:auto;padding:4px 7px;border-radius:999px;background:#f1f2f5;color:#555;font-size:8px;font-weight:900}
-@media(min-width:720px){#shots{padding-right:120px}#shots .shot{flex-basis:300px}#shots .shot .visual,#vhero .detail>.visual{width:165px}}
+#shots .shot{flex:0 0:min(80vw,310px);scroll-snap-align:start;margin:0;padding:10px;overflow:visible;max-height:none;box-shadow:0 8px 22px rgba(25,28,35,.07)}
+#shots .shothead{align-items:center}
+#shots .shotcount{margin-left:auto;padding:4px 7px;border-radius:999px;background:#f1f2f5;color:#555;font-size:8px;font-weight:900;white-space:nowrap}
+#shots .shot .compact-ref{width:min(34vw,126px);margin:8px auto 9px}
+#shots .shot .ins{grid-template-columns:1fr;gap:6px;margin-top:5px}
+#shots .shot .ib{padding:8px;font-size:10px;line-height:1.32}
+#shots .shot .say{font-size:12px;line-height:1.38;padding:8px 9px;margin-top:6px}
+#shots .shot small{font-size:8px}
+#vdetail{overflow-x:hidden}
+@media(min-width:720px){
+  .compact-video .video-row{grid-template-columns:110px minmax(0,1fr)}
+  .compact-ref{width:110px}
+  #shots{padding-right:120px}
+  #shots .shot{flex-basis:300px}
+  #shots .shot .compact-ref{width:130px}
+}
