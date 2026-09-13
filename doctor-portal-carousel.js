@@ -1,48 +1,58 @@
 (()=>{
-  const shots=document.getElementById('shots');
-  if(!shots)return;
+  const shotsEl=document.getElementById('shots');
+  const vhero=document.getElementById('vhero');
+  const videos=document.getElementById('videos');
+  if(!shotsEl||!vhero||!videos)return;
 
-  let hint=document.getElementById('shotsHint');
-  if(!hint){
-    hint=document.createElement('div');
-    hint.id='shotsHint';
-    shots.parentNode.insertBefore(hint,shots);
+  function imgBox(url,label,eager=false){
+    if(!url||!/^https?:\/\//i.test(url))return `<div class="visual compact-ref no-ref"><span class="visual-status">Sin referencia</span></div>`;
+    return `<div class="visual compact-ref"><span class="visual-status">Cargando referencia…</span><img src="${esc(url)}" alt="${esc(label)}" loading="${eager?'eager':'lazy'}" decoding="async" ${eager?'fetchpriority="high"':'fetchpriority="low"'}></div>`;
   }
 
-  let raf=0;
-  function sync(){
-    cancelAnimationFrame(raf);
-    raf=requestAnimationFrame(()=>{
-      const cards=[...shots.children].filter(x=>x.classList&&x.classList.contains('shot'));
-      if(!cards.length){
-        hint.style.display='none';
-        return;
-      }
-
-      hint.style.display='flex';
-      const expected=`<b>${cards.length} tomas</b><span class="arrow">Desliza ← →</span>`;
-      if(hint.innerHTML!==expected)hint.innerHTML=expected;
-
-      cards.forEach((card,i)=>{
-        let c=card.querySelector('.shotcount');
-        if(!c){
-          c=document.createElement('span');
-          c.className='shotcount';
-          card.querySelector('.shothead')?.appendChild(c);
-        }
-        const count=`${i+1}/${cards.length}`;
-        if(c.textContent!==count)c.textContent=count;
-
-        const b=card.querySelector('.sleft b');
-        if(b){
-          const br=/^Recurso|^B-roll/i.test(b.textContent||'');
-          const label=`${br?'B-roll':'Toma'} ${i+1}`;
-          if(b.textContent!==label)b.textContent=label;
-        }
-      });
+  function wireImages(root){
+    root.querySelectorAll('.compact-ref img').forEach(img=>{
+      const box=img.closest('.compact-ref'),status=box?.querySelector('.visual-status');
+      const ok=()=>{box?.classList.add('loaded');if(status)status.textContent='';};
+      const bad=()=>{box?.classList.add('failed');if(status)status.textContent='Referencia no disponible';img.remove();};
+      if(img.complete){img.naturalWidth?ok():bad();return;}
+      img.addEventListener('load',ok,{once:true});
+      img.addEventListener('error',bad,{once:true});
     });
   }
 
-  new MutationObserver(sync).observe(shots,{childList:true});
-  sync();
+  renderVideos=function(items){
+    videos.innerHTML=items.length?items.map((x,i)=>{
+      const thumb=firstImg(x);
+      return `<article class="card video jsV compact-video" data-i="${i}"><div class="vr"><span class="vn">${i+1}</span><span class="vo">DE ${items.length}</span><span class="pill ${x.estado==='GRABADO'?'ok':''}">${x.estado==='GRABADO'?ic('check'):ic('playi')} ${x.estado==='GRABADO'?'Grabado':'Pendiente'}</span></div><div class="video-row">${imgBox(thumb,'Referencia de grabación',true)}<div class="vb"><h3>${esc(pt(x.pieza))}</h3><div class="meta"><span>${esc(x.pieza.servicio||'')}</span><span>${ic('clk')} ${x.pieza.duracion_seg?x.pieza.duracion_seg+' s':''}</span></div><button class="cta">${x.estado==='GRABADO'?'Revisar video':'Abrir y grabar'}</button></div></div></article>`;
+    }).join(''):'<div class="card empty">Esta sesión todavía no tiene videos.</div>';
+    wireImages(videos);
+    document.querySelectorAll('.jsV').forEach(x=>x.onclick=()=>openVideo(+x.dataset.i));
+  };
+
+  openVideo=function(i){
+    Item=S?.items?.[i];
+    if(!Item)return;
+    const p=Item.pieza||{},sh=Array.isArray(Item.tomas)?Item.tomas:[];
+    document.getElementById('sdetail').style.display='none';
+    document.getElementById('vdetail').style.display='block';
+
+    vhero.innerHTML=`<div class="card detail compact-detail"><div class="date">VIDEO ${i+1}</div><h2>${esc(pt(p))}</h2><div class="meta"><span>${esc(p.servicio||'')}</span><span>${p.duracion_seg?p.duracion_seg+' s':''}</span></div><div class="actions"><button id="teleb" class="btn primary">${ic('playi')} Abrir teleprompter</button><button id="recb" class="btn ok">${ic('check')} ${Item.estado==='GRABADO'?'Marcar pendiente':'Marcar grabado'}</button></div></div>`;
+
+    let hint=document.getElementById('shotsHint');
+    if(!hint){hint=document.createElement('div');hint.id='shotsHint';shotsEl.parentNode.insertBefore(hint,shotsEl);}
+    hint.style.display=sh.length?'flex':'none';
+    hint.innerHTML=sh.length?`<b>${sh.length} tomas</b><span>Desliza ← →</span>`:'';
+
+    shotsEl.innerHTML=sh.length?sh.map((s,n)=>{
+      const isB=s.tipo==='BROLL';
+      const action=[s.accion,s.mirada_gesto].filter(Boolean).join(' · ');
+      const seen=[s.que_se_ve,s.camara].filter(Boolean).join(' · ');
+      return `<article class="card shot"><div class="shothead"><div class="sleft"><span class="sn">${n+1}</span><div><b>Toma ${n+1}${isB?' · B-roll':''}</b><div class="stime">${esc(s.tiempo||'')}</div></div></div><span class="shotcount">${n+1}/${sh.length}</span></div>${imgBox(s.reference_url,isB?'Referencia de B-roll':'Composición de la toma',n===0)}<div class="ins">${action?`<div class="ib"><small>Qué haces</small>${esc(action)}</div>`:''}${seen?`<div class="ib"><small>Qué debe verse</small>${esc(seen)}</div>`:''}</div>${s.que_se_dice?`<div class="say">${esc(s.que_se_dice)}</div>`:''}</article>`;
+    }).join(''):'<div class="card empty">Las indicaciones todavía no están cargadas.</div>';
+
+    wireImages(shotsEl);
+    document.getElementById('teleb').onclick=()=>openTele(Item);
+    document.getElementById('recb').onclick=()=>toggleRec(Item);
+    requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));
+  };
 })();
