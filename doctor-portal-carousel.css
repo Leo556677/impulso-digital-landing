@@ -12,6 +12,10 @@
 .compact-ref.loaded img{opacity:1}
 .compact-ref .visual-status{padding:8px;text-align:center;color:#7a828d;font-size:9px;line-height:1.25;font-weight:750}
 .compact-ref.failed{background:#f4f4f6}
+.piece-guide-wrap{margin:0 0 13px}
+.piece-guide-title{font-size:10px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:var(--p);margin:1px 0 7px}
+.compact-ref.piece-guide{width:min(100%,460px);aspect-ratio:941/1672;margin:0 auto;border-radius:16px;background:#111827}
+.compact-ref.piece-guide img{background:#111827}
 #shotsHint{display:none;align-items:center;justify-content:space-between;gap:10px;margin:3px 2px 8px;padding:8px 10px;border:1px solid var(--l);border-radius:12px;background:#fff;font-size:10px;color:var(--m)}
 #shotsHint b{font-size:11px;color:var(--i)}
 #shotsHint span{color:var(--p);font-weight:900;white-space:nowrap}
