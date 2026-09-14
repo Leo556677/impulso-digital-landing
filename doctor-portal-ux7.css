@@ -1,0 +1,66 @@
+/* Dr. Olano · Portal production UX v7 */
+#shotsHint{width:min(100%,560px)!important;margin:9px auto!important;border:2px solid #d6dbe3!important;background:#fff!important}
+#shotsHint span{color:var(--p)!important;font-weight:950!important}
+#shots{display:flex!important;align-items:stretch!important;gap:12px!important;width:min(100%,560px)!important;margin:0 auto!important;padding:2px 0 20px!important;overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior-inline:contain!important}
+#shots::-webkit-scrollbar{display:none!important}
+#shots .shot{flex:0 0 100%!important;width:100%!important;margin:0!important;padding:14px!important;border:3px solid #c8ced8!important;border-radius:21px!important;scroll-snap-align:start!important;scroll-snap-stop:always!important;box-shadow:0 12px 28px rgba(25,28,35,.08)!important;overflow:hidden!important;background:#fff!important}
+#shots .shothead{padding-bottom:11px!important;border-bottom:2px solid #d9dde4!important}
+#shots .shothead .sleft b{font-size:18px!important}
+#shots .shotcount{border:1px solid #d9dde4!important;background:#f5f6f8!important}
+#shots .shot .say{margin:12px 0 0!important;padding:13px 14px!important;border:2px solid #edc5dc!important;border-left:5px solid var(--p)!important;border-radius:15px!important;background:#fff7fb!important;font-size:14px!important;line-height:1.55!important}
+#shots .shot .say-label,.ib-title,.cta-scene-title{display:flex!important;align-items:center!important;gap:8px!important;font-size:10px!important;font-weight:950!important;letter-spacing:.05em!important;text-transform:uppercase!important}
+#shots .shot .say-label{color:var(--p)!important;margin-bottom:7px!important}
+#shots .shot .say-copy,#shots .shot .ib-copy,.cta-scene-copy{text-align:justify!important;text-justify:inter-word!important;hyphens:auto!important;overflow-wrap:anywhere!important}
+#shots .shot .ins{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;margin-top:10px!important}
+#shots .shot .ib{padding:13px 14px!important;border:2px solid #d4d9e1!important;border-radius:15px!important;background:#fafbfc!important;font-size:13px!important;line-height:1.5!important}
+#shots .shot .ib.action-block{border-left:5px solid #25252A!important;background:#f7f8fa!important}
+#shots .shot .ib.visual-block{border-left:5px solid var(--p)!important;background:#fffafd!important}
+#shots .shot .ib-title{color:#3f4650!important;margin-bottom:7px!important}
+#shots .shot .visual-block .ib-title{color:var(--p)!important}
+.block-ico{width:18px!important;height:18px!important;fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linecap:round!important;stroke-linejoin:round!important;flex:0 0 auto!important}
+.cta-scene-block{margin-top:10px;padding:13px 14px;border:2px solid #ffb1d8;border-left:5px solid var(--p);border-radius:15px;background:linear-gradient(135deg,#fff3f9,#fff);color:#3b3140}
+.cta-scene-title{color:var(--p);margin-bottom:7px}
+.cta-scene-copy{font-size:14px;line-height:1.5;font-weight:850}
+.cta-scene-note{margin-top:5px;font-size:10px;color:#7d6574;font-weight:750}
+
+/* Teleprompter scenes */
+.tele-scene{margin:0 0 38px!important}
+.tele-scene-head{border:2px solid rgba(255,255,255,.28)!important;box-shadow:0 12px 30px rgba(230,0,126,.28)!important}
+.tele-scene-id b{font-size:14px!important}
+.tele-scene-id small{font-size:9px!important}
+.tele-scene-audio{min-height:42px!important;border:2px solid rgba(255,255,255,.48)!important}
+.tele-cta{margin:10px 0 0;padding:10px 12px;border:2px solid rgba(230,0,126,.6);border-radius:13px;background:rgba(230,0,126,.12);color:#fff;font-size:11px;line-height:1.4}
+.tele-cta b{color:#ff79bd}
+
+/* Scene instruction voice player */
+.scene-voice-overlay-v7{position:fixed;inset:0;z-index:260;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(3,4,6,.52);backdrop-filter:blur(16px) brightness(.48);-webkit-backdrop-filter:blur(16px) brightness(.48)}
+.scene-voice-overlay-v7.on{display:flex}
+.scene-voice-card-v7{width:min(540px,100%);border:2px solid rgba(255,255,255,.16);border-radius:24px;background:#10151d;color:#fff;padding:18px;box-shadow:0 30px 90px rgba(0,0,0,.5)}
+.scene-voice-top-v7{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.scene-voice-top-v7 small{display:block;color:#f5a9d2;font-size:9px;font-weight:900;letter-spacing:.08em}
+.scene-voice-top-v7 b{display:block;margin-top:3px;font-size:22px}
+.scene-voice-close-v7{width:42px;height:42px;border:1px solid #38404b;border-radius:12px;background:#1c222c;color:#fff;display:grid;place-items:center}
+.scene-voice-text-v7{margin:15px 0;padding:14px;border:1px solid #303744;border-radius:15px;background:#191f29;color:#edf1f5;font-size:13px;line-height:1.58;text-align:justify;text-justify:inter-word;hyphens:auto}
+.scene-voice-progress-v7{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:10px;align-items:center}
+.scene-voice-progress-v7 input{width:100%;accent-color:var(--p)}
+.scene-voice-progress-v7 span{font-size:10px;color:#aab2be;font-weight:850;text-align:right}
+.scene-voice-controls-v7{display:grid;grid-template-columns:1fr 1fr 46px;gap:8px;margin-top:12px}
+.voice-control-v7{min-height:44px;border:1px solid #39414d;border-radius:12px;background:#1b212b;color:#fff;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:900}
+.voice-control-v7.primary{background:linear-gradient(135deg,var(--p),var(--c));border-color:transparent}
+.voice-settings-v7{display:grid;grid-template-columns:1.4fr .8fr;gap:8px;margin-top:8px}
+.voice-setting-v7{display:flex;flex-direction:column;gap:4px;padding:8px 10px;border:1px solid #39414d;border-radius:12px;background:#1b212b}
+.voice-setting-v7 span{font-size:8px;color:#aab2be;font-weight:900;text-transform:uppercase}
+.voice-setting-v7 select{border:0;background:transparent;color:#fff;font-weight:850;outline:none;min-width:0}
+.voice-setting-v7 option{color:#111}
+.voice-quality-note{margin-top:8px;color:#8f98a5;font-size:9px;line-height:1.35}
+.voice-ico-v7{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+@media(max-width:520px){
+  #shotsHint,#shots{width:100%!important}
+  #shots .shot{flex-basis:100%!important;border-radius:18px!important;padding:13px!important}
+  #shots .shot .say{font-size:14px!important}
+  #shots .shot .ib{font-size:13px!important}
+  .tele-scene-audio span{display:none!important}
+  .tele-scene-audio{width:44px!important;padding:0!important;justify-content:center!important}
+  .voice-settings-v7{grid-template-columns:1fr!important}
+}
