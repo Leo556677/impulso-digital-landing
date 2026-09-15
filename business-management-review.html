@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <meta name="theme-color" content="#E6007E" />
+  <title>business_management · App Review | Impulso Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;--ok:#16794c;--danger:#C62828;--gradient:linear-gradient(135deg,var(--magenta),var(--coral) 52%,var(--orange));--shadow:0 18px 55px rgba(38,38,38,.10)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px;background:radial-gradient(circle at 12% 8%,rgba(230,0,126,.10),transparent 28%),radial-gradient(circle at 88% 92%,rgba(255,106,0,.10),transparent 30%),var(--gray);color:var(--charcoal);font-family:'Montserrat',system-ui,sans-serif}.wrap{width:min(860px,100%);margin:auto}.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:var(--charcoal);text-decoration:none}.brand img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--magenta)}.brand strong{display:block;font-family:'Anton',sans-serif;font-size:1.45rem;font-weight:400}.brand small{display:block;margin-top:4px;color:var(--magenta);font-weight:800;letter-spacing:.1em}.tag,.pill{display:inline-block;padding:7px 11px;border-radius:999px;font-weight:800;font-size:12px}.tag{background:#fff0f7;color:var(--magenta)}h1,h2{font-family:'Anton',sans-serif;font-weight:400}h1{font-size:clamp(2rem,5vw,3rem);margin:.4rem 0 .75rem}.lead{color:var(--muted);line-height:1.65}.card{background:#fff;border:1px solid var(--gray2);border-radius:22px;padding:24px;margin:16px 0;box-shadow:var(--shadow)}.card::before{content:'';display:block;width:46px;height:4px;border-radius:99px;background:var(--gradient);margin-bottom:16px}.ok{color:var(--ok);font-weight:800}.danger{color:var(--danger);font-weight:800}.muted{color:var(--muted)}.field{display:grid;gap:7px}.field label{font-size:12px;font-weight:800}.field select{width:100%;padding:12px 13px;border:1px solid #d9d9e1;border-radius:12px;background:#fff;color:var(--charcoal);font:inherit}button,a.btn{display:inline-block;border:0;border-radius:12px;padding:12px 17px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none}button{background:var(--gradient);color:#fff;box-shadow:0 10px 24px rgba(230,0,126,.18)}button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}a.btn{border:1px solid #dedee4;color:var(--charcoal);background:#fff}pre{white-space:pre-wrap;word-break:break-word;background:#262626;color:#fff;border-radius:14px;padding:16px;min-height:115px}.review-note{border-left:4px solid var(--magenta)}.review-note ol{padding-left:20px}.review-note li{margin:6px 0}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}@media(max-width:600px){body{padding:18px}.card{padding:20px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a class="brand" href="./"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><span><strong>IMPULSO DIGITAL</strong><small>APP REVIEW · BUSINESS MANAGEMENT</small></span></a>
+  <span class="tag">TEMPORAL · REVISIÓN META · NO PRODUCCIÓN</span>
+  <h1>Business Portfolio Authorization</h1>
+  <p class="lead">Demostración específica del permiso <code>business_management</code>. Esta página no registra números de WhatsApp ni modifica activos.</p>
+
+  <section class="card review-note">
+    <h2>Qué demuestra este flujo</h2>
+    <ol>
+      <li>Usuario autenticado en Impulso Digital.</li>
+      <li>Selección de una empresa que pertenece al usuario.</li>
+      <li>Autorización oficial de Meta para <code>business_management</code>.</li>
+      <li>Intercambio del código OAuth exclusivamente en backend.</li>
+      <li>Lectura de los Business Portfolios autorizados mediante <code>GET /me/businesses</code>.</li>
+      <li>Resultado mostrado dentro de Impulso Digital, sin exponer tokens ni App Secret.</li>
+    </ol>
+    <p class="muted"><strong>Reviewer note:</strong> This is the exact pre-onboarding use of <code>business_management</code>. WhatsApp customer registration is a separate Embedded Signup step and is not executed on this review page.</p>
+  </section>
+
+  <section class="card">
+    <h2>1. Sesión y empresa</h2>
+    <div id="sessionStatus">Validando sesión…</div>
+    <div class="field" style="margin-top:14px"><label for="tenantSelect">Empresa activa / Active business</label><select id="tenantSelect" disabled><option>Cargando…</option></select></div>
+    <p id="tenantStatus" class="muted"></p>
+    <p><a class="btn" href="./crm-login.html">Ir al login CRM</a></p>
+  </section>
+
+  <section class="card">
+    <h2>2. Autorizar Business Portfolio</h2>
+    <button id="authorizeBtn" type="button" disabled>Autorizar con Meta</button>
+    <p class="muted">Solicita únicamente <code>business_management</code>. No ejecuta Embedded Signup, no registra teléfonos y no toca el número real.</p>
+  </section>
+
+  <section class="card">
+    <h2>3. Resultado autorizado</h2>
+    <pre id="result">Esperando sesión…</pre>
+    <p class="muted">El resultado esperado muestra el/los Business Portfolio(s) que Meta permite leer para esta autorización.</p>
+  </section>
+
+  <p class="footer">No se muestran credenciales privadas. Los tokens OAuth se procesan exclusivamente en backend y no se almacenan en esta página.</p>
+</main>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+const SUPABASE_URL='https://xnlzsgulskqyecfgzhwa.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
+const APP_ID='860468763590445';
+const GRAPH_VERSION='v26.0';
+const CALLBACK_URL='https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
+const OWN_ORIGIN='https://leo556677.github.io';
+const supabase=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const sessionStatus=document.getElementById('sessionStatus'),tenantSelect=document.getElementById('tenantSelect'),tenantStatus=document.getElementById('tenantStatus'),authorizeBtn=document.getElementById('authorizeBtn'),result=document.getElementById('result');
+let memberships=[],businesses=new Map(),negocioId=null,oauthPopup=null,submitting=false;
+const setResult=v=>result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2);
+function randomState(){const b=new Uint8Array(24);crypto.getRandomValues(b);return Array.from(b,x=>x.toString(16).padStart(2,'0')).join('')}
+function updateTenant(){const id=tenantSelect.value,m=memberships.find(x=>x.negocio_id===id),b=businesses.get(id);negocioId=null;if(!id||!m||!b){tenantStatus.textContent='Selecciona una empresa autorizada.';authorizeBtn.disabled=true;return}if(m.rol!=='admin'){tenantStatus.innerHTML=`<span class="danger">${b.nombre}: se requiere rol admin para esta evidencia.</span>`;authorizeBtn.disabled=true;return}negocioId=id;tenantStatus.innerHTML=`<span class="ok">${b.nombre} · ${m.rol} · listo para autorización Meta.</span>`;authorizeBtn.disabled=submitting;setResult('Listo. Puedes autorizar el Business Portfolio con Meta.')}
+async function resolveSession(){const{data:{session},error}=await supabase.auth.getSession();if(error||!session?.user){sessionStatus.innerHTML='<span class="danger">Sin sesión CRM activa.</span>';tenantStatus.textContent='Inicia sesión primero.';return}const{data:rows,error:me}=await supabase.from('usuarios_negocio').select('negocio_id,rol').eq('user_id',session.user.id);if(me)throw me;memberships=rows||[];if(!memberships.length)throw new Error('No hay empresas para el usuario autenticado.');const ids=[...new Set(memberships.map(x=>x.negocio_id))];const{data:bs,error:be}=await supabase.from('negocios').select('id,nombre,slug').in('id',ids);if(be)throw be;businesses=new Map((bs||[]).map(x=>[x.id,x]));tenantSelect.replaceChildren();for(const m of memberships){const b=businesses.get(m.negocio_id);if(!b)continue;const o=document.createElement('option');o.value=m.negocio_id;o.textContent=`${b.nombre} · ${m.rol}`;tenantSelect.append(o)}sessionStatus.innerHTML=`<span class="ok">Sesión válida.</span> ${memberships.length} empresa(s) del usuario autenticado.`;tenantSelect.disabled=false;const preferred=memberships.find(x=>businesses.get(x.negocio_id)?.nombre==='IMPULSO DIGITAL')||memberships[0];tenantSelect.value=preferred.negocio_id;updateTenant()}
+async function submitCode(code){if(!code||!negocioId||submitting)return;submitting=true;authorizeBtn.disabled=true;setResult('Código OAuth recibido. Consultando Business Portfolios en backend seguro…');try{const{data,error}=await supabase.functions.invoke('business-management-review',{body:{negocio_id:negocioId,code}});if(error){let d=null;try{if(error.context&&typeof error.context.json==='function')d=await error.context.json()}catch{}if(d){setResult(d);return}throw error}setResult(data)}catch(e){setResult(`Error: ${e?.message||'No se pudo completar la validación.'}`)}finally{submitting=false;updateTenant()}}
+window.addEventListener('message',event=>{if(event.origin!==OWN_ORIGIN)return;if(oauthPopup&&event.source!==oauthPopup)return;const d=event.data;if(!d||d.type!=='IMPULSO_META_OAUTH_CALLBACK')return;const expected=sessionStorage.getItem('impulso_business_management_state');sessionStorage.removeItem('impulso_business_management_state');if(!expected||!d.state||d.state!==expected){setResult('Respuesta OAuth rechazada: state inválido.');return}if(d.error){setResult({ok:false,error:d.error,detalle:d.error_description||d.error_reason||null});return}if(!d.code){setResult('Meta no devolvió código OAuth.');return}submitCode(String(d.code))});
+tenantSelect.addEventListener('change',updateTenant);
+authorizeBtn.addEventListener('click',()=>{if(!negocioId)return;const state=randomState();sessionStorage.setItem('impulso_business_management_state',state);const oauth=new URL(`https://www.facebook.com/${GRAPH_VERSION}/dialog/oauth`);oauth.searchParams.set('client_id',APP_ID);oauth.searchParams.set('redirect_uri',CALLBACK_URL);oauth.searchParams.set('response_type','code');oauth.searchParams.set('scope','business_management');oauth.searchParams.set('state',state);oauth.searchParams.set('display','popup');oauth.searchParams.set('auth_type','rerequest');setResult('Abriendo autorización oficial de Meta para business_management…');oauthPopup=window.open(oauth.toString(),'impulso_business_management','width=720,height=760,resizable=yes,scrollbars=yes');if(!oauthPopup)setResult('El navegador bloqueó el popup. Permite ventanas emergentes y vuelve a intentar.')});
+try{await resolveSession()}catch(e){console.error(e);sessionStatus.innerHTML='<span class="danger">No se pudo validar la sesión.</span>';tenantStatus.textContent=e?.message||'Error de autorización.';setResult('No se habilitará la prueba hasta resolver la sesión.')}
+</script>
+</body>
+</html>
