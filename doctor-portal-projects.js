@@ -1,6 +1,24 @@
 /* Project identity and human recording view; legacy businesses retain their existing interface. */
 (()=>{
  'use strict';
+ const ACCESS_KEY='do_portal_access_v1';
+ try{
+   const u=new URL(location.href),incoming=u.searchParams.get('token'),saved=localStorage.getItem(ACCESS_KEY)||'';
+   if(!incoming&&saved){u.searchParams.set('token',saved);location.replace(u.toString());return;}
+   if(incoming){
+     let tries=0;
+     const remember=()=>{
+       if(typeof P!=='undefined'&&P?.negocio){
+         localStorage.setItem(ACCESS_KEY,incoming);
+         u.searchParams.delete('token');
+         history.replaceState(null,'',u.pathname+(u.searchParams.toString()?`?${u.searchParams}`:'')+u.hash);
+         return;
+       }
+       if(++tries<50)setTimeout(remember,200);
+     };
+     setTimeout(remember,0);
+   }
+ }catch{}
  const M=window.RecordingModel,oldOpenVideo=openVideo,oldRenderVideos=renderVideos;
  const list=(a)=>Array.isArray(a)?a:[a].filter(Boolean);
  const copy=(label,text)=>text?`<div class="ib"><div class="ib-title">${esc(label)}</div><div class="ib-copy">${esc(text)}</div></div>`:'';
