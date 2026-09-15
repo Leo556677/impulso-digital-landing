@@ -65,5 +65,13 @@
     renderCal();
   }
 
+  const previousToggle=typeof toggleRec==='function'?toggleRec:null;
+  if(previousToggle){
+    toggleRec=async function(item){
+      await previousToggle(item);
+      await loadCalendar();
+    };
+  }
+
   loadCalendar();
 })();
