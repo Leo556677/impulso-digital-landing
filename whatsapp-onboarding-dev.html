@@ -10,13 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    :root{--magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;--white:#fff;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;--ok:#16794c;--danger:#C62828;--warn:#9a6700;--gradient:linear-gradient(135deg,var(--magenta),var(--coral) 52%,var(--orange));--shadow:0 18px 55px rgba(38,38,38,.10)}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px;color:var(--charcoal);font-family:'Montserrat',system-ui,sans-serif;background:radial-gradient(circle at 12% 8%,rgba(230,0,126,.10),transparent 28%),radial-gradient(circle at 88% 92%,rgba(255,106,0,.10),transparent 30%),var(--gray)}.wrap{width:min(860px,100%);margin:auto}.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;text-decoration:none;color:var(--charcoal)}.brand-logo{width:54px;height:54px;border-radius:50%;padding:2px;background:var(--gradient);box-shadow:0 8px 24px rgba(230,0,126,.16)}.brand-logo span{display:grid;width:100%;height:100%;place-items:center;border-radius:50%;background:#fff;overflow:hidden}.brand-logo img{width:100%;height:100%;object-fit:cover}.brand-copy strong{display:block;font-family:'Anton',sans-serif;font-size:1.45rem;font-weight:400;line-height:1}.brand-copy small{display:block;margin-top:5px;color:var(--magenta);font-weight:800;letter-spacing:.12em}h1,h2{font-family:'Anton',sans-serif;font-weight:400;color:var(--charcoal)}h1{font-size:clamp(2rem,5vw,3rem);margin:.4rem 0 .75rem}h2{margin:0 0 12px;font-size:1.55rem}.lead{color:var(--muted);line-height:1.65;margin-bottom:24px}.tag,.pill{display:inline-block;padding:7px 11px;border-radius:999px;font-weight:800;font-size:12px;letter-spacing:.04em}.tag{background:#FFF2E9;color:#A94200}.pill{background:#fff0f7;color:var(--magenta)}.card{background:rgba(255,255,255,.97);border:1px solid var(--gray2);border-radius:22px;padding:24px;margin:16px 0;box-shadow:var(--shadow)}.card::before{content:'';display:block;width:46px;height:4px;border-radius:99px;background:var(--gradient);margin-bottom:16px}.ok{color:var(--ok);font-weight:800}.danger{color:var(--danger);font-weight:800}.warn{color:var(--warn);font-weight:700}.muted{color:var(--muted)}.grid{display:grid;gap:12px}.field{display:grid;gap:7px}.field label{font-size:12px;font-weight:800}.field select{width:100%;padding:12px 13px;border:1px solid #d9d9e1;border-radius:12px;background:#fff;color:var(--charcoal);font:inherit}button,a.btn{display:inline-block;border:0;border-radius:12px;padding:12px 17px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}button{background:var(--gradient);color:#fff;box-shadow:0 10px 24px rgba(230,0,126,.18)}button:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(230,0,126,.24)}button:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}a.btn{border:1px solid #dedee4;color:var(--charcoal);background:#fff}pre{white-space:pre-wrap;word-break:break-word;background:#262626;color:#fff;border-radius:14px;padding:16px;min-height:110px}.review-note{border-left:4px solid var(--magenta)}.review-note ol{padding-left:20px}.review-note li{margin:6px 0}.footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}@media(max-width:600px){body{padding:18px}.card{padding:20px}.brand-logo{width:48px;height:48px}}
+    :root{--magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;--ok:#16794c;--danger:#C62828;--warn:#9a6700;--gradient:linear-gradient(135deg,var(--magenta),var(--coral) 52%,var(--orange));--shadow:0 18px 55px rgba(38,38,38,.10)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px;color:var(--charcoal);font-family:'Montserrat',system-ui,sans-serif;background:radial-gradient(circle at 12% 8%,rgba(230,0,126,.10),transparent 28%),radial-gradient(circle at 88% 92%,rgba(255,106,0,.10),transparent 30%),var(--gray)}.wrap{width:min(860px,100%);margin:auto}.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;text-decoration:none;color:var(--charcoal)}.brand-logo{width:54px;height:54px;border-radius:50%;padding:2px;background:var(--gradient);box-shadow:0 8px 24px rgba(230,0,126,.16)}.brand-logo span{display:grid;width:100%;height:100%;place-items:center;border-radius:50%;background:#fff;overflow:hidden}.brand-logo img{width:100%;height:100%;object-fit:cover}.brand-copy strong{display:block;font-family:'Anton',sans-serif;font-size:1.45rem;font-weight:400;line-height:1}.brand-copy small{display:block;margin-top:5px;color:var(--magenta);font-weight:800;letter-spacing:.12em}h1,h2{font-family:'Anton',sans-serif;font-weight:400;color:var(--charcoal)}h1{font-size:clamp(2rem,5vw,3rem);margin:.4rem 0 .75rem}h2{margin:0 0 12px;font-size:1.55rem}.lead{color:var(--muted);line-height:1.65;margin-bottom:24px}.tag,.pill{display:inline-block;padding:7px 11px;border-radius:999px;font-weight:800;font-size:12px;letter-spacing:.04em}.tag{background:#FFF2E9;color:#A94200}.pill{background:#fff0f7;color:var(--magenta)}.card{background:rgba(255,255,255,.97);border:1px solid var(--gray2);border-radius:22px;padding:24px;margin:16px 0;box-shadow:var(--shadow)}.card::before{content:'';display:block;width:46px;height:4px;border-radius:99px;background:var(--gradient);margin-bottom:16px}.ok{color:var(--ok);font-weight:800}.danger{color:var(--danger);font-weight:800}.warn{color:var(--warn);font-weight:700}.muted{color:var(--muted)}.field{display:grid;gap:7px}.field label{font-size:12px;font-weight:800}.field select{width:100%;padding:12px 13px;border:1px solid #d9d9e1;border-radius:12px;background:#fff;color:var(--charcoal);font:inherit}button,a.btn{display:inline-block;border:0;border-radius:12px;padding:12px 17px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}button{background:var(--gradient);color:#fff;box-shadow:0 10px 24px rgba(230,0,126,.18)}button:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(230,0,126,.24)}button:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}a.btn{border:1px solid #dedee4;color:var(--charcoal);background:#fff}pre{white-space:pre-wrap;word-break:break-word;background:#262626;color:#fff;border-radius:14px;padding:16px;min-height:110px}.review-note{border-left:4px solid var(--magenta)}.review-note ol{padding-left:20px}.review-note li{margin:6px 0}.footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}@media(max-width:600px){body{padding:18px}.card{padding:20px}.brand-logo{width:48px;height:48px}}
   </style>
 </head>
 <body>
 <main class="wrap">
-  <a class="brand" href="./" aria-label="Volver a Impulso Digital"><span class="brand-logo"><span><img src="./img/logo-impulso-digital.png" alt="Impulso Digital" /></span></span><span class="brand-copy"><strong>IMPULSO DIGITAL</strong><small>CRM + WHATSAPP</small></span></a>
+  <a class="brand" href="./"><span class="brand-logo"><span><img src="./img/logo-impulso-digital.png" alt="Impulso Digital" /></span></span><span class="brand-copy"><strong>IMPULSO DIGITAL</strong><small>CRM + WHATSAPP</small></span></a>
   <span class="tag">DESARROLLO · NO PRODUCCIÓN</span>
   <h1>WhatsApp Embedded Signup · E2E</h1>
   <p class="lead">Validación autenticada y multiempresa del caso de uso completo. Usa exclusivamente activos Meta de PRUEBA.</p>
@@ -26,7 +26,7 @@
     <h2>Qué demuestra este flujo</h2>
     <ol>
       <li>Usuario autenticado en Impulso Digital.</li>
-      <li>Selección explícita de la empresa autorizada.</li>
+      <li>Selección explícita de una empresa que pertenece a ese usuario.</li>
       <li>Inicio del flujo oficial de Meta / Meta Login.</li>
       <li>Autorización del negocio y sus activos de PRUEBA.</li>
       <li>Retorno a Impulso Digital y validación backend.</li>
@@ -42,7 +42,7 @@
       <label for="tenantSelect">Empresa activa / Active business</label>
       <select id="tenantSelect" disabled><option value="">Cargando empresas autorizadas…</option></select>
     </div>
-    <p id="tenantStatus" class="muted">Esperando membresías autorizadas por RLS…</p>
+    <p id="tenantStatus" class="muted">Esperando membresías del usuario autenticado…</p>
     <p><a class="btn" href="./crm-login.html">Ir al login CRM</a></p>
   </section>
 
@@ -56,7 +56,7 @@
   <section class="card">
     <h2>3. Resultado final seguro</h2>
     <pre id="result">Esperando sesión…</pre>
-    <p class="muted">Un resultado <strong>ok: true</strong> demuestra que el backend validó la autorización, la empresa, la WABA y el número Meta de PRUEBA. Las credenciales privadas nunca se muestran.</p>
+    <p class="muted">Un resultado <strong>ok: true</strong> demuestra que el backend validó la autorización, la empresa, la WABA y el número Meta de PRUEBA.</p>
   </section>
 
   <p class="footer">TEMPORAL · Preparación técnica de evidencia App Review · Sin credenciales privadas en frontend.</p>
@@ -65,210 +65,60 @@
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
 
-  const SUPABASE_URL = 'https://xnlzsgulskqyecfgzhwa.supabase.co';
-  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
-  const APP_ID = '860468763590445';
-  const CONFIG_ID = '1581941380393885';
-  const GRAPH_VERSION = 'v26.0';
-  const CALLBACK_URL = 'https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
-  const OWN_ORIGIN = 'https://leo556677.github.io';
+  const SUPABASE_URL='https://xnlzsgulskqyecfgzhwa.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY='sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
+  const APP_ID='860468763590445';
+  const CONFIG_ID='1581941380393885';
+  const GRAPH_VERSION='v26.0';
+  const CALLBACK_URL='https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
+  const OWN_ORIGIN='https://leo556677.github.io';
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
-  });
+  const supabase=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+  const sessionStatus=document.getElementById('sessionStatus'),tenantSelect=document.getElementById('tenantSelect'),tenantStatus=document.getElementById('tenantStatus'),signupBtn=document.getElementById('signupBtn'),result=document.getElementById('result');
+  let negocioId=null,memberships=[],businesses=new Map(),testChannels=new Map(),oauthPopup=null,submitting=false;
 
-  const sessionStatus = document.getElementById('sessionStatus');
-  const tenantSelect = document.getElementById('tenantSelect');
-  const tenantStatus = document.getElementById('tenantStatus');
-  const signupBtn = document.getElementById('signupBtn');
-  const result = document.getElementById('result');
+  function setResult(v){result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2)}
+  function randomState(){const bytes=new Uint8Array(24);crypto.getRandomValues(bytes);return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('')}
+  function getMembership(id){return memberships.find(x=>x.negocio_id===id)||null}
 
-  let negocioId = null;
-  let memberships = [];
-  let businesses = new Map();
-  let testChannels = new Map();
-  let oauthPopup = null;
-  let submitting = false;
-
-  function setResult(value) {
-    result.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+  function updateSelectedTenant(){
+    const id=tenantSelect.value,membership=getMembership(id),business=businesses.get(id),channels=testChannels.get(id)||[];negocioId=null;
+    if(!id||!membership||!business){tenantStatus.textContent='Selecciona una empresa autorizada.';signupBtn.disabled=true;return}
+    if(membership.rol!=='admin'){tenantStatus.innerHTML=`<span class="danger">${business.nombre}: tu rol no permite administrar el onboarding.</span>`;signupBtn.disabled=true;return}
+    if(channels.length!==1){tenantStatus.innerHTML=`<span class="warn">${business.nombre} · ${membership.rol} · ${channels.length} canal(es) Meta de PRUEBA activo(s). Este flujo exige exactamente 1.</span>`;signupBtn.disabled=true;return}
+    negocioId=id;tenantStatus.innerHTML=`<span class="ok">${business.nombre} · admin · canal Meta de PRUEBA listo.</span>`;signupBtn.disabled=submitting;setResult('Listo. Empresa del usuario autenticado y canal Meta de PRUEBA identificados. Puedes iniciar el flujo oficial de Meta.');
   }
 
-  function randomState() {
-    const bytes = new Uint8Array(24);
-    crypto.getRandomValues(bytes);
-    return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  function getMembership(id) {
-    return memberships.find(x => x.negocio_id === id) || null;
-  }
-
-  function updateSelectedTenant() {
-    const id = tenantSelect.value;
-    const membership = getMembership(id);
-    const business = businesses.get(id);
-    const channels = testChannels.get(id) || [];
-    negocioId = null;
-
-    if (!id || !membership || !business) {
-      tenantStatus.textContent = 'Selecciona una empresa autorizada.';
-      signupBtn.disabled = true;
-      return;
-    }
-
-    if (membership.rol !== 'admin') {
-      tenantStatus.innerHTML = `<span class="danger">${business.nombre}: tu rol no permite administrar el onboarding.</span>`;
-      signupBtn.disabled = true;
-      return;
-    }
-
-    if (channels.length !== 1) {
-      tenantStatus.innerHTML = `<span class="warn">${business.nombre} · admin · ${channels.length} canal(es) Meta de PRUEBA activo(s). Este flujo exige exactamente 1.</span>`;
-      signupBtn.disabled = true;
-      return;
-    }
-
-    negocioId = id;
-    tenantStatus.innerHTML = `<span class="ok">${business.nombre} · admin · canal Meta de PRUEBA listo.</span>`;
-    signupBtn.disabled = submitting;
-    setResult('Listo. Empresa autorizada y canal Meta de PRUEBA identificados. Puedes iniciar el flujo oficial de Meta.');
-  }
-
-  async function resolveSession() {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (error || !session?.user) {
-      sessionStatus.innerHTML = '<span class="danger">Sin sesión CRM activa.</span>';
-      tenantStatus.textContent = 'Inicia sesión primero y vuelve a esta página.';
-      return;
-    }
-
-    const { data: membershipRows, error: membershipError } = await supabase
-      .from('usuarios_negocio')
-      .select('negocio_id,rol');
-    if (membershipError) throw membershipError;
-
-    memberships = membershipRows || [];
-    if (!memberships.length) throw new Error('La sesión no tiene empresas autorizadas.');
-
-    const ids = [...new Set(memberships.map(x => x.negocio_id))];
-    const { data: businessRows, error: businessError } = await supabase
-      .from('negocios')
-      .select('id,nombre,slug,activo')
-      .in('id', ids);
-    if (businessError) throw businessError;
-    businesses = new Map((businessRows || []).map(x => [x.id, x]));
-
-    const { data: channelRows, error: channelError } = await supabase
-      .from('canales_whatsapp')
-      .select('id,negocio_id,es_prueba,activo')
-      .in('negocio_id', ids)
-      .eq('es_prueba', true)
-      .eq('activo', true);
-    if (channelError) throw channelError;
-
-    testChannels = new Map();
-    for (const ch of channelRows || []) {
-      if (!testChannels.has(ch.negocio_id)) testChannels.set(ch.negocio_id, []);
-      testChannels.get(ch.negocio_id).push(ch);
-    }
-
+  async function resolveSession(){
+    const{data:{session},error}=await supabase.auth.getSession();
+    if(error||!session?.user){sessionStatus.innerHTML='<span class="danger">Sin sesión CRM activa.</span>';tenantStatus.textContent='Inicia sesión primero y vuelve a esta página.';return}
+    const{data:membershipRows,error:membershipError}=await supabase.from('usuarios_negocio').select('negocio_id,rol').eq('user_id',session.user.id);
+    if(membershipError)throw membershipError;
+    memberships=membershipRows||[];
+    if(!memberships.length)throw new Error('La sesión no tiene empresas autorizadas.');
+    const ids=[...new Set(memberships.map(x=>x.negocio_id))];
+    const{data:businessRows,error:businessError}=await supabase.from('negocios').select('id,nombre,slug,activo').in('id',ids);
+    if(businessError)throw businessError;
+    businesses=new Map((businessRows||[]).map(x=>[x.id,x]));
+    const{data:channelRows,error:channelError}=await supabase.from('canales_whatsapp').select('id,negocio_id,es_prueba,activo').in('negocio_id',ids).eq('es_prueba',true).eq('activo',true);
+    if(channelError)throw channelError;
+    testChannels=new Map();
+    for(const ch of channelRows||[]){if(!testChannels.has(ch.negocio_id))testChannels.set(ch.negocio_id,[]);testChannels.get(ch.negocio_id).push(ch)}
     tenantSelect.replaceChildren();
-    for (const membership of memberships) {
-      const business = businesses.get(membership.negocio_id);
-      if (!business) continue;
-      const channels = testChannels.get(membership.negocio_id) || [];
-      const option = document.createElement('option');
-      option.value = membership.negocio_id;
-      option.textContent = `${business.nombre} · ${membership.rol} · ${channels.length === 1 ? 'PRUEBA lista' : 'sin canal PRUEBA listo'}`;
-      tenantSelect.append(option);
-    }
-
-    sessionStatus.innerHTML = `<span class="ok">Sesión válida.</span> ${memberships.length} empresa(s) autorizada(s) visible(s) por RLS.`;
-    tenantSelect.disabled = false;
-
-    const preferred = memberships.find(m => (testChannels.get(m.negocio_id) || []).length === 1 && m.rol === 'admin');
-    if (preferred) tenantSelect.value = preferred.negocio_id;
-    updateSelectedTenant();
+    for(const membership of memberships){const business=businesses.get(membership.negocio_id);if(!business)continue;const channels=testChannels.get(membership.negocio_id)||[],option=document.createElement('option');option.value=membership.negocio_id;option.textContent=`${business.nombre} · ${membership.rol} · ${channels.length===1?'PRUEBA lista':'sin canal PRUEBA listo'}`;tenantSelect.append(option)}
+    sessionStatus.innerHTML=`<span class="ok">Sesión válida.</span> ${memberships.length} empresa(s) perteneciente(s) al usuario autenticado.`;tenantSelect.disabled=false;
+    const preferred=memberships.find(m=>(testChannels.get(m.negocio_id)||[]).length===1&&m.rol==='admin');if(preferred)tenantSelect.value=preferred.negocio_id;updateSelectedTenant();
   }
 
-  async function submitCode(code) {
-    if (!code || !negocioId || submitting) return;
-    submitting = true;
-    signupBtn.disabled = true;
-    setResult('Código OAuth recibido. Validando autorización, negocio y activos Meta en backend seguro…');
-
-    try {
-      const { data, error } = await supabase.functions.invoke('whatsapp-embedded-signup', {
-        body: { negocio_id: negocioId, code }
-      });
-      if (error) {
-        let detail = null;
-        try { if (error.context && typeof error.context.json === 'function') detail = await error.context.json(); } catch (_) {}
-        if (detail) { setResult(detail); return; }
-        throw error;
-      }
-      setResult(data);
-    } catch (error) {
-      setResult(`Error: ${error?.message || 'No se pudo completar la validación.'}`);
-    } finally {
-      submitting = false;
-      updateSelectedTenant();
-    }
+  async function submitCode(code){
+    if(!code||!negocioId||submitting)return;submitting=true;signupBtn.disabled=true;setResult('Código OAuth recibido. Validando autorización, usuario, negocio y activos Meta en backend seguro…');
+    try{const{data,error}=await supabase.functions.invoke('whatsapp-embedded-signup',{body:{negocio_id:negocioId,code}});if(error){let detail=null;try{if(error.context&&typeof error.context.json==='function')detail=await error.context.json()}catch(_){}if(detail){setResult(detail);return}throw error}setResult(data)}catch(error){setResult(`Error: ${error?.message||'No se pudo completar la validación.'}`)}finally{submitting=false;updateSelectedTenant()}
   }
 
-  window.addEventListener('message', (event) => {
-    if (event.origin !== OWN_ORIGIN) return;
-    if (oauthPopup && event.source !== oauthPopup) return;
-    const data = event.data;
-    if (!data || data.type !== 'IMPULSO_META_OAUTH_CALLBACK') return;
-
-    const expectedState = sessionStorage.getItem('impulso_meta_oauth_state');
-    sessionStorage.removeItem('impulso_meta_oauth_state');
-    if (!expectedState || !data.state || data.state !== expectedState) {
-      setResult('Respuesta OAuth rechazada: state inválido. No se envió nada al backend.');
-      return;
-    }
-    if (data.error) {
-      setResult({ ok: false, error: data.error, detalle: data.error_description || data.error_reason || null });
-      return;
-    }
-    if (!data.code) {
-      setResult('Meta no devolvió código OAuth. No se envió nada al backend.');
-      return;
-    }
-    submitCode(String(data.code));
-  });
-
-  tenantSelect.addEventListener('change', updateSelectedTenant);
-
-  signupBtn.addEventListener('click', () => {
-    if (!negocioId) return;
-    const state = randomState();
-    sessionStorage.setItem('impulso_meta_oauth_state', state);
-
-    const oauth = new URL(`https://www.facebook.com/${GRAPH_VERSION}/dialog/oauth`);
-    oauth.searchParams.set('client_id', APP_ID);
-    oauth.searchParams.set('config_id', CONFIG_ID);
-    oauth.searchParams.set('display', 'popup');
-    oauth.searchParams.set('redirect_uri', CALLBACK_URL);
-    oauth.searchParams.set('response_type', 'code');
-    oauth.searchParams.set('state', state);
-    oauth.searchParams.set('extras', JSON.stringify({ setup: {}, sessionInfoVersion: '2' }));
-
-    setResult('Abriendo el flujo oficial de Meta para la empresa seleccionada…');
-    oauthPopup = window.open(oauth.toString(), 'impulso_meta_signup', 'width=760,height=760,resizable=yes,scrollbars=yes');
-    if (!oauthPopup) setResult('El navegador bloqueó la ventana emergente. Permite pop-ups para este sitio y vuelve a intentar.');
-  });
-
-  try {
-    await resolveSession();
-  } catch (error) {
-    console.error(error);
-    sessionStatus.innerHTML = '<span class="danger">No se pudo validar la sesión.</span>';
-    tenantStatus.textContent = error?.message || 'Error de autorización.';
-    setResult('No se habilitará Embedded Signup hasta resolver la sesión.');
-  }
+  window.addEventListener('message',event=>{if(event.origin!==OWN_ORIGIN)return;if(oauthPopup&&event.source!==oauthPopup)return;const data=event.data;if(!data||data.type!=='IMPULSO_META_OAUTH_CALLBACK')return;const expectedState=sessionStorage.getItem('impulso_meta_oauth_state');sessionStorage.removeItem('impulso_meta_oauth_state');if(!expectedState||!data.state||data.state!==expectedState){setResult('Respuesta OAuth rechazada: state inválido. No se envió nada al backend.');return}if(data.error){setResult({ok:false,error:data.error,detalle:data.error_description||data.error_reason||null});return}if(!data.code){setResult('Meta no devolvió código OAuth. No se envió nada al backend.');return}submitCode(String(data.code))});
+  tenantSelect.addEventListener('change',updateSelectedTenant);
+  signupBtn.addEventListener('click',()=>{if(!negocioId)return;const state=randomState();sessionStorage.setItem('impulso_meta_oauth_state',state);const oauth=new URL(`https://www.facebook.com/${GRAPH_VERSION}/dialog/oauth`);oauth.searchParams.set('client_id',APP_ID);oauth.searchParams.set('config_id',CONFIG_ID);oauth.searchParams.set('display','popup');oauth.searchParams.set('redirect_uri',CALLBACK_URL);oauth.searchParams.set('response_type','code');oauth.searchParams.set('state',state);oauth.searchParams.set('extras',JSON.stringify({setup:{},sessionInfoVersion:'2'}));setResult('Abriendo el flujo oficial de Meta para la empresa seleccionada…');oauthPopup=window.open(oauth.toString(),'impulso_meta_signup','width=760,height=760,resizable=yes,scrollbars=yes');if(!oauthPopup)setResult('El navegador bloqueó la ventana emergente. Permite pop-ups para este sitio y vuelve a intentar.')});
+  try{await resolveSession()}catch(error){console.error(error);sessionStatus.innerHTML='<span class="danger">No se pudo validar la sesión.</span>';tenantStatus.textContent=error?.message||'Error de autorización.';setResult('No se habilitará Embedded Signup hasta resolver la sesión.')}
 </script>
 </body>
 </html>
