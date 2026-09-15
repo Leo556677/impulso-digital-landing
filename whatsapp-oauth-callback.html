@@ -19,6 +19,7 @@
   </main>
   <script>
     const ORIGIN = 'https://leo556677.github.io';
+    const CHANNEL = 'impulso-meta-oauth';
     const params = new URLSearchParams(window.location.search);
     const payload = {
       type: 'IMPULSO_META_OAUTH_CALLBACK',
@@ -30,15 +31,26 @@
     };
 
     const status = document.getElementById('status');
-    if (!window.opener) {
-      status.textContent = 'No se encontró la ventana de origen. Cierra esta ventana y vuelve a iniciar desde la página DEV.';
+
+    try {
+      if (window.opener) window.opener.postMessage(payload, ORIGIN);
+    } catch (_) {}
+
+    try {
+      const bc = new BroadcastChannel(CHANNEL);
+      bc.postMessage(payload);
+      setTimeout(() => bc.close(), 1500);
+    } catch (_) {}
+
+    if (payload.code) {
+      status.textContent = 'Autorización recibida. Volviendo a Impulso Digital…';
+    } else if (payload.error) {
+      status.textContent = 'Meta devolvió un error de autorización. Puedes volver a la ventana anterior.';
     } else {
-      window.opener.postMessage(payload, ORIGIN);
-      status.textContent = payload.code
-        ? 'Autorización recibida. Puedes volver a la ventana de Impulso Digital.'
-        : 'Meta no devolvió un código de autorización. Puedes volver a la ventana anterior.';
-      setTimeout(() => window.close(), 900);
+      status.textContent = 'Meta no devolvió un código de autorización. Puedes volver a la ventana anterior.';
     }
+
+    setTimeout(() => window.close(), 1200);
   </script>
 </body>
 </html>
