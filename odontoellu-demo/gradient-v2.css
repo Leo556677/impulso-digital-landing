@@ -1,49 +1,33 @@
-/* Odontoellu v0.2 · capa visual para staging */
-:root{
-  --grad-brand:linear-gradient(135deg,#073b7a 0%,#086db9 48%,#12b7df 100%);
-  --grad-soft:linear-gradient(135deg,rgba(7,59,122,.07),rgba(18,183,223,.12));
-  --grad-mesh:radial-gradient(circle at 12% 12%,rgba(18,183,223,.20),transparent 30%),radial-gradient(circle at 86% 8%,rgba(8,109,185,.16),transparent 32%),linear-gradient(180deg,#ffffff 0%,#f6fcff 100%);
-}
-body{background:var(--grad-mesh);background-attachment:fixed}
-.demo-ribbon{background:linear-gradient(90deg,#052f63,#0b67af 52%,#13aed5);box-shadow:0 6px 24px rgba(5,47,99,.16)}
-.site-header{background:linear-gradient(120deg,rgba(255,255,255,.96),rgba(232,248,254,.91));border-bottom:1px solid rgba(16,168,216,.22);box-shadow:0 10px 30px rgba(8,58,114,.07)}
-.brand-copy strong{background:linear-gradient(90deg,#0b4a8b,#10a8d8);-webkit-background-clip:text;background-clip:text;color:transparent}
-.location-chip{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#0a65b6,#78d5ef) border-box;border:1px solid transparent;box-shadow:0 8px 24px rgba(8,58,114,.08)}
-.hero{position:relative;margin-top:1.2rem;margin-bottom:1rem;border-radius:38px;padding-left:clamp(1rem,3vw,2.4rem);padding-right:clamp(1rem,3vw,2.4rem);background:radial-gradient(circle at 8% 15%,rgba(120,213,239,.28),transparent 32%),radial-gradient(circle at 96% 12%,rgba(10,101,182,.16),transparent 34%),linear-gradient(135deg,rgba(255,255,255,.96),rgba(239,250,255,.9));box-shadow:0 30px 80px rgba(7,43,85,.10);border:1px solid rgba(120,213,239,.30);overflow:hidden}
-.hero::before{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:linear-gradient(135deg,rgba(10,101,182,.12),rgba(16,168,216,.08));filter:blur(3px);left:-100px;bottom:-130px;pointer-events:none}
-h1 span{background:linear-gradient(90deg,#0875c6 0%,#11add8 58%,#5dd5ee 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 10px 35px rgba(16,168,216,.10)}
-.eyebrow::before{background:linear-gradient(90deg,#0a65b6,#2fc7e8)}
-.button-primary{background:linear-gradient(120deg,#0758a0 0%,#078dcc 54%,#16bddd 100%);box-shadow:0 16px 34px rgba(7,117,198,.28),inset 0 1px rgba(255,255,255,.25)}
-.button-primary:hover{box-shadow:0 20px 40px rgba(7,117,198,.34)}
-.hero-facts span{background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(231,248,254,.92));border-color:rgba(16,168,216,.18);box-shadow:0 8px 22px rgba(8,58,114,.06)}
-.hero-media{border:1px solid rgba(120,213,239,.44);box-shadow:0 30px 70px rgba(7,43,85,.18)}
-.hero-media::before{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(145deg,rgba(7,43,85,.08),transparent 45%,rgba(16,168,216,.08));pointer-events:none}
-.feature-card{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,rgba(10,101,182,.55),rgba(120,213,239,.70)) border-box;border:1px solid transparent;box-shadow:0 16px 42px rgba(8,58,114,.09);transition:transform .18s ease,box-shadow .18s ease}
-.feature-card:hover{transform:translateY(-3px);box-shadow:0 22px 50px rgba(8,58,114,.14)}
-.icon-badge{background:linear-gradient(135deg,#e7f7ff,#d8f6fc);box-shadow:inset 0 0 0 1px rgba(16,168,216,.16)}
-.section-soft{background:radial-gradient(circle at 10% 12%,rgba(120,213,239,.30),transparent 28%),radial-gradient(circle at 88% 18%,rgba(10,101,182,.14),transparent 30%),linear-gradient(135deg,#f9fdff,#eaf8fd)}
-.brand-card{background:radial-gradient(circle at 20% 15%,rgba(120,213,239,.78),transparent 30%),radial-gradient(circle at 88% 80%,rgba(16,168,216,.28),transparent 35%),linear-gradient(135deg,#052f63,#0962a9 58%,#0fa8d2);box-shadow:0 28px 70px rgba(5,47,99,.22)}
-.steps li>span{background:linear-gradient(135deg,#0758a0,#12b7df);box-shadow:0 8px 20px rgba(7,88,160,.22)}
-.notice{background:linear-gradient(135deg,#fffaf0,#fff4d7);border-color:#f0d495;box-shadow:0 10px 25px rgba(117,87,24,.06)}
-.section-booking{background:radial-gradient(circle at 12% 8%,rgba(120,213,239,.24),transparent 27%),radial-gradient(circle at 90% 86%,rgba(16,168,216,.20),transparent 30%),linear-gradient(135deg,#052a57 0%,#07599d 52%,#0a90c1 100%)}
-.booking-form{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,rgba(120,213,239,.85),rgba(255,255,255,.35)) border-box;border:1px solid transparent;box-shadow:0 28px 70px rgba(0,0,0,.22)}
-.booking-rules span{background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.07));backdrop-filter:blur(8px)}
-.location-card{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#0a65b6,#78d5ef) border-box;border:1px solid transparent;box-shadow:0 18px 48px rgba(8,58,114,.10)}
-.button-secondary{background:linear-gradient(135deg,#fafdff,#e8f8fd);border-color:rgba(10,101,182,.28)}
-.site-footer{background:radial-gradient(circle at 82% 20%,rgba(16,168,216,.18),transparent 28%),linear-gradient(135deg,#031f40,#063c72 60%,#075987)}
-.app-dialog{background:linear-gradient(145deg,#ffffff,#f1fbff);border:1px solid rgba(120,213,239,.32)}
-.button-whatsapp{background:linear-gradient(135deg,#128c4f,#25d366);box-shadow:0 12px 28px rgba(37,211,102,.24)}
-.wa-icon{display:block;width:24px;height:24px;fill:currentColor}
-.whatsapp-float{position:fixed;right:18px;bottom:18px;z-index:47;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#128c4f,#25d366);box-shadow:0 16px 35px rgba(18,140,79,.36),0 0 0 5px rgba(255,255,255,.9);transition:transform .18s ease,box-shadow .18s ease}
-.whatsapp-float:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 20px 42px rgba(18,140,79,.42),0 0 0 5px rgba(255,255,255,.94)}
-.whatsapp-float .wa-icon{width:30px;height:30px}
-@media (max-width:640px){
-  body{background:linear-gradient(180deg,#fff,#f3fbff)}
-  .hero{margin-top:.65rem;border-radius:26px;padding-left:.9rem;padding-right:.9rem;background:radial-gradient(circle at 85% 5%,rgba(16,168,216,.18),transparent 30%),linear-gradient(145deg,#ffffff,#edf9fe)}
-  .hero-media{box-shadow:0 22px 48px rgba(7,43,85,.16)}
-  .mobile-cta{left:.65rem;right:5.15rem;background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(235,249,254,.96));border-color:rgba(16,168,216,.22);box-shadow:0 16px 50px rgba(7,43,85,.18)}
-  .mobile-cta .button{width:100%}
-  .whatsapp-float{right:.72rem;bottom:calc(.72rem + env(safe-area-inset-bottom));width:56px;height:56px;box-shadow:0 14px 30px rgba(18,140,79,.34),0 0 0 4px rgba(255,255,255,.94)}
-  .whatsapp-float .wa-icon{width:28px;height:28px}
-}
-@media (prefers-reduced-motion:reduce){.feature-card,.whatsapp-float{transition:none}}
+/* Odontoellu visual 0.3 — capa de override sobre styles.css */
+:root{--v3-blue:#0758a0;--v3-blue2:#0b78c7;--v3-cyan:#20c2e8;--v3-ice:#effbff;--v3-ink:#0b3760;--v3-shadow:0 24px 60px rgba(7,63,112,.13)}
+body{background:radial-gradient(circle at 92% 8%,rgba(32,194,232,.12),transparent 24%),linear-gradient(180deg,#f8fdff 0%,#fff 34%,#f6fbfe 100%)}
+.demo-ribbon{background:linear-gradient(90deg,#064478,#0b78c7 50%,#20c2e8);box-shadow:0 8px 24px rgba(7,88,160,.12)}
+.site-header{height:84px;background:rgba(247,252,255,.82)!important;backdrop-filter:blur(18px) saturate(1.25);border-bottom:1px solid rgba(32,194,232,.13);box-shadow:none;overflow:visible}
+.site-header::after{content:"";position:absolute;left:0;right:0;bottom:-32px;height:32px;background:linear-gradient(to bottom,rgba(247,252,255,.88),rgba(247,252,255,.42),rgba(247,252,255,0));backdrop-filter:blur(5px);pointer-events:none}
+.brand-mark{filter:drop-shadow(0 8px 14px rgba(32,194,232,.15))}.brand-copy strong{color:var(--v3-blue)}
+.hero{position:relative}.hero::before{content:"";position:absolute;inset:7% 0 auto -7%;height:60%;background:radial-gradient(circle,rgba(32,194,232,.11),transparent 65%);z-index:-1}
+.hero h1 span{background:linear-gradient(135deg,#0873c3,#20c2e8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-media{box-shadow:0 28px 65px rgba(7,63,112,.17);border:1px solid rgba(32,194,232,.16)}
+.button-primary{background:linear-gradient(135deg,#086cb9,#20c2e8)!important;box-shadow:0 16px 38px rgba(7,88,160,.27)!important}
+.feature-card{background:linear-gradient(160deg,#fff 0%,#fbfeff 55%,#edfaff 100%)!important;border:1px solid rgba(32,194,232,.22)!important;border-radius:28px!important;box-shadow:0 20px 48px rgba(7,63,112,.08),inset 0 1px 0 rgba(255,255,255,.9)!important;position:relative;overflow:hidden}
+.feature-card::after{content:"";position:absolute;width:110px;height:110px;right:-46px;top:-54px;border-radius:50%;background:radial-gradient(circle,rgba(32,194,232,.22),transparent 70%);pointer-events:none}
+.icon-badge{background:linear-gradient(145deg,#effcff,#d9f6fd)!important;border:1px solid rgba(32,194,232,.2);box-shadow:0 10px 24px rgba(7,88,160,.08)}
+.section-soft{background:linear-gradient(180deg,#f9fdff 0%,#eef9fd 58%,#f7fcff 100%)!important}.brand-card{background:radial-gradient(circle at 22% 16%,rgba(120,223,246,.72),transparent 28%),linear-gradient(135deg,#053968,#0875bd)!important;box-shadow:var(--v3-shadow)!important}
+.location-card{background:linear-gradient(145deg,#fff,#f3fbff)!important;border:1px solid rgba(32,194,232,.2)!important;box-shadow:0 22px 50px rgba(7,63,112,.08)!important}
+.premium-reveal{opacity:0;transform:translateY(32px) scale(.985);transition:opacity .5s ease var(--delay,0ms),transform .5s cubic-bezier(.2,.8,.2,1) var(--delay,0ms)}.premium-reveal.in-view{opacity:1;transform:translateY(0) scale(1)}
+
+/* Se elimina visualmente la sección oscura anterior y se convierte en wizard */
+.section-booking.booking-wizard-section{background:transparent!important;color:var(--v3-ink)!important;padding:4.7rem 0 5.6rem!important}.booking-wizard-section h2,.booking-wizard-section .eyebrow{color:var(--v3-ink)!important}.booking-layout-v3{display:block!important}.booking-wizard{display:grid;gap:1.35rem;max-width:820px;margin:0 auto}
+.service-summary-card{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.15rem;border:1px solid rgba(32,194,232,.22);border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(232,249,255,.94));box-shadow:0 18px 42px rgba(7,63,112,.09);backdrop-filter:blur(14px)}.sticky-service{position:sticky;top:102px;z-index:30}.service-summary-label{display:block;font-size:.71rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:#658097}.service-summary-card strong{color:#073b69;font-size:1.03rem}.service-summary-price{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.55rem .9rem;border-radius:999px;background:linear-gradient(135deg,#086cb9,#20c2e8);color:#fff;font-weight:900;white-space:nowrap;box-shadow:0 12px 28px rgba(7,88,160,.23)}
+.booking-step{display:grid;gap:.9rem;scroll-margin-top:172px}.step-hidden{display:none!important}.step-head{display:flex;gap:.85rem;align-items:flex-start}.step-number{display:grid;place-items:center;width:40px;height:40px;border-radius:999px;background:linear-gradient(135deg,#086cb9,#20c2e8);color:#fff;font-weight:900;box-shadow:0 12px 26px rgba(7,88,160,.22);flex:0 0 auto}.step-head h3{margin:0 0 .16rem;color:#073b69}.step-head p{margin:0;color:#648096}
+.booking-card,.hour-grid,.booking-form-v3{background:linear-gradient(160deg,#fff,#f7fcff)!important;border:1px solid rgba(32,194,232,.2)!important;border-radius:28px!important;box-shadow:0 24px 50px rgba(7,63,112,.08)!important;padding:1.2rem!important;color:var(--v3-ink)!important}
+.calendar-toolbar{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:.65rem;margin-bottom:.8rem}.calendar-toolbar strong{text-align:center;color:#073b69;text-transform:capitalize}.calendar-nav{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;border:1px solid rgba(7,88,160,.12);background:linear-gradient(180deg,#fff,#edf9fd);color:#0758a0;font-size:1.65rem;line-height:1;cursor:pointer}.calendar-nav:disabled{opacity:.28;cursor:not-allowed}.calendar-weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.34rem}.calendar-weekdays{padding:.25rem .15rem .45rem}.calendar-weekdays span{text-align:center;color:#6d879b;font-size:.72rem;font-weight:850}.calendar-day{aspect-ratio:1;border-radius:14px;border:1px solid rgba(7,88,160,.08);background:linear-gradient(180deg,#fff,#f3fbff);color:#0758a0;font-weight:820;cursor:pointer;transition:.16s ease}.calendar-day:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(7,88,160,.09)}.calendar-day.is-outside{visibility:hidden}.calendar-day.is-disabled{opacity:.24;cursor:not-allowed}.calendar-day.is-today{box-shadow:inset 0 0 0 2px rgba(32,194,232,.42)}.calendar-day.is-selected{background:linear-gradient(135deg,#086cb9,#20c2e8);color:#fff;border-color:transparent;box-shadow:0 10px 24px rgba(7,88,160,.24)}
+.hour-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:.72rem}.hour-button{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:16px;border:1px solid rgba(7,88,160,.13);background:linear-gradient(180deg,#fff,#f3fbff);color:#0758a0;font-weight:850;cursor:pointer;box-shadow:0 10px 20px rgba(7,63,112,.045);transition:.16s ease}.hour-button:hover{transform:translateY(-1px)}.time-collapsed{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;border:1px solid rgba(32,194,232,.2);border-radius:22px;background:linear-gradient(135deg,#edfaff,#fff);box-shadow:0 16px 34px rgba(7,63,112,.06)}.time-collapsed span{display:block;font-size:.71rem;text-transform:uppercase;letter-spacing:.1em;color:#688298;font-weight:850}.time-collapsed strong{color:#073b69}.change-link{border:0;background:transparent;color:#0758a0;font-weight:850;cursor:pointer;padding:.45rem .2rem}
+.booking-form-v3 label{color:#074372!important}.booking-form-v3 input:not([type=checkbox]){min-height:56px!important;border-radius:16px!important}.selected-summary{padding:.9rem 1rem;border:1px solid rgba(32,194,232,.2);border-radius:16px;background:linear-gradient(135deg,#eefaff,#fff);color:#084a80;line-height:1.6}.booking-form-v3 button:disabled{opacity:.46;cursor:not-allowed;box-shadow:none!important}
+
+/* CTA flotante: solo el botón azul, sin subcontenedor exterior */
+.mobile-cta{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;padding:0!important;left:.85rem!important;right:5.8rem!important;bottom:calc(.85rem + env(safe-area-inset-bottom))!important;transition:opacity .22s ease,transform .22s ease,visibility .22s ease}.mobile-cta .button{width:100%!important;min-height:60px;border-radius:18px!important;box-shadow:0 18px 44px rgba(7,88,160,.28)!important}.mobile-cta.is-hidden{opacity:0;visibility:hidden;transform:translateY(18px);pointer-events:none}
+.whatsapp-float{right:.85rem!important;bottom:calc(.85rem + env(safe-area-inset-bottom))!important;width:70px!important;height:70px!important;background:linear-gradient(135deg,#24c861,#11a34d)!important;box-shadow:0 18px 42px rgba(17,163,77,.34)!important;border:4px solid rgba(255,255,255,.9)!important}
+
+@media(max-width:640px){html{scroll-padding-top:155px}.site-header{height:88px!important;align-items:flex-end;padding-bottom:1rem!important}.site-header::after{bottom:-30px;height:30px}.hero{padding-top:2.25rem!important;padding-bottom:3.1rem!important;gap:1.05rem!important}.hero-media{min-height:305px!important;border-radius:28px!important}.hero-media img{min-height:305px!important}.hero h1{font-size:clamp(2.55rem,11.7vw,3.9rem)!important;line-height:.98!important}.hero-copy{padding-bottom:1.2rem}.feature-card{padding:1.35rem!important}.sticky-service{top:105px}.service-summary-card{align-items:flex-start;flex-direction:column}.service-summary-price{min-height:auto}.booking-step{scroll-margin-top:170px}.booking-card,.hour-grid,.booking-form-v3{padding:1.05rem!important;border-radius:24px!important}.hour-grid{grid-template-columns:1fr 1fr}.time-collapsed{align-items:flex-start}.calendar-day{border-radius:11px;font-size:.88rem}.section-booking.booking-wizard-section{padding-top:3.5rem!important}.site-footer{padding-bottom:7.4rem!important}}
+@media(prefers-reduced-motion:reduce){.premium-reveal,.mobile-cta,.calendar-day,.hour-button{transition:none!important}}
