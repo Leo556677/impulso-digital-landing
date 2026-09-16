@@ -13,7 +13,7 @@
 
 ## Numeración y cobertura
 
-Cada colección tiene edición, miembros fijos, episodios y total. Filtros y fechas no renumeran. Cambiar alcance exige otra edición. Las 71 piezas constituyen esta propuesta de ciclo, no un máximo de posibilidades, ni 71 guiones aprobados. La recomendación global comienza por PRP fría, continúa las bases frías de los demás servicios y luego desarrolla las preguntas siguientes por servicio/colección. Lunes/miércoles/viernes desde 21/09/2026 es una cadencia referencial editable, no capacidad de producción confirmada.
+Cada colección tiene edición, miembros fijos, episodios y total. Filtros y fechas no renumeran. Cambiar alcance exige otra edición. Las 71 piezas constituyen esta propuesta de ciclo, no un máximo de posibilidades, ni 71 guiones aprobados. Por elección expresa del usuario, las 13 piezas de PRP ocupan las primeras 13 fechas (21/09–19/10/2026). Después continúan los demás servicios conservando su orden relativo. El orden visible sigue las fechas y la numeración de cada colección permanece fija. Lunes/miércoles/viernes desde 21/09/2026 es una cadencia referencial editable, no capacidad de producción confirmada.
 
 La cobertura muestra 8 objetivos × 3 temperaturas y los 3 motivos, 9 categorías, 14 formatos, 15 familias. Distingue intención del plan y uso registrado. Los ceros en metadata heredada no prueban ausencia. RETORNO legado se advierte como relación, no se suma como cuarta temperatura. No se rellena RESERVA sin comprobar ruta/oferta. C5 y familias basadas en testimonios, rutinas, experiencias o experimentos requieren material real. S6 permanece educativo.
 
