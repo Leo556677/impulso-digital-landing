@@ -29,6 +29,74 @@ jobs:
           touch /tmp/impulso-site/.nojekyll
           sed -i 's#https://impulso-digital-landing.vercel.app#https://leo556677.github.io/impulso-digital-landing#g' /tmp/impulso-site/index.html /tmp/impulso-site/robots.txt /tmp/impulso-site/sitemap.xml
 
+      - name: Build Odontoellu WhatsApp preview like Dr. Olano
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageOps
+          import re, shutil
+
+          root = Path('/tmp/impulso-site/odontoellu-demo')
+          assets = root / 'assets'
+          src = assets / 'odontoellu-social-preview.jpg'
+          out = assets / 'odontoellu-og-512.png'
+
+          if not src.exists():
+              raise SystemExit(f'Falta recurso de origen: {src}')
+
+          im = Image.open(src).convert('RGB')
+          # Emula el patrón comprobado de Dr. Olano: imagen social cuadrada 512x512.
+          # Conservamos la zona izquierda, donde están logo, nombre, servicio y oferta.
+          crop_width = min(im.width, round(im.height * 1.27))
+          crop = im.crop((0, 0, crop_width, im.height))
+          fitted = ImageOps.contain(crop, (480, 480), Image.Resampling.LANCZOS)
+          canvas = Image.new('RGB', (512, 512), '#F3FBFE')
+          canvas.paste(fitted, ((512 - fitted.width)//2, (512 - fitted.height)//2))
+          canvas.save(out, format='PNG', optimize=True)
+
+          image_url = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/assets/odontoellu-og-512.png?v=20260916-1'
+          page_base = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/'
+
+          v7 = root / 'v7.html'
+          v8 = root / 'v8.html'
+          shutil.copy2(v7, v8)
+
+          for p in [root/'index.html', root/'compartir.html', v7, v8]:
+              if not p.exists():
+                  continue
+              s = p.read_text(encoding='utf-8')
+              s = s.replace('content="noindex,nofollow"', 'content="noindex,follow,max-image-preview:large"')
+              s = re.sub(r'<meta property="og:image" content="[^"]+">', f'<meta property="og:image" content="{image_url}">', s)
+              s = re.sub(r'<meta property="og:image:url" content="[^"]+">', f'<meta property="og:image:url" content="{image_url}">', s)
+              s = re.sub(r'<meta property="og:image:secure_url" content="[^"]+">', f'<meta property="og:image:secure_url" content="{image_url}">', s)
+              s = re.sub(r'<meta property="og:image:type" content="[^"]+">', '<meta property="og:image:type" content="image/png">', s)
+              s = re.sub(r'<meta property="og:image:width" content="[^"]+">', '<meta property="og:image:width" content="512">', s)
+              s = re.sub(r'<meta property="og:image:height" content="[^"]+">', '<meta property="og:image:height" content="512">', s)
+              s = re.sub(r'<meta name="twitter:image" content="[^"]+">', f'<meta name="twitter:image" content="{image_url}">', s)
+              s = re.sub(r'<link rel="image_src" href="[^"]+">', f'<link rel="image_src" href="{image_url}">', s)
+
+              if 'rel="image_src"' not in s:
+                  marker = '<meta name="theme-color" content="#0758a0">'
+                  if marker in s:
+                      s = s.replace(marker, marker + f'\n  <link rel="image_src" href="{image_url}">')
+              if 'rel="apple-touch-icon"' not in s:
+                  marker = '<meta name="theme-color" content="#0758a0">'
+                  icon_tags = marker + '\n  <link rel="icon" type="image/png" href="assets/odontoellu-og-512.png?v=20260916-1">\n  <link rel="apple-touch-icon" href="assets/odontoellu-og-512.png?v=20260916-1">'
+                  if marker in s:
+                      s = s.replace(marker, icon_tags)
+
+              if p.name == 'v8.html':
+                  direct = page_base + 'v8.html'
+                  s = re.sub(r'<link rel="canonical" href="[^"]+">', f'<link rel="canonical" href="{direct}">', s)
+                  s = re.sub(r'<meta property="og:url" content="[^"]+">', f'<meta property="og:url" content="{direct}">', s)
+                  s = s.replace('VERSIÓN VISUAL 0.7', 'VERSIÓN VISUAL 0.8')
+              p.write_text(s, encoding='utf-8')
+
+          print('Odontoellu social image:', out, out.stat().st_size, 'bytes')
+          print('Direct share page:', v8)
+          PY
+
       - name: Publish gh-pages branch
         run: |
           git config user.name "github-actions[bot]"
