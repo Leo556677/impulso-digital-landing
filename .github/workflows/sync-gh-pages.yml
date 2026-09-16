@@ -33,17 +33,22 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re, shutil
+          import base64, re, shutil
 
           root = Path('/tmp/impulso-site/odontoellu-demo')
           assets = root / 'assets'
           out = assets / 'odontoellu-og-512.png'
-          if out.exists():
-              print('Odontoellu square social image ready:', out, out.stat().st_size, 'bytes')
-          else:
-              print('WARNING: odontoellu-og-512.png not present in source yet')
+          encoded = assets / 'odontoellu-og-512.b64.txt'
 
-          image_url = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/assets/odontoellu-og-512.png?v=20260916-3'
+          # El recurso se guarda en main como texto base64 para conservar los bytes exactos.
+          # En despliegue se reconstruye el PNG cuadrado 512x512, igual al patrón usado por Dr. Olano.
+          if encoded.exists():
+              out.write_bytes(base64.b64decode(encoded.read_text(encoding='ascii').strip()))
+          if not out.exists() or out.stat().st_size < 10000:
+              raise SystemExit(f'OG image missing or too small: {out} ({out.stat().st_size if out.exists() else 0} bytes)')
+          print('Odontoellu square social image ready:', out, out.stat().st_size, 'bytes')
+
+          image_url = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/assets/odontoellu-og-512.png?v=20260916-4'
           page_base = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/'
 
           v7 = root / 'v7.html'
@@ -65,15 +70,12 @@ jobs:
               s = re.sub(r'<meta name="twitter:image" content="[^"]+">', f'<meta name="twitter:image" content="{image_url}">', s)
               s = re.sub(r'<link rel="image_src" href="[^"]+">', f'<link rel="image_src" href="{image_url}">', s)
 
-              if 'rel="image_src"' not in s:
-                  marker = '<meta name="theme-color" content="#0758a0">'
-                  if marker in s:
-                      s = s.replace(marker, marker + f'\n  <link rel="image_src" href="{image_url}">')
-              if 'rel="apple-touch-icon"' not in s:
-                  marker = '<meta name="theme-color" content="#0758a0">'
-                  icon_tags = marker + '\n  <link rel="icon" type="image/png" href="assets/odontoellu-og-512.png?v=20260916-3">\n  <link rel="apple-touch-icon" href="assets/odontoellu-og-512.png?v=20260916-3">'
-                  if marker in s:
-                      s = s.replace(marker, icon_tags)
+              marker = '<meta name="theme-color" content="#0758a0">'
+              if 'rel="image_src"' not in s and marker in s:
+                  s = s.replace(marker, marker + f'\n  <link rel="image_src" href="{image_url}">')
+              if 'rel="apple-touch-icon"' not in s and marker in s:
+                  icon_tags = marker + '\n  <link rel="icon" type="image/png" href="assets/odontoellu-og-512.png?v=20260916-4">\n  <link rel="apple-touch-icon" href="assets/odontoellu-og-512.png?v=20260916-4">'
+                  s = s.replace(marker, icon_tags)
 
               if p.name == 'v8.html':
                   direct = page_base + 'v8.html'
