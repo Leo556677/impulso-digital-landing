@@ -9,7 +9,7 @@
   const statusRibbon = document.querySelector('.demo-ribbon');
   const mapLink = document.querySelector('#ubicacion .button-secondary');
   const mobileCta = document.querySelector('.mobile-cta');
-  const heroInlineCta = document.querySelector('.hero .button[href="#solicitar"]');
+  const heroSection = document.querySelector('.hero');
   const successDialog = document.querySelector('#success-dialog');
   const successSummary = document.querySelector('#success-summary');
   const whatsappLink = document.querySelector('#whatsapp-link');
@@ -194,10 +194,16 @@
   if('IntersectionObserver' in window){
     const revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>entry.target.classList.toggle('in-view',entry.isIntersecting)),{threshold:.2});
     document.querySelectorAll('.premium-reveal').forEach(el=>revealObserver.observe(el));
-    let heroVisible=true,bookingVisible=false;
-    const syncCta=()=>mobileCta?.classList.toggle('is-hidden',heroVisible||bookingVisible);
-    if(heroInlineCta)new IntersectionObserver(entries=>{heroVisible=entries[0].isIntersecting;syncCta();},{threshold:.05}).observe(heroInlineCta);
+    let bookingVisible=false;
+    const syncCta=()=>{
+      const heroBottom=(heroSection?.offsetTop||0)+(heroSection?.offsetHeight||0);
+      const pastHero=window.scrollY>Math.max(120,heroBottom-90);
+      mobileCta?.classList.toggle('is-hidden',!pastHero||bookingVisible);
+    };
     new IntersectionObserver(entries=>{bookingVisible=entries[0].isIntersecting;syncCta();},{threshold:.08}).observe(section);
+    window.addEventListener('scroll',syncCta,{passive:true});
+    window.addEventListener('resize',syncCta);
+    syncCta();
   }
 
   renderCalendar();
