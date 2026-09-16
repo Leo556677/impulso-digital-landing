@@ -206,7 +206,7 @@ $('saveImport').onclick=async()=>{
 };
 
 async function init(){try{
-  ctx=await resolveContentContext({redirect:false});if(params.get('negocio')&&params.get('negocio')!==String(ctx.negocioId))throw Error('No tienes acceso a la marca solicitada. Abre tu panel y elige una empresa autorizada.');
+  ctx=await resolveContentContext({redirect:false});$('planLink').href='./plan-contenido.html?negocio='+encodeURIComponent(ctx.negocioId);if(params.get('negocio')&&params.get('negocio')!==String(ctx.negocioId))throw Error('No tienes acceso a la marca solicitada. Abre tu panel y elige una empresa autorizada.');
   const {data,error}=await sb.from('negocios').select('id,nombre').in('id',ctx.memberships.map(x=>x.negocio_id));if(error)throw error;
   $('company').innerHTML=data.map(n=>`<option value="${esc(n.id)}">${esc(n.nombre)}</option>`).join('');$('company').value=ctx.negocioId;$('company').disabled=false;$('company').onchange=()=>{location.href=`./biblioteca-contenido.html?negocio=${encodeURIComponent($('company').value)}`};
   $('panelLink').href=`./cliente-panel.html?negocio=${encodeURIComponent(ctx.negocioId)}`;$('connection').textContent='Registro conectado · acceso por empresa';$('importButton').disabled=!ctx.canEdit;view=params.get('vista')==='tabla'?'table':'cards';await reload();if(params.get('pieza'))openPiece(params.get('pieza'));
