@@ -4,7 +4,7 @@ export const motivations=['MIEDO','DESEO','OBJECIÓN'];
 export const categories=['C1','C2','C3','C4','C5','C6','C7','C8','C9'];
 export const formats=['TALKING_HEAD','STORYTELLING','FAQ','LISTA','COMPARACIÓN','DIBUJA_Y_EXPLICA','OBJETOS','POV','DEMO_VISUAL','ANATOMÍA_VISUAL','PREGUNTA_RESPUESTA','REACCIÓN','CHECKLIST','TIMELINE'];
 export const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-export function filterEpisodes(plan,f={}){return plan.episodes.filter(e=>['service','audience','objective','motivation'].every(k=>!f[k]||e[k]===f[k])).sort((a,b)=>a.order-b.order)}
+export function filterEpisodes(plan,f={}){return plan.episodes.filter(e=>['service','audience','objective','motivation'].every(k=>!f[k]||e[k]===f[k])).sort((a,b)=>(a.reference_date||'9999-12-31').localeCompare(b.reference_date||'9999-12-31')||a.order-b.order)}
 export function validDate(s){return typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s))&&new Date(s+'T12:00:00Z').toISOString().slice(0,10)===s}
 export function moveDate(plan,key,date){if(date!==null&&!validDate(date))throw Error('Fecha no válida.');const copy=structuredClone(plan),ep=copy.episodes.find(e=>e.key===key);if(!ep)throw Error('Pieza no encontrada.');ep.reference_date=date;return copy}
 export function linkedPiece(ep,pieces,business){return pieces.find(p=>p.id===ep.content_id&&p.negocio_id===business)||null}
