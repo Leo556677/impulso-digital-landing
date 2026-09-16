@@ -29,40 +29,27 @@ jobs:
           touch /tmp/impulso-site/.nojekyll
           sed -i 's#https://impulso-digital-landing.vercel.app#https://leo556677.github.io/impulso-digital-landing#g' /tmp/impulso-site/index.html /tmp/impulso-site/robots.txt /tmp/impulso-site/sitemap.xml
 
-      - name: Build Odontoellu WhatsApp preview like Dr. Olano
+      - name: Configure Odontoellu WhatsApp preview like Dr. Olano
         run: |
-          python3 -m pip install --quiet pillow
           python3 - <<'PY'
           from pathlib import Path
-          from PIL import Image, ImageOps, ImageFile
           import re, shutil
-
-          ImageFile.LOAD_TRUNCATED_IMAGES = True
 
           root = Path('/tmp/impulso-site/odontoellu-demo')
           assets = root / 'assets'
-          src = assets / 'odontoellu-social-preview.jpg'
           out = assets / 'odontoellu-og-512.png'
+          if out.exists():
+              print('Odontoellu square social image ready:', out, out.stat().st_size, 'bytes')
+          else:
+              print('WARNING: odontoellu-og-512.png not present in source yet')
 
-          if not src.exists():
-              raise SystemExit(f'Falta recurso de origen: {src}')
-
-          im = Image.open(src).convert('RGB')
-          # Emula el patrón comprobado de Dr. Olano: imagen social cuadrada 512x512 PNG.
-          # Conservamos la zona izquierda, donde están logo, nombre, servicio y oferta.
-          crop_width = min(im.width, round(im.height * 1.27))
-          crop = im.crop((0, 0, crop_width, im.height))
-          fitted = ImageOps.contain(crop, (480, 480), Image.Resampling.LANCZOS)
-          canvas = Image.new('RGB', (512, 512), '#F3FBFE')
-          canvas.paste(fitted, ((512 - fitted.width)//2, (512 - fitted.height)//2))
-          canvas.save(out, format='PNG', optimize=True)
-
-          image_url = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/assets/odontoellu-og-512.png?v=20260916-2'
+          image_url = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/assets/odontoellu-og-512.png?v=20260916-3'
           page_base = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/'
 
           v7 = root / 'v7.html'
           v8 = root / 'v8.html'
-          shutil.copy2(v7, v8)
+          if v7.exists():
+              shutil.copy2(v7, v8)
 
           for p in [root/'index.html', root/'compartir.html', v7, v8]:
               if not p.exists():
@@ -84,7 +71,7 @@ jobs:
                       s = s.replace(marker, marker + f'\n  <link rel="image_src" href="{image_url}">')
               if 'rel="apple-touch-icon"' not in s:
                   marker = '<meta name="theme-color" content="#0758a0">'
-                  icon_tags = marker + '\n  <link rel="icon" type="image/png" href="assets/odontoellu-og-512.png?v=20260916-2">\n  <link rel="apple-touch-icon" href="assets/odontoellu-og-512.png?v=20260916-2">'
+                  icon_tags = marker + '\n  <link rel="icon" type="image/png" href="assets/odontoellu-og-512.png?v=20260916-3">\n  <link rel="apple-touch-icon" href="assets/odontoellu-og-512.png?v=20260916-3">'
                   if marker in s:
                       s = s.replace(marker, icon_tags)
 
@@ -94,9 +81,6 @@ jobs:
                   s = re.sub(r'<meta property="og:url" content="[^"]+">', f'<meta property="og:url" content="{direct}">', s)
                   s = s.replace('VERSIÓN VISUAL 0.7', 'VERSIÓN VISUAL 0.8')
               p.write_text(s, encoding='utf-8')
-
-          print('Odontoellu social image:', out, out.stat().st_size, 'bytes')
-          print('Direct share page:', v8)
           PY
 
       - name: Publish gh-pages branch
