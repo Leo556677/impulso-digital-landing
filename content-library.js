@@ -2,7 +2,7 @@ import {sb,resolveContentContext,normalizeContentPayload,logoutContentVault} fro
 import {model,fields,filterItems,related,safeUrl,validatePackage,sha256} from './content-library-model.mjs';
 
 const $=id=>document.getElementById(id);
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=v=>String(v??'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 let ctx,items=[],filtered=[],view='cards',draft=null,current=null,ready=false,firstOptions=true;
 const params=new URLSearchParams(location.search),filterKeys=['q',...Object.keys(fields),'from','to'];
