@@ -34,8 +34,10 @@ jobs:
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
           from pathlib import Path
-          from PIL import Image, ImageOps
+          from PIL import Image, ImageOps, ImageFile
           import re, shutil
+
+          ImageFile.LOAD_TRUNCATED_IMAGES = True
 
           root = Path('/tmp/impulso-site/odontoellu-demo')
           assets = root / 'assets'
@@ -46,7 +48,7 @@ jobs:
               raise SystemExit(f'Falta recurso de origen: {src}')
 
           im = Image.open(src).convert('RGB')
-          # Emula el patrón comprobado de Dr. Olano: imagen social cuadrada 512x512.
+          # Emula el patrón comprobado de Dr. Olano: imagen social cuadrada 512x512 PNG.
           # Conservamos la zona izquierda, donde están logo, nombre, servicio y oferta.
           crop_width = min(im.width, round(im.height * 1.27))
           crop = im.crop((0, 0, crop_width, im.height))
@@ -55,7 +57,7 @@ jobs:
           canvas.paste(fitted, ((512 - fitted.width)//2, (512 - fitted.height)//2))
           canvas.save(out, format='PNG', optimize=True)
 
-          image_url = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/assets/odontoellu-og-512.png?v=20260916-1'
+          image_url = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/assets/odontoellu-og-512.png?v=20260916-2'
           page_base = 'https://leo556677.github.io/impulso-digital-landing/odontoellu-demo/'
 
           v7 = root / 'v7.html'
@@ -82,7 +84,7 @@ jobs:
                       s = s.replace(marker, marker + f'\n  <link rel="image_src" href="{image_url}">')
               if 'rel="apple-touch-icon"' not in s:
                   marker = '<meta name="theme-color" content="#0758a0">'
-                  icon_tags = marker + '\n  <link rel="icon" type="image/png" href="assets/odontoellu-og-512.png?v=20260916-1">\n  <link rel="apple-touch-icon" href="assets/odontoellu-og-512.png?v=20260916-1">'
+                  icon_tags = marker + '\n  <link rel="icon" type="image/png" href="assets/odontoellu-og-512.png?v=20260916-2">\n  <link rel="apple-touch-icon" href="assets/odontoellu-og-512.png?v=20260916-2">'
                   if marker in s:
                       s = s.replace(marker, icon_tags)
 
