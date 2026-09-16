@@ -1,0 +1,49 @@
+/* Odontoellu v0.2 · capa visual para staging */
+:root{
+  --grad-brand:linear-gradient(135deg,#073b7a 0%,#086db9 48%,#12b7df 100%);
+  --grad-soft:linear-gradient(135deg,rgba(7,59,122,.07),rgba(18,183,223,.12));
+  --grad-mesh:radial-gradient(circle at 12% 12%,rgba(18,183,223,.20),transparent 30%),radial-gradient(circle at 86% 8%,rgba(8,109,185,.16),transparent 32%),linear-gradient(180deg,#ffffff 0%,#f6fcff 100%);
+}
+body{background:var(--grad-mesh);background-attachment:fixed}
+.demo-ribbon{background:linear-gradient(90deg,#052f63,#0b67af 52%,#13aed5);box-shadow:0 6px 24px rgba(5,47,99,.16)}
+.site-header{background:linear-gradient(120deg,rgba(255,255,255,.96),rgba(232,248,254,.91));border-bottom:1px solid rgba(16,168,216,.22);box-shadow:0 10px 30px rgba(8,58,114,.07)}
+.brand-copy strong{background:linear-gradient(90deg,#0b4a8b,#10a8d8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.location-chip{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#0a65b6,#78d5ef) border-box;border:1px solid transparent;box-shadow:0 8px 24px rgba(8,58,114,.08)}
+.hero{position:relative;margin-top:1.2rem;margin-bottom:1rem;border-radius:38px;padding-left:clamp(1rem,3vw,2.4rem);padding-right:clamp(1rem,3vw,2.4rem);background:radial-gradient(circle at 8% 15%,rgba(120,213,239,.28),transparent 32%),radial-gradient(circle at 96% 12%,rgba(10,101,182,.16),transparent 34%),linear-gradient(135deg,rgba(255,255,255,.96),rgba(239,250,255,.9));box-shadow:0 30px 80px rgba(7,43,85,.10);border:1px solid rgba(120,213,239,.30);overflow:hidden}
+.hero::before{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:linear-gradient(135deg,rgba(10,101,182,.12),rgba(16,168,216,.08));filter:blur(3px);left:-100px;bottom:-130px;pointer-events:none}
+h1 span{background:linear-gradient(90deg,#0875c6 0%,#11add8 58%,#5dd5ee 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 10px 35px rgba(16,168,216,.10)}
+.eyebrow::before{background:linear-gradient(90deg,#0a65b6,#2fc7e8)}
+.button-primary{background:linear-gradient(120deg,#0758a0 0%,#078dcc 54%,#16bddd 100%);box-shadow:0 16px 34px rgba(7,117,198,.28),inset 0 1px rgba(255,255,255,.25)}
+.button-primary:hover{box-shadow:0 20px 40px rgba(7,117,198,.34)}
+.hero-facts span{background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(231,248,254,.92));border-color:rgba(16,168,216,.18);box-shadow:0 8px 22px rgba(8,58,114,.06)}
+.hero-media{border:1px solid rgba(120,213,239,.44);box-shadow:0 30px 70px rgba(7,43,85,.18)}
+.hero-media::before{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(145deg,rgba(7,43,85,.08),transparent 45%,rgba(16,168,216,.08));pointer-events:none}
+.feature-card{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,rgba(10,101,182,.55),rgba(120,213,239,.70)) border-box;border:1px solid transparent;box-shadow:0 16px 42px rgba(8,58,114,.09);transition:transform .18s ease,box-shadow .18s ease}
+.feature-card:hover{transform:translateY(-3px);box-shadow:0 22px 50px rgba(8,58,114,.14)}
+.icon-badge{background:linear-gradient(135deg,#e7f7ff,#d8f6fc);box-shadow:inset 0 0 0 1px rgba(16,168,216,.16)}
+.section-soft{background:radial-gradient(circle at 10% 12%,rgba(120,213,239,.30),transparent 28%),radial-gradient(circle at 88% 18%,rgba(10,101,182,.14),transparent 30%),linear-gradient(135deg,#f9fdff,#eaf8fd)}
+.brand-card{background:radial-gradient(circle at 20% 15%,rgba(120,213,239,.78),transparent 30%),radial-gradient(circle at 88% 80%,rgba(16,168,216,.28),transparent 35%),linear-gradient(135deg,#052f63,#0962a9 58%,#0fa8d2);box-shadow:0 28px 70px rgba(5,47,99,.22)}
+.steps li>span{background:linear-gradient(135deg,#0758a0,#12b7df);box-shadow:0 8px 20px rgba(7,88,160,.22)}
+.notice{background:linear-gradient(135deg,#fffaf0,#fff4d7);border-color:#f0d495;box-shadow:0 10px 25px rgba(117,87,24,.06)}
+.section-booking{background:radial-gradient(circle at 12% 8%,rgba(120,213,239,.24),transparent 27%),radial-gradient(circle at 90% 86%,rgba(16,168,216,.20),transparent 30%),linear-gradient(135deg,#052a57 0%,#07599d 52%,#0a90c1 100%)}
+.booking-form{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,rgba(120,213,239,.85),rgba(255,255,255,.35)) border-box;border:1px solid transparent;box-shadow:0 28px 70px rgba(0,0,0,.22)}
+.booking-rules span{background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.07));backdrop-filter:blur(8px)}
+.location-card{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#0a65b6,#78d5ef) border-box;border:1px solid transparent;box-shadow:0 18px 48px rgba(8,58,114,.10)}
+.button-secondary{background:linear-gradient(135deg,#fafdff,#e8f8fd);border-color:rgba(10,101,182,.28)}
+.site-footer{background:radial-gradient(circle at 82% 20%,rgba(16,168,216,.18),transparent 28%),linear-gradient(135deg,#031f40,#063c72 60%,#075987)}
+.app-dialog{background:linear-gradient(145deg,#ffffff,#f1fbff);border:1px solid rgba(120,213,239,.32)}
+.button-whatsapp{background:linear-gradient(135deg,#128c4f,#25d366);box-shadow:0 12px 28px rgba(37,211,102,.24)}
+.wa-icon{display:block;width:24px;height:24px;fill:currentColor}
+.whatsapp-float{position:fixed;right:18px;bottom:18px;z-index:47;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#128c4f,#25d366);box-shadow:0 16px 35px rgba(18,140,79,.36),0 0 0 5px rgba(255,255,255,.9);transition:transform .18s ease,box-shadow .18s ease}
+.whatsapp-float:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 20px 42px rgba(18,140,79,.42),0 0 0 5px rgba(255,255,255,.94)}
+.whatsapp-float .wa-icon{width:30px;height:30px}
+@media (max-width:640px){
+  body{background:linear-gradient(180deg,#fff,#f3fbff)}
+  .hero{margin-top:.65rem;border-radius:26px;padding-left:.9rem;padding-right:.9rem;background:radial-gradient(circle at 85% 5%,rgba(16,168,216,.18),transparent 30%),linear-gradient(145deg,#ffffff,#edf9fe)}
+  .hero-media{box-shadow:0 22px 48px rgba(7,43,85,.16)}
+  .mobile-cta{left:.65rem;right:5.15rem;background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(235,249,254,.96));border-color:rgba(16,168,216,.22);box-shadow:0 16px 50px rgba(7,43,85,.18)}
+  .mobile-cta .button{width:100%}
+  .whatsapp-float{right:.72rem;bottom:calc(.72rem + env(safe-area-inset-bottom));width:56px;height:56px;box-shadow:0 14px 30px rgba(18,140,79,.34),0 0 0 4px rgba(255,255,255,.94)}
+  .whatsapp-float .wa-icon{width:28px;height:28px}
+}
+@media (prefers-reduced-motion:reduce){.feature-card,.whatsapp-float{transition:none}}
