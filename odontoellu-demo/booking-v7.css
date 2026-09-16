@@ -1,1 +1,20 @@
-placeholder
+/* Odontoellu 0.7 · microajustes premium */
+.v5-sticky-cta{bottom:calc(.8rem + env(safe-area-inset-bottom))!important}
+.v5-sticky-cta .button{min-height:58px!important;height:58px!important}
+.v5-whatsapp-float{width:58px!important;height:58px!important;bottom:calc(.8rem + env(safe-area-inset-bottom))!important;border-width:3px!important}
+.v5-whatsapp-float svg{width:30px!important;height:30px!important}
+.v5-hero-media{overflow:hidden!important}
+.v5-hero-media img{transform-origin:center center;will-change:transform;animation:v7HeroBreath 6s ease-in-out infinite}
+@keyframes v7HeroBreath{0%,100%{transform:scale(1.01)}50%{transform:scale(1.05)}}
+.v6-location-head{align-items:center!important}
+.v6-location-icon{align-self:center!important;display:grid!important;place-items:center!important}
+.v6-location-icon svg{display:block!important}
+@media(max-width:640px){
+  .v5-sticky-cta{right:5.05rem!important;bottom:calc(.8rem + env(safe-area-inset-bottom))!important}
+  .v5-sticky-cta .button{min-height:58px!important;height:58px!important}
+  .v5-whatsapp-float{width:58px!important;height:58px!important;bottom:calc(.8rem + env(safe-area-inset-bottom))!important}
+  .v5-whatsapp-float svg{width:30px!important;height:30px!important}
+  .v6-location-head{align-items:center!important}
+  .v6-location-icon{width:54px!important;height:54px!important;flex:0 0 54px!important}
+}
+@media(prefers-reduced-motion:reduce){.v5-hero-media img{animation:none!important;transform:none!important}}
