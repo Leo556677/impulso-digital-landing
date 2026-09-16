@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es-PE">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel demo · Odontoellu</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="panel-page">
+  <section class="panel-login" id="panel-login">
+    <form class="login-card" id="login-form">
+      <span class="eyebrow">Prototipo</span>
+      <h1>Panel Odontoellu</h1>
+      <p>Acceso simulado para explorar la gestión de solicitudes. No es autenticación real.</p>
+      <label for="demo-pin"><strong>PIN demo</strong></label>
+      <input id="demo-pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" required />
+      <button class="button button-primary button-block" type="submit">Entrar</button>
+      <p class="demo-code">Código para esta prueba: <strong>2468</strong></p>
+      <p><a href="index.html">← Volver a la landing</a></p>
+    </form>
+  </section>
+
+  <main id="panel-app" hidden>
+    <div class="panel-shell">
+      <div class="panel-top">
+        <div><span class="eyebrow">Panel demo</span><h1>Solicitudes</h1></div>
+        <div><a class="button button-secondary" href="index.html">Ver landing</a> <button class="button button-primary" id="logout" type="button">Salir</button></div>
+      </div>
+      <div class="panel-note"><strong>Importante:</strong> este panel usa datos guardados en el mismo navegador. La versión real necesitará backend, autenticación y autorización por rol.</div>
+      <div class="panel-toolbar">
+        <select id="status-filter" aria-label="Filtrar por estado">
+          <option value="todos">Todos los estados</option><option value="pendiente">Pendiente</option><option value="confirmada">Confirmada</option><option value="rechazada">Rechazada</option><option value="cancelada">Cancelada</option>
+        </select>
+        <input id="search" type="search" placeholder="Buscar por nombre o celular" aria-label="Buscar solicitudes" />
+        <button class="button button-secondary" id="clear-demo" type="button">Borrar datos demo</button>
+      </div>
+      <div class="panel-table-wrap" id="table-wrap"></div>
+    </div>
+  </main>
+  <script src="panel.js" defer></script>
+</body>
+</html>
