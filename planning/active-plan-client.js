@@ -1,6 +1,6 @@
 import {sb as baseSb,resolveContentContext} from '../content-vault-client.js?v=20260917-vinculos';
 
-const ACTIVE_PLAN_KEY='olano-editorial-v9';
+const ACTIVE_PLAN_KEY='olano-editorial-v10';
 
 function wrapBuilder(builder){
  return new Proxy(builder,{
