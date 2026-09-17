@@ -57,7 +57,15 @@ function renderStats(weekVisible,globalVisible){
 }
 function compactCard(s){
  const d=dval(s.publish_date),item=itemFor(s),svc=s.service_key||'MARCA',expanded=openId===s.id;
- return `<article class="day" data-service="${svc}" data-open="${expanded?'true':'false'}"><button class="day-toggle" type="button" data-slot="${esc(s.id)}" aria-expanded="${expanded}"><div class="day-head"><div><div class="dow">${dayNames[d.getDay()]}</div><div class="date">${d.getDate()}</div></div><span class="chevron">${svgChevron(expanded?'up':'down')}</span></div><span class="role">${esc(roleNames[s.strategic_role]||s.strategic_role)}</span><div class="service">${esc(serviceName(s))}</div><h2 class="title">${esc(item?.title||'Necesidad editorial')}</h2><div class="compact-badges"><span class="badge ${badgeClass(s)}">${esc(statusNames[s.status]||s.status)}</span>${s.editorial_key?`<span class="badge">${esc(s.editorial_key)}</span>`:''}${item?.editorial_key?`<span class="badge">${esc(item.editorial_key)}</span>`:''}</div></button></article>`;
+ return `<article class="day" data-service="${svc}" data-open="${expanded?'true':'false'}"><button class="day-toggle" type="button" data-slot="${esc(s.id)}" aria-expanded="${expanded}"><div class="day-head"><div class="date">${d.getDate()}</div><span class="chevron">${svgChevron(expanded?'up':'down')}</span></div><span class="role">${esc(roleNames[s.strategic_role]||s.strategic_role)}</span><div class="service">${esc(serviceName(s))}</div><h2 class="title">${esc(item?.title||'Necesidad editorial')}</h2><div class="compact-badges"><span class="badge ${badgeClass(s)}">${esc(statusNames[s.status]||s.status)}</span>${s.editorial_key?`<span class="badge">${esc(s.editorial_key)}</span>`:''}${item?.editorial_key?`<span class="badge">${esc(item.editorial_key)}</span>`:''}</div></button></article>`;
+}
+function addDays(iso,n){const d=dval(iso);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+function calendarColumns(cal){
+ const byDate=new Map(slotsFor(cal).map(s=>[s.publish_date,s]));
+ return Array.from({length:7},(_,i)=>{const date=addDays(cal.week_start,i),slot=byDate.get(date)||null;return{date,slot}})
+}
+function emptyDay(date){
+ return `<article class="day day-empty"><div class="day-toggle"><div class="day-head"><div class="date">${dval(date).getDate()}</div></div><div class="empty-day-copy">Sin resultado con estos filtros</div></div></article>`;
 }
 function renderDetail(){
  const host=document.querySelector('#dayDetail'),s=slots.find(x=>x.id===openId);if(!s||s.calendario_id!==calendars[current]?.id||!matches(s)){host.hidden=true;host.innerHTML='';return}
@@ -67,10 +75,12 @@ function renderDetail(){
  host.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function render(){
- if(!calendars.length)return;const global=globalMatches(),week=currentMatches(),root=document.querySelector('#calendarApp');
+ if(!calendars.length)return;const global=globalMatches(),week=currentMatches(),root=document.querySelector('#calendarApp'),cal=calendars[current],visibleIds=new Set(week.map(s=>s.id));
  document.querySelector('#strategyResultCount').textContent=`${global.length} resultado${global.length===1?'':'s'} · ${new Set(global.map(x=>x.calendario_id)).size} semana${new Set(global.map(x=>x.calendario_id)).size===1?'':'s'}`;
  renderWeekNav();renderStats(week,global);
- root.innerHTML=week.length?week.map(compactCard).join(''):'<div class="empty-filter">No hay contenidos que coincidan en esta semana. Usa las flechas o modifica los filtros.</div>';
+ const headers=['LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO','DOMINGO'].map(x=>`<div class="weekday-label">${x}</div>`).join('');
+ const cards=calendarColumns(cal).map(({date,slot})=>slot&&visibleIds.has(slot.id)?compactCard(slot):emptyDay(date)).join('');
+ root.innerHTML=`<div class="calendar-shell"><div class="weekday-row">${headers}</div><div class="day-grid">${cards}</div></div>`;
  root.querySelectorAll('[data-slot]').forEach(btn=>btn.addEventListener('click',()=>{openId=openId===btn.dataset.slot?null:btn.dataset.slot;render()}));
  renderDetail();
 }
