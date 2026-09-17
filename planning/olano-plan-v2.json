@@ -1,0 +1,3665 @@
+{
+  "business_slug": "dr-olano",
+  "cadence": "Una pieza por servicio cada día natural desde el 21/09/2026; fechas referenciales ajustables, sin obligación de grabar o publicar.",
+  "coverage_notes": [
+    "RESERVA: pendiente de validar recorrido y oferta concretos; no se crea una pieza de conversión solo para llenar la matriz.",
+    "C5 / prueba social: requiere captura real voluntaria según 20; ninguna señal de foro cuenta como caso propio.",
+    "STORYTELLING y REACCIÓN: pendientes de relato o material real adecuado; no se inventa una historia.",
+    "Familias B, H, I, L, M, N, O: evaluar encaje y requisitos antes de usarlas; urgencia, causa, experimentos y experiencia no se fabrican.",
+    "S6: incluido en todos los objetivos y audiencias pertinentes por indicación de Kal del 17/09/2026. Confirmar oferta, ejecutor y ruta antes de usar afirmaciones comerciales; no atribuir la cirugía a Dr. Olano sin confirmación.",
+    "El total es el alcance de esta edición, no todas las combinaciones posibles. Nuevos temas abren otra colección; no renumeran las cerradas."
+  ],
+  "edition": "2 · seis servicios en paralelo",
+  "episodes": [
+    {
+      "audience": "FRÍA",
+      "category": "C1",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "POV",
+      "hook_candidates": [
+        "C",
+        "J",
+        "E"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-01",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "DESEO",
+      "objective": "IDENTIFICACIÓN",
+      "order": 1,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué significa mejorar el aspecto de la piel y cómo se define un objetivo concreto?",
+      "question": "¿Qué significa mejorar el aspecto de la piel y cómo se define un objetivo concreto?",
+      "reference_date": "2026-09-21",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-1",
+      "service": "S2",
+      "signal": "Mi piel se ve apagada y quiero que vuelva a verse más fresca.",
+      "source_ids": [
+        "P1"
+      ],
+      "title": "Piel apagada: precisar el objetivo",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C2",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "DIBUJA_Y_EXPLICA",
+      "hook_candidates": [
+        "C",
+        "G",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-04",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 2,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Por qué hay que diferenciar granitos activos, manchas y marcas antes de elegir?",
+      "question": "¿Por qué hay que diferenciar granitos activos, manchas y marcas antes de elegir?",
+      "reference_date": "2026-09-22",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-1",
+      "service": "S2",
+      "signal": "Ya me preocupan tanto las marcas que dejaron los granitos como los granitos mismos.",
+      "source_ids": [
+        "P2"
+      ],
+      "title": "Granitos, manchas y marcas",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C6",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "DIBUJA_Y_EXPLICA",
+      "hook_candidates": [
+        "G",
+        "C",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-17",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EDUCACIÓN",
+      "order": 3,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué ocurre en cada etapa del PRP y qué molestias conviene conversar antes?",
+      "question": "¿Qué ocurre en cada etapa del PRP y qué molestias conviene conversar antes?",
+      "reference_date": "2026-09-23",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-1",
+      "service": "S2",
+      "signal": "Un relato describe la extracción y la aplicación, con molestias distintas según la zona.",
+      "source_ids": [
+        "P1"
+      ],
+      "title": "¿Duele el PRP? Entender las etapas",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C3",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "OBJETOS",
+      "hook_candidates": [
+        "F",
+        "D",
+        "C"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-08",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 4,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué límites de evidencia tiene el PRP cuando esperas borrar arrugas?",
+      "question": "¿Qué límites de evidencia tiene el PRP cuando esperas borrar arrugas?",
+      "reference_date": "2026-09-24",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-1",
+      "service": "S2",
+      "signal": "Pensé que con el plasma se me iban a borrar las arrugas.",
+      "source_ids": [
+        "P5"
+      ],
+      "title": "Arrugas: qué esperas que cambie",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C1",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "POV",
+      "hook_candidates": [
+        "C",
+        "J",
+        "E"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-01",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "DESEO",
+      "objective": "IDENTIFICACIÓN",
+      "order": 5,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué se evalúa cuando alguien consulta porque parece molesto sin estarlo?",
+      "question": "¿Qué se evalúa cuando alguien consulta porque parece molesto sin estarlo?",
+      "reference_date": "2026-09-21",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S1-coleccion-1",
+      "service": "S1",
+      "signal": "Me preguntan por qué estoy molesto cuando yo estoy tranquilo.",
+      "source_ids": [
+        "T1"
+      ],
+      "title": "Parecer molesto sin estarlo",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C6",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "TALKING_HEAD",
+      "hook_candidates": [
+        "G",
+        "C",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-02",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EDUCACIÓN",
+      "order": 6,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué puede resolver en una primera consulta y qué decisiones vendrían después?",
+      "question": "¿Qué puede resolver en una primera consulta y qué decisiones vendrían después?",
+      "reference_date": "2026-09-22",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S1-coleccion-1",
+      "service": "S1",
+      "signal": "Nunca me he puesto nada y no sé ni qué tendría que preguntar.",
+      "source_ids": [
+        "T1"
+      ],
+      "title": "Tu primera consulta",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C8",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "COMPARACIÓN",
+      "hook_candidates": [
+        "F",
+        "K",
+        "D"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-05",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 7,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué diferencias de objetivo conviene entender antes de cambiar de producto a procedimiento?",
+      "question": "¿Qué diferencias de objetivo conviene entender antes de cambiar de producto a procedimiento?",
+      "reference_date": "2026-09-23",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S1-coleccion-1",
+      "service": "S1",
+      "signal": "Ya probé cremas y esas líneas de la frente siguen molestándome.",
+      "source_ids": [
+        "T3"
+      ],
+      "title": "Cremas y procedimientos: objetivos",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C1",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "POV",
+      "hook_candidates": [
+        "E",
+        "C",
+        "J"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-06",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "DESEO",
+      "objective": "IDENTIFICACIÓN",
+      "order": 8,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo describir un cambio discreto sin prometer que nadie lo notará?",
+      "question": "¿Cómo describir un cambio discreto sin prometer que nadie lo notará?",
+      "reference_date": "2026-09-24",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S1-coleccion-1",
+      "service": "S1",
+      "signal": "Quiero que el cambio sea sutil, que no parezca que me hice de todo.",
+      "source_ids": [
+        "T3"
+      ],
+      "title": "Qué entiendes por un cambio discreto",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C1",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "POV",
+      "hook_candidates": [
+        "E",
+        "C",
+        "J"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-03",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "DESEO",
+      "objective": "IDENTIFICACIÓN",
+      "order": 9,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué se revisa antes de ofrecer una limpieza como respuesta a la textura?",
+      "question": "¿Qué se revisa antes de ofrecer una limpieza como respuesta a la textura?",
+      "reference_date": "2026-09-21",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-1",
+      "service": "S3",
+      "signal": "He probado varias bases y ninguna me deja la piel como esperaba.",
+      "source_ids": [
+        "H2"
+      ],
+      "title": "Textura que se nota con maquillaje",
+      "total": 7
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C2",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "PREGUNTA_RESPUESTA",
+      "hook_candidates": [
+        "C",
+        "G",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-04",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 10,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué expectativas y hábitos conviene revisar antes de sumar un servicio?",
+      "question": "¿Qué expectativas y hábitos conviene revisar antes de sumar un servicio?",
+      "reference_date": "2026-09-22",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-1",
+      "service": "S3",
+      "signal": "Empecé a cuidar mi piel y aun así con maquillaje la sigo viendo igual.",
+      "source_ids": [
+        "H2"
+      ],
+      "title": "Qué esperas de una sesión",
+      "total": 7
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C6",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "DIBUJA_Y_EXPLICA",
+      "hook_candidates": [
+        "C",
+        "F",
+        "G"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-06",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EDUCACIÓN",
+      "order": 11,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se explica qué se hará y qué puede variar según la piel?",
+      "question": "¿Cómo se explica qué se hará y qué puede variar según la piel?",
+      "reference_date": "2026-09-23",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-1",
+      "service": "S3",
+      "signal": "Iba a hacerme mi primera limpieza, pero leí que puedes salir muy roja y lo estoy dudando.",
+      "source_ids": [
+        "H3"
+      ],
+      "title": "Qué se hará según tu piel",
+      "total": 7
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C1",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "TALKING_HEAD",
+      "hook_candidates": [
+        "E",
+        "C",
+        "J"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-09",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo.",
+        "Verificar recursos reales y consentimiento cuando corresponda; no simular una atención como registro real."
+      ],
+      "motivation": "DESEO",
+      "objective": "IDENTIFICACIÓN",
+      "order": 12,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo describir la experiencia real sin prometer resultados extraordinarios?",
+      "question": "¿Cómo describir la experiencia real sin prometer resultados extraordinarios?",
+      "reference_date": "2026-09-24",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-1",
+      "service": "S3",
+      "signal": "También me gusta tener un rato para mí, aunque no espere una transformación.",
+      "source_ids": [
+        "H4"
+      ],
+      "title": "Un momento de cuidado",
+      "total": 7
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C3",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "OBJETOS",
+      "hook_candidates": [
+        "C",
+        "F",
+        "D"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-10",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EDUCACIÓN",
+      "order": 13,
+      "part": 5,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué merece evaluación antes de probar extracción o recetas por cuenta propia?",
+      "question": "¿Qué merece evaluación antes de probar extracción o recetas por cuenta propia?",
+      "reference_date": "2026-09-25",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-1",
+      "service": "S3",
+      "signal": "Busco algo para los puntos negros que pueda hacerme en casa.",
+      "source_ids": [
+        "H5"
+      ],
+      "title": "Antes de extraer puntos negros",
+      "total": 7
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C3",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "PREGUNTA_RESPUESTA",
+      "hook_candidates": [
+        "F",
+        "D",
+        "C"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-11",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "ALCANCE",
+      "order": 14,
+      "part": 6,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo explicar el cuidado según la piel sin asociarlo a un género?",
+      "question": "¿Cómo explicar el cuidado según la piel sin asociarlo a un género?",
+      "reference_date": "2026-09-26",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-1",
+      "service": "S3",
+      "signal": "Soy hombre y no sé si tengo que buscar productos o tratamientos distintos.",
+      "source_ids": [
+        "H6"
+      ],
+      "title": "Cuidado sin etiquetas de género",
+      "total": 7
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C2",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "LISTA",
+      "hook_candidates": [
+        "F",
+        "C",
+        "G"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-12",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 15,
+      "part": 7,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se conversa sobre cuidados sencillos y por qué una sesión no reemplaza todo lo demás?",
+      "question": "¿Cómo se conversa sobre cuidados sencillos y por qué una sesión no reemplaza todo lo demás?",
+      "reference_date": "2026-09-27",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-1",
+      "service": "S3",
+      "signal": "Me recomendaron varias cosas, pero no soy constante con una rutina larga.",
+      "source_ids": [
+        "H6"
+      ],
+      "title": "La sesión y los cuidados cotidianos",
+      "total": 7
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C1",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "POV",
+      "hook_candidates": [
+        "C",
+        "J",
+        "E"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-01",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "DESEO",
+      "objective": "IDENTIFICACIÓN",
+      "order": 16,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué se evalúa cuando los hábitos no producen el cambio que espera en esa zona?",
+      "question": "¿Qué se evalúa cuando los hábitos no producen el cambio que espera en esa zona?",
+      "reference_date": "2026-09-21",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S4-coleccion-1",
+      "service": "S4",
+      "signal": "Entreno y cuido lo que como, pero esa zona debajo del mentón sigue molestándome.",
+      "source_ids": [
+        "L1"
+      ],
+      "title": "Los hábitos y el contorno de la papada",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C4",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "LISTA",
+      "hook_candidates": [
+        "J",
+        "A",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-02",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EDUCACIÓN",
+      "order": 17,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué información individual hace falta antes de dar una respuesta?",
+      "question": "¿Qué información individual hace falta antes de dar una respuesta?",
+      "reference_date": "2026-09-22",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S4-coleccion-1",
+      "service": "S4",
+      "signal": "Cada vez que pregunto por mi papada me dicen que haga ejercicio, pero eso ya lo hago.",
+      "source_ids": [
+        "L1"
+      ],
+      "title": "Qué se necesita evaluar en tu caso",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C3",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "FAQ",
+      "hook_candidates": [
+        "D",
+        "C",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-06",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EDUCACIÓN",
+      "order": 18,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Por qué hace falta evaluar a la persona además de conocer su edad?",
+      "question": "¿Por qué hace falta evaluar a la persona además de conocer su edad?",
+      "reference_date": "2026-09-23",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S4-coleccion-1",
+      "service": "S4",
+      "signal": "Como soy joven pensé que no tendría ese problema con la piel, pero ya no estoy seguro.",
+      "source_ids": [
+        "L3"
+      ],
+      "title": "La edad no responde todo",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C2",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "OBJETOS",
+      "hook_candidates": [
+        "F",
+        "C",
+        "G"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-09",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 19,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se explica la diferencia de objetivos sin diagnosticar por pantalla?",
+      "question": "¿Cómo se explica la diferencia de objetivos sin diagnosticar por pantalla?",
+      "reference_date": "2026-09-24",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S4-coleccion-1",
+      "service": "S4",
+      "signal": "Bajé mucho de peso y no sé si lo que me molesta es grasa o piel que quedó suelta.",
+      "source_ids": [
+        "L5"
+      ],
+      "title": "Grasa y piel: objetivos distintos",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C1",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "POV",
+      "hook_candidates": [
+        "C",
+        "J",
+        "E"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-01",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "DESEO",
+      "objective": "IDENTIFICACIÓN",
+      "order": 20,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué conviene evaluar cuando el cuerpo cambió y las mejillas no como esperabas?",
+      "question": "¿Qué conviene evaluar cuando el cuerpo cambió y las mejillas no como esperabas?",
+      "reference_date": "2026-09-21",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-1",
+      "service": "S5",
+      "signal": "Entreno, bajé de peso y mis cachetes siguen siendo lo primero que veo en mi cara.",
+      "source_ids": [
+        "B1"
+      ],
+      "title": "Bajar de peso y seguir viendo mejillas",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C3",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "ANATOMÍA_VISUAL",
+      "hook_candidates": [
+        "F",
+        "D",
+        "C"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-02",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EDUCACIÓN",
+      "order": 21,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Una cara redonda en alguien delgado basta para pensar en bichectomía?",
+      "question": "¿Una cara redonda en alguien delgado basta para pensar en bichectomía?",
+      "reference_date": "2026-09-22",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-1",
+      "service": "S5",
+      "signal": "Soy delgado, pero mi cara siempre ha sido redonda.",
+      "source_ids": [
+        "B5"
+      ],
+      "title": "Una cara redonda no define indicación",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C1",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "PREGUNTA_RESPUESTA",
+      "hook_candidates": [
+        "E",
+        "C",
+        "J"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-03",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "DESEO",
+      "objective": "IDENTIFICACIÓN",
+      "order": 22,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué se busca cambiar exactamente cuando alguien dice que no le gusta salir en fotos?",
+      "question": "¿Qué se busca cambiar exactamente cuando alguien dice que no le gusta salir en fotos?",
+      "reference_date": "2026-09-23",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-1",
+      "service": "S5",
+      "signal": "En las fotos me fijo en mis cachetes y termino sin querer salir.",
+      "source_ids": [
+        "B2"
+      ],
+      "title": "Qué quieres cambiar en tus fotos",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C2",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "DIBUJA_Y_EXPLICA",
+      "hook_candidates": [
+        "C",
+        "G",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-04",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 23,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué hay que conversar si el volumen que molesta aparece sobre todo al sonreír?",
+      "question": "¿Qué hay que conversar si el volumen que molesta aparece sobre todo al sonreír?",
+      "reference_date": "2026-09-24",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-1",
+      "service": "S5",
+      "signal": "Cuando sonrío siento que mis mejillas ocupan toda la foto.",
+      "source_ids": [
+        "B2"
+      ],
+      "title": "El volumen al sonreír",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C6",
+      "clinical_orientation": [
+        "C2"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "PREGUNTA_RESPUESTA",
+      "hook_candidates": [
+        "G",
+        "C",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "RIN-02",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Alcance editorial ampliado por Kal el 17/09/2026. Antes de afirmar oferta, técnica, disponibilidad o ejecutor, confirmar esos datos; no inventarlos. Verificar ruta de evaluación/reserva antes de usar CTA comercial."
+      ],
+      "motivation": "MIEDO",
+      "objective": "IDENTIFICACIÓN",
+      "order": 24,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué se puede resolver en una primera evaluación sin comprometerse a operar?",
+      "question": "¿Qué se puede resolver en una primera evaluación sin comprometerse a operar?",
+      "reference_date": "2026-09-21",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S6-coleccion-1",
+      "service": "S6",
+      "signal": "Llevo años pensando en mi nariz, pero todavía no sé por dónde empezar.",
+      "source_ids": [
+        "R1"
+      ],
+      "title": "Qué resuelve una primera evaluación",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C2",
+      "clinical_orientation": [
+        "C2"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "DIBUJA_Y_EXPLICA",
+      "hook_candidates": [
+        "F",
+        "C",
+        "G"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "RIN-03",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Alcance editorial ampliado por Kal el 17/09/2026. Antes de afirmar oferta, técnica, disponibilidad o ejecutor, confirmar esos datos; no inventarlos. Verificar ruta de evaluación/reserva antes de usar CTA comercial."
+      ],
+      "motivation": "DESEO",
+      "objective": "ALCANCE",
+      "order": 25,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo conversar sobre la vista frontal y el perfil antes de una rinoplastia?",
+      "question": "¿Cómo conversar sobre la vista frontal y el perfil antes de una rinoplastia?",
+      "reference_date": "2026-09-22",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S6-coleccion-1",
+      "service": "S6",
+      "signal": "De perfil me gusta, pero de frente no me veo como esperaba.",
+      "source_ids": [
+        "R2"
+      ],
+      "title": "Vista frontal y perfil",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C2",
+      "clinical_orientation": [
+        "C2"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "LISTA",
+      "hook_candidates": [
+        "F",
+        "C",
+        "G"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "RIN-06",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Alcance editorial ampliado por Kal el 17/09/2026. Antes de afirmar oferta, técnica, disponibilidad o ejecutor, confirmar esos datos; no inventarlos. Verificar ruta de evaluación/reserva antes de usar CTA comercial."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "CONSIDERACIÓN",
+      "order": 26,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué preguntas prácticas puede llevar a consulta después de escuchar una experiencia?",
+      "question": "¿Qué preguntas prácticas puede llevar a consulta después de escuchar una experiencia?",
+      "reference_date": "2026-09-23",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S6-coleccion-1",
+      "service": "S6",
+      "signal": "Quiero que alguien que ya pasó por esto me cuente cómo se organizó.",
+      "source_ids": [
+        "R3"
+      ],
+      "title": "Convertir una experiencia en preguntas",
+      "total": 4
+    },
+    {
+      "audience": "FRÍA",
+      "category": "C8",
+      "clinical_orientation": [
+        "C2"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "ANATOMÍA_VISUAL",
+      "hook_candidates": [
+        "F",
+        "K",
+        "D"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "RIN-08",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Alcance editorial ampliado por Kal el 17/09/2026. Antes de afirmar oferta, técnica, disponibilidad o ejecutor, confirmar esos datos; no inventarlos. Verificar ruta de evaluación/reserva antes de usar CTA comercial."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 27,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué se conversa sobre respiración y apariencia antes de elegir el procedimiento?",
+      "question": "¿Qué se conversa sobre respiración y apariencia antes de elegir el procedimiento?",
+      "reference_date": "2026-09-24",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S6-coleccion-1",
+      "service": "S6",
+      "signal": "Quiero respirar mejor, pero también quiero entender si mi nariz se verá distinta.",
+      "source_ids": [
+        "R4"
+      ],
+      "title": "Respiración y apariencia",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C4",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "PREGUNTA_RESPUESTA",
+      "hook_candidates": [
+        "F",
+        "J",
+        "A"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-07",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "AUTORIDAD",
+      "order": 28,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué debe evaluarse y qué evidencia se necesita antes de ofrecer PRP para manchas?",
+      "question": "¿Qué debe evaluarse y qué evidencia se necesita antes de ofrecer PRP para manchas?",
+      "reference_date": "2026-09-25",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-2",
+      "service": "S2",
+      "signal": "Yo lo que quiero es tratar mis manchas. ¿El plasma tiene sentido para eso?",
+      "source_ids": [
+        "P4"
+      ],
+      "title": "PRP para manchas: qué evidencia pedir",
+      "total": 3
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C3",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "FAQ",
+      "hook_candidates": [
+        "D",
+        "C",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-09",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EDUCACIÓN",
+      "order": 29,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿A qué se refieren con “rebote” al hablar de PRP y qué se sabe realmente?",
+      "question": "¿A qué se refieren con “rebote” al hablar de PRP y qué se sabe realmente?",
+      "reference_date": "2026-09-26",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-2",
+      "service": "S2",
+      "signal": "Si después dejo el plasma, ¿se me puede poner peor la piel?",
+      "source_ids": [
+        "P5"
+      ],
+      "title": "¿Qué significa “rebote”?",
+      "total": 3
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C8",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "LISTA",
+      "hook_candidates": [
+        "K",
+        "D",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-06",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "CONSIDERACIÓN",
+      "order": 30,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué debe incluir una explicación del precio y del plan propuesto?",
+      "question": "¿Qué debe incluir una explicación del precio y del plan propuesto?",
+      "reference_date": "2026-09-27",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-2",
+      "service": "S2",
+      "signal": "Me dicen cuánto vale una sesión, pero necesito entender qué estaría pagando.",
+      "source_ids": [
+        "P3"
+      ],
+      "title": "Qué debe explicar un presupuesto",
+      "total": 3
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C6",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "DEMO_VISUAL",
+      "hook_candidates": [
+        "G",
+        "C",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-02",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Verificar recursos reales y consentimiento cuando corresponda; no simular una atención como registro real."
+      ],
+      "motivation": "MIEDO",
+      "objective": "CONFIANZA",
+      "order": 31,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se muestra el acompañamiento real durante una sesión?",
+      "question": "¿Cómo se muestra el acompañamiento real durante una sesión?",
+      "reference_date": "2026-09-28",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-3",
+      "service": "S2",
+      "signal": "Me tranquiliza que me expliquen y estén pendientes de cómo me siento.",
+      "source_ids": [
+        "P1"
+      ],
+      "title": "Acompañamiento durante la sesión",
+      "total": 2
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C4",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "A",
+        "F",
+        "J"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-03",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Verificar recursos reales y consentimiento cuando corresponda; no simular una atención como registro real."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "CONFIANZA",
+      "order": 32,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué parte del proceso puede mostrarse para que entienda quién atiende y cómo se trabaja?",
+      "question": "¿Qué parte del proceso puede mostrarse para que entienda quién atiende y cómo se trabaja?",
+      "reference_date": "2026-09-29",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-3",
+      "service": "S2",
+      "signal": "Es mi primer tratamiento y necesito confiar en el lugar antes de dejar que me hagan algo.",
+      "source_ids": [
+        "P2"
+      ],
+      "title": "Quién atiende y qué puedes comprobar",
+      "total": 2
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C7",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "FAQ",
+      "hook_candidates": [
+        "C",
+        "J",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-05",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EDUCACIÓN",
+      "order": 33,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué posibles efectos y cuidados deben conversarse antes de programar?",
+      "question": "¿Qué posibles efectos y cuidados deben conversarse antes de programar?",
+      "reference_date": "2026-09-30",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-4",
+      "service": "S2",
+      "signal": "Me interesa el plasma, pero no quiero enterarme después de que podría quedar con moretones.",
+      "source_ids": [
+        "P3"
+      ],
+      "title": "Moretones y organización personal",
+      "total": 4
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C7",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Revisar la evaluación desde perfil → landing → servicio; comprobar ruta real antes de fijar CTA.",
+      "evidence_status": "Señal releída",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "C",
+        "J",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-11",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EVALUACIÓN",
+      "order": 34,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo conversar sobre tiempos y límites antes de programar por un evento?",
+      "question": "¿Cómo conversar sobre tiempos y límites antes de programar por un evento?",
+      "reference_date": "2026-10-01",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S2-coleccion-4",
+      "service": "S2",
+      "signal": "Se acerca mi cumpleaños y quería hacer algo para verme la piel más fresca.",
+      "source_ids": [
+        "P6"
+      ],
+      "title": "PRP antes de un evento",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C2",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "TIMELINE",
+      "hook_candidates": [
+        "C",
+        "G",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-10",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 35,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se acuerda de antemano qué observar y cómo revisar la evolución?",
+      "question": "¿Cómo se acuerda de antemano qué observar y cómo revisar la evolución?",
+      "reference_date": "2026-10-02",
+      "relationship": "RETORNO",
+      "series": "S2-coleccion-4",
+      "service": "S2",
+      "signal": "Al principio me vi distinta, pero después volví a notar las líneas.",
+      "source_ids": [
+        "P5"
+      ],
+      "title": "Cómo revisar un cambio con criterio",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C4",
+      "clinical_orientation": [
+        "C4"
+      ],
+      "content_id": null,
+      "cta": "Revisar la evaluación desde perfil → landing → servicio; comprobar ruta real antes de fijar CTA.",
+      "evidence_status": "Señal releída",
+      "format": "PREGUNTA_RESPUESTA",
+      "hook_candidates": [
+        "A",
+        "F",
+        "J"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "PRP-12",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EVALUACIÓN",
+      "order": 36,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué información permite revisar si tiene sentido continuar con el plan?",
+      "question": "¿Qué información permite revisar si tiene sentido continuar con el plan?",
+      "reference_date": "2026-10-03",
+      "relationship": "RETORNO",
+      "series": "S2-coleccion-4",
+      "service": "S2",
+      "signal": "Siento la piel hidratada, pero esperaba algo más evidente.",
+      "source_ids": [
+        "P6"
+      ],
+      "title": "Qué conversar antes de continuar",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C7",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "FAQ",
+      "hook_candidates": [
+        "J",
+        "F",
+        "C"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-03",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "MIEDO",
+      "objective": "CONSIDERACIÓN",
+      "order": 37,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se conversa sobre movimiento y resultado esperado?",
+      "question": "¿Cómo se conversa sobre movimiento y resultado esperado?",
+      "reference_date": "2026-09-25",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S1-coleccion-2",
+      "service": "S1",
+      "signal": "Me molestan esas líneas, pero no quiero dejar de expresarme como siempre.",
+      "source_ids": [
+        "T2"
+      ],
+      "title": "Movimiento y expresión propia",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C3",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "TIMELINE",
+      "hook_candidates": [
+        "C",
+        "F",
+        "D"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-04",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EDUCACIÓN",
+      "order": 38,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué se debe explicar sobre el efecto temporal y la decisión de repetir?",
+      "question": "¿Qué se debe explicar sobre el efecto temporal y la decisión de repetir?",
+      "reference_date": "2026-09-26",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S1-coleccion-2",
+      "service": "S1",
+      "signal": "Si empiezo y después ya no quiero seguir, ¿qué pasa?",
+      "source_ids": [
+        "T2"
+      ],
+      "title": "Efecto temporal y repetición",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C4",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "F",
+        "J",
+        "A"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-07",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "MIEDO",
+      "objective": "CONFIANZA",
+      "order": 39,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué puede observar y preguntar antes de su primera aplicación?",
+      "question": "¿Qué puede observar y preguntar antes de su primera aplicación?",
+      "reference_date": "2026-09-27",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S1-coleccion-2",
+      "service": "S1",
+      "signal": "Quiero probar por primera vez, pero necesito saber dónde me van a atender bien.",
+      "source_ids": [
+        "T4"
+      ],
+      "title": "Qué comprobar antes de aplicarte",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C8",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "LISTA",
+      "hook_candidates": [
+        "F",
+        "K",
+        "D"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-08",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "CONSIDERACIÓN",
+      "order": 40,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se explica un presupuesto sin ofrecer una dosis o plan sin evaluar?",
+      "question": "¿Cómo se explica un presupuesto sin ofrecer una dosis o plan sin evaluar?",
+      "reference_date": "2026-09-28",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S1-coleccion-2",
+      "service": "S1",
+      "signal": "Antes de animarme quiero entender cuánto me costaría tratar lo que me molesta.",
+      "source_ids": [
+        "T4"
+      ],
+      "title": "Entender el presupuesto",
+      "total": 4
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C4",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Revisar la evaluación desde perfil → landing → servicio; comprobar ruta real antes de fijar CTA.",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "DIBUJA_Y_EXPLICA",
+      "hook_candidates": [
+        "A",
+        "F",
+        "J"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-09",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EVALUACIÓN",
+      "order": 41,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se explica por qué se propone cada zona y cómo se acuerda el plan?",
+      "question": "¿Cómo se explica por qué se propone cada zona y cómo se acuerda el plan?",
+      "reference_date": "2026-09-29",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S1-coleccion-3",
+      "service": "S1",
+      "signal": "Yo solo quería tratar el entrecejo; no entendí por qué me propusieron más zonas.",
+      "source_ids": [
+        "T5"
+      ],
+      "title": "Acordar el plan y las zonas",
+      "total": 4
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C6",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "F",
+        "G",
+        "C"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-10",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EDUCACIÓN",
+      "order": 42,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué información y contacto de seguimiento debe tener desde antes de aplicarse?",
+      "question": "¿Qué información y contacto de seguimiento debe tener desde antes de aplicarse?",
+      "reference_date": "2026-09-30",
+      "relationship": "RETORNO",
+      "series": "S1-coleccion-3",
+      "service": "S1",
+      "signal": "Es mi primera vez y esa sensación de tirantez me tiene pendiente de la frente.",
+      "source_ids": [
+        "T5"
+      ],
+      "title": "Cómo quedará organizado el seguimiento",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C2",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "ANATOMÍA_VISUAL",
+      "hook_candidates": [
+        "G",
+        "F",
+        "C"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-11",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "MIEDO",
+      "objective": "AUTORIDAD",
+      "order": 43,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se prepara la evaluación y el seguimiento de frente, cejas y expresión?",
+      "question": "¿Cómo se prepara la evaluación y el seguimiento de frente, cejas y expresión?",
+      "reference_date": "2026-10-01",
+      "relationship": "RETORNO",
+      "series": "S1-coleccion-3",
+      "service": "S1",
+      "signal": "Quería suavizar la frente y ahora me preocupa cómo se ven mis cejas.",
+      "source_ids": [
+        "T6"
+      ],
+      "title": "Frente, cejas y expresión",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C7",
+      "clinical_orientation": [
+        "C3"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "PREGUNTA_RESPUESTA",
+      "hook_candidates": [
+        "J",
+        "F",
+        "C"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BOT-12",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EDUCACIÓN",
+      "order": 44,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué debe explicar una evaluación de seguimiento antes de proponer otra intervención?",
+      "question": "¿Qué debe explicar una evaluación de seguimiento antes de proponer otra intervención?",
+      "reference_date": "2026-10-02",
+      "relationship": "RETORNO",
+      "series": "S1-coleccion-3",
+      "service": "S1",
+      "signal": "Me dicen que pueden corregirlo, pero me da miedo que quede peor.",
+      "source_ids": [
+        "T6"
+      ],
+      "title": "Consultar antes de otra intervención",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C4",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "F",
+        "J",
+        "A"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-01",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "CONFIANZA",
+      "order": 45,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué información del centro y del responsable puede comprobar antes de reservar?",
+      "question": "¿Qué información del centro y del responsable puede comprobar antes de reservar?",
+      "reference_date": "2026-09-28",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-2",
+      "service": "S3",
+      "signal": "Quiero hacerme una limpieza, pero primero necesito un lugar que tenga todo en regla.",
+      "source_ids": [
+        "H1"
+      ],
+      "title": "Quién realizará la limpieza",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C8",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "COMPARACIÓN",
+      "hook_candidates": [
+        "F",
+        "K",
+        "D"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-02",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "CONSIDERACIÓN",
+      "order": 46,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué debería comparar además del nombre y el precio?",
+      "question": "¿Qué debería comparar además del nombre y el precio?",
+      "reference_date": "2026-09-29",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-2",
+      "service": "S3",
+      "signal": "Ya decidí hacerme una limpieza; lo que necesito son buenas opciones para elegir.",
+      "source_ids": [
+        "H1"
+      ],
+      "title": "Comparar algo más que el precio",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C7",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "FAQ",
+      "hook_candidates": [
+        "C",
+        "J",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-05",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "MIEDO",
+      "objective": "CONFIANZA",
+      "order": 47,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué antecedentes de la piel y de la experiencia anterior deben conversar?",
+      "question": "¿Qué antecedentes de la piel y de la experiencia anterior deben conversar?",
+      "reference_date": "2026-09-30",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-2",
+      "service": "S3",
+      "signal": "La última limpieza me dejó marcas varios días y ahora me da miedo repetir.",
+      "source_ids": [
+        "H3"
+      ],
+      "title": "Miedo a otra experiencia agresiva",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C4",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "TIMELINE",
+      "hook_candidates": [
+        "F",
+        "J",
+        "A"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-07",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "AUTORIDAD",
+      "order": 48,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué cambio y duración se pueden explicar sin exagerar ni garantizar?",
+      "question": "¿Qué cambio y duración se pueden explicar sin exagerar ni garantizar?",
+      "reference_date": "2026-10-01",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-2",
+      "service": "S3",
+      "signal": "Si el cambio se nota tan poquito tiempo, quiero entender si a mí me compensa.",
+      "source_ids": [
+        "H4"
+      ],
+      "title": "Cambios y duración sin promesas",
+      "total": 4
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C7",
+      "clinical_orientation": [],
+      "content_id": null,
+      "cta": "Revisar la evaluación desde perfil → landing → servicio; comprobar ruta real antes de fijar CTA.",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "C",
+        "J",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "HID-08",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Confirmar alcance real de limpieza/aparatología. No atribuir marca Hydrafacial ni equipo."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EVALUACIÓN",
+      "order": 49,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué debe conversar antes de programar un tratamiento previo a un evento?",
+      "question": "¿Qué debe conversar antes de programar un tratamiento previo a un evento?",
+      "reference_date": "2026-10-02",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S3-coleccion-3",
+      "service": "S3",
+      "signal": "Tengo un evento y no quiero estrenar una limpieza justo cuando necesito verme bien.",
+      "source_ids": [
+        "H4"
+      ],
+      "title": "Limpieza antes de un evento",
+      "total": 1
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C4",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "ANATOMÍA_VISUAL",
+      "hook_candidates": [
+        "J",
+        "A",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-05",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "MIEDO",
+      "objective": "AUTORIDAD",
+      "order": 50,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué se revisa sobre la piel antes de hablar de retirar grasa?",
+      "question": "¿Qué se revisa sobre la piel antes de hablar de retirar grasa?",
+      "reference_date": "2026-09-25",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S4-coleccion-2",
+      "service": "S4",
+      "signal": "Me preocupa quitar la papada y que después quede la piel floja.",
+      "source_ids": [
+        "L3"
+      ],
+      "title": "La piel también debe evaluarse",
+      "total": 3
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C8",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "COMPARACIÓN",
+      "hook_candidates": [
+        "D",
+        "F",
+        "K"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-07",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "CONSIDERACIÓN",
+      "order": 51,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué hace útil una experiencia y qué límites tiene como prueba para tu caso?",
+      "question": "¿Qué hace útil una experiencia y qué límites tiene como prueba para tu caso?",
+      "reference_date": "2026-09-26",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S4-coleccion-2",
+      "service": "S4",
+      "signal": "Quiero escuchar a alguien que se la hizo y que no esté cobrando por recomendarla.",
+      "source_ids": [
+        "L4"
+      ],
+      "title": "Lo que un testimonio no puede probar",
+      "total": 3
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C6",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "DIBUJA_Y_EXPLICA",
+      "hook_candidates": [
+        "G",
+        "C",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-08",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "MIEDO",
+      "objective": "CONFIANZA",
+      "order": 52,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué preguntas debe cubrir una conversación honesta sobre el procedimiento?",
+      "question": "¿Qué preguntas debe cubrir una conversación honesta sobre el procedimiento?",
+      "reference_date": "2026-09-27",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S4-coleccion-2",
+      "service": "S4",
+      "signal": "Antes de decidir quiero saber cuánto gastaron, qué les molestó y si volverían a hacerlo.",
+      "source_ids": [
+        "L4"
+      ],
+      "title": "Preguntas sobre la cirugía con cánulas",
+      "total": 3
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C7",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Revisar la evaluación desde perfil → landing → servicio; comprobar ruta real antes de fijar CTA.",
+      "evidence_status": "Señal releída",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "J",
+        "F",
+        "C"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-03",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EVALUACIÓN",
+      "order": 53,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué compatibilidad con el trabajo debe hablar antes de programar el procedimiento?",
+      "question": "¿Qué compatibilidad con el trabajo debe hablar antes de programar el procedimiento?",
+      "reference_date": "2026-09-28",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S4-coleccion-3",
+      "service": "S4",
+      "signal": "Me indicaron usar faja, pero con mi trabajo no sé cómo cumplirlo.",
+      "source_ids": [
+        "L2"
+      ],
+      "title": "Recuperación y trabajo",
+      "total": 5
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C7",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal releída",
+      "format": "PREGUNTA_RESPUESTA",
+      "hook_candidates": [
+        "F",
+        "C",
+        "J"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-04",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EDUCACIÓN",
+      "order": 54,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Con quién debe revisar el plan cuando no puede cumplir una indicación?",
+      "question": "¿Con quién debe revisar el plan cuando no puede cumplir una indicación?",
+      "reference_date": "2026-09-29",
+      "relationship": "RETORNO",
+      "series": "S4-coleccion-3",
+      "service": "S4",
+      "signal": "Estoy pensando usarla solo de noche porque de día trabajo.",
+      "source_ids": [
+        "L2"
+      ],
+      "title": "Si no puedes cumplir una indicación",
+      "total": 5
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C3",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "ANATOMÍA_VISUAL",
+      "hook_candidates": [
+        "C",
+        "F",
+        "D"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-10",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 55,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué límites se debían conversar cuando la preocupación era piel suelta?",
+      "question": "¿Qué límites se debían conversar cuando la preocupación era piel suelta?",
+      "reference_date": "2026-09-30",
+      "relationship": "RETORNO",
+      "series": "S4-coleccion-3",
+      "service": "S4",
+      "signal": "Yo esperaba que se viera más firme, pero no quedé contento.",
+      "source_ids": [
+        "L5"
+      ],
+      "title": "Cuando te preocupa la piel suelta",
+      "total": 5
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C4",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Revisar la evaluación desde perfil → landing → servicio; comprobar ruta real antes de fijar CTA.",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "J",
+        "A",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-11",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EVALUACIÓN",
+      "order": 56,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo debe quedar claro el seguimiento desde antes de reservar?",
+      "question": "¿Cómo debe quedar claro el seguimiento desde antes de reservar?",
+      "reference_date": "2026-10-01",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S4-coleccion-3",
+      "service": "S4",
+      "signal": "Después del procedimiento me quedé con dudas y sentí que nadie me estaba haciendo seguimiento.",
+      "source_ids": [
+        "L6"
+      ],
+      "title": "Acordar controles antes de decidir",
+      "total": 5
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C7",
+      "clinical_orientation": [
+        "C5"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "LISTA",
+      "hook_candidates": [
+        "J",
+        "F",
+        "C"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "LIP-12",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Cirugía con cánulas. No confundir con inyectables ni diagnosticar por imagen."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EDUCACIÓN",
+      "order": 57,
+      "part": 5,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué información y canal de revisión deberían acordarse?",
+      "question": "¿Qué información y canal de revisión deberían acordarse?",
+      "reference_date": "2026-10-02",
+      "relationship": "RETORNO",
+      "series": "S4-coleccion-3",
+      "service": "S4",
+      "signal": "Pregunté por WhatsApp y me dijeron que espere, pero sigo sin entender lo que veo.",
+      "source_ids": [
+        "L6"
+      ],
+      "title": "Qué comunicar en una revisión",
+      "total": 5
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C7",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "C",
+        "J",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-05",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "MIEDO",
+      "objective": "CONSIDERACIÓN",
+      "order": 58,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué información necesita alguien antes de decidir un cambio que lleva tiempo pensando?",
+      "question": "¿Qué información necesita alguien antes de decidir un cambio que lleva tiempo pensando?",
+      "reference_date": "2026-09-25",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-2",
+      "service": "S5",
+      "signal": "Llevo tiempo queriendo hacérmela, pero siempre pienso: ¿y si no me gusta?",
+      "source_ids": [
+        "B3"
+      ],
+      "title": "Decidir sin apresurarte",
+      "total": 5
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C3",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "COMPARACIÓN",
+      "hook_candidates": [
+        "D",
+        "C",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-06",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EDUCACIÓN",
+      "order": 59,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué debe evaluarse en ti aunque a tu amiga le haya gustado su resultado?",
+      "question": "¿Qué debe evaluarse en ti aunque a tu amiga le haya gustado su resultado?",
+      "reference_date": "2026-09-26",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-2",
+      "service": "S5",
+      "signal": "Una amiga me animó, pero todavía quiero saber si a mí me conviene.",
+      "source_ids": [
+        "B3"
+      ],
+      "title": "El resultado de tu amiga no es tu plan",
+      "total": 5
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C4",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "OBJETOS",
+      "hook_candidates": [
+        "J",
+        "A",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-08",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "AUTORIDAD",
+      "order": 60,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Quién define cuánto retirar y por qué la cantidad no es una promesa de resultado?",
+      "question": "¿Quién define cuánto retirar y por qué la cantidad no es una promesa de resultado?",
+      "reference_date": "2026-09-27",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-2",
+      "service": "S5",
+      "signal": "¿Yo puedo pedir que me quiten más para que se note más?",
+      "source_ids": [
+        "B4"
+      ],
+      "title": "La cantidad no garantiza el resultado",
+      "total": 5
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C8",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "TIMELINE",
+      "hook_candidates": [
+        "D",
+        "F",
+        "K"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-10",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "MIEDO",
+      "objective": "CONSIDERACIÓN",
+      "order": 61,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué límites tienen las fotos recientes para tomar una decisión a largo plazo?",
+      "question": "¿Qué límites tienen las fotos recientes para tomar una decisión a largo plazo?",
+      "reference_date": "2026-09-28",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-2",
+      "service": "S5",
+      "signal": "Quiero saber cómo podría verse mi cara después, no solo recién operada.",
+      "source_ids": [
+        "B5"
+      ],
+      "title": "Fotos recientes y decisiones duraderas",
+      "total": 5
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C7",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "FAQ",
+      "hook_candidates": [
+        "C",
+        "J",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-11",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EDUCACIÓN",
+      "order": 62,
+      "part": 5,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué conviene aclarar sobre el procedimiento y los cambios de peso posteriores?",
+      "question": "¿Qué conviene aclarar sobre el procedimiento y los cambios de peso posteriores?",
+      "reference_date": "2026-09-29",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-2",
+      "service": "S5",
+      "signal": "Si mis cachetes vuelven a crecer, ¿para qué me la hago?",
+      "source_ids": [
+        "B6"
+      ],
+      "title": "Cambios de peso posteriores",
+      "total": 5
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C4",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Revisar la evaluación desde perfil → landing → servicio; comprobar ruta real antes de fijar CTA.",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "ANATOMÍA_VISUAL",
+      "hook_candidates": [
+        "A",
+        "F",
+        "J"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-09",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EVALUACIÓN",
+      "order": 63,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se evalúa si reducir las mejillas corresponde a tu rostro y a lo que buscas?",
+      "question": "¿Cómo se evalúa si reducir las mejillas corresponde a tu rostro y a lo que buscas?",
+      "reference_date": "2026-09-30",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-3",
+      "service": "S5",
+      "signal": "Veo comentarios de caras muy hundidas y se me quitan las ganas.",
+      "source_ids": [
+        "B5"
+      ],
+      "title": "Qué evalúa el cirujano en tu rostro",
+      "total": 3
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C6",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "DIBUJA_Y_EXPLICA",
+      "hook_candidates": [
+        "C",
+        "F",
+        "G"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-12",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "MIEDO",
+      "objective": "CONFIANZA",
+      "order": 64,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué explicación sobre incisiones y recuperación debe recibir alguien antes de decidir?",
+      "question": "¿Qué explicación sobre incisiones y recuperación debe recibir alguien antes de decidir?",
+      "reference_date": "2026-10-01",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S5-coleccion-3",
+      "service": "S5",
+      "signal": "¿Después se siente o se ve una marca por dentro de la boca?",
+      "source_ids": [
+        "B6"
+      ],
+      "title": "Incisiones y recuperación: qué preguntar",
+      "total": 3
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C2",
+      "clinical_orientation": [
+        "C1"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "TALKING_HEAD",
+      "hook_candidates": [
+        "C",
+        "G",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "BIC-07",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Responsables: Danny Cecil Chilón Idrugo / Reynaldo Vizcarra Rojas. Dr. Olano no ejecuta bichectomía."
+      ],
+      "motivation": "DESEO",
+      "objective": "EDUCACIÓN",
+      "order": 65,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué se debía haber aclarado sobre cuánto cambio era razonable esperar?",
+      "question": "¿Qué se debía haber aclarado sobre cuánto cambio era razonable esperar?",
+      "reference_date": "2026-10-02",
+      "relationship": "RETORNO",
+      "series": "S5-coleccion-3",
+      "service": "S5",
+      "signal": "Me hice la bichectomía, pero yo esperaba que se notara más.",
+      "source_ids": [
+        "B4"
+      ],
+      "title": "Cuánto cambio esperabas",
+      "total": 3
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C4",
+      "clinical_orientation": [
+        "C2"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "F",
+        "J",
+        "A"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "RIN-01",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Alcance editorial ampliado por Kal el 17/09/2026. Antes de afirmar oferta, técnica, disponibilidad o ejecutor, confirmar esos datos; no inventarlos. Verificar ruta de evaluación/reserva antes de usar CTA comercial."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "EVALUACIÓN",
+      "order": 66,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué debe comprobar antes de entregar un adelanto?",
+      "question": "¿Qué debe comprobar antes de entregar un adelanto?",
+      "reference_date": "2026-09-25",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S6-coleccion-2",
+      "service": "S6",
+      "signal": "Por fin junté el dinero para mi nariz. Ahora me da más miedo elegir mal.",
+      "source_ids": [
+        "R1"
+      ],
+      "title": "Qué comprobar antes de un adelanto",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C7",
+      "clinical_orientation": [
+        "C2"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "C",
+        "J",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "RIN-05",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Alcance editorial ampliado por Kal el 17/09/2026. Antes de afirmar oferta, técnica, disponibilidad o ejecutor, confirmar esos datos; no inventarlos. Verificar ruta de evaluación/reserva antes de usar CTA comercial."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "CONSIDERACIÓN",
+      "order": 67,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué necesita planificar para recuperación y trabajo sin prometer una fecha universal?",
+      "question": "¿Qué necesita planificar para recuperación y trabajo sin prometer una fecha universal?",
+      "reference_date": "2026-09-26",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S6-coleccion-2",
+      "service": "S6",
+      "signal": "Lo que me frena es pedir permiso en el trabajo y que me juzguen por operarme.",
+      "source_ids": [
+        "R3"
+      ],
+      "title": "Recuperación y trabajo",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C4",
+      "clinical_orientation": [
+        "C2"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "CHECKLIST",
+      "hook_candidates": [
+        "F",
+        "J",
+        "A"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "RIN-07",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Alcance editorial ampliado por Kal el 17/09/2026. Antes de afirmar oferta, técnica, disponibilidad o ejecutor, confirmar esos datos; no inventarlos. Verificar ruta de evaluación/reserva antes de usar CTA comercial."
+      ],
+      "motivation": "MIEDO",
+      "objective": "AUTORIDAD",
+      "order": 68,
+      "part": 3,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué evidencia ayuda a evaluar al profesional y al lugar?",
+      "question": "¿Qué evidencia ayuda a evaluar al profesional y al lugar?",
+      "reference_date": "2026-09-27",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S6-coleccion-2",
+      "service": "S6",
+      "signal": "El precio no es lo que más me preocupa; quiero encontrar a alguien en quien confiar.",
+      "source_ids": [
+        "R4"
+      ],
+      "title": "Profesional y lugar: qué verificar",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C3",
+      "clinical_orientation": [
+        "C2"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "COMPARACIÓN",
+      "hook_candidates": [
+        "D",
+        "C",
+        "F"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "RIN-09",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Alcance editorial ampliado por Kal el 17/09/2026. Antes de afirmar oferta, técnica, disponibilidad o ejecutor, confirmar esos datos; no inventarlos. Verificar ruta de evaluación/reserva antes de usar CTA comercial."
+      ],
+      "motivation": "DESEO",
+      "objective": "CONFIANZA",
+      "order": 69,
+      "part": 4,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Para qué sirve una simulación y qué no puede asegurar?",
+      "question": "¿Para qué sirve una simulación y qué no puede asegurar?",
+      "reference_date": "2026-09-28",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S6-coleccion-2",
+      "service": "S6",
+      "signal": "Mi nariz no quedó como el dibujo que me habían mostrado.",
+      "source_ids": [
+        "R5"
+      ],
+      "title": "Lo que una simulación no asegura",
+      "total": 4
+    },
+    {
+      "audience": "TIBIA",
+      "category": "C6",
+      "clinical_orientation": [
+        "C2"
+      ],
+      "content_id": null,
+      "cta": "Guardar esta explicación",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "TIMELINE",
+      "hook_candidates": [
+        "F",
+        "G",
+        "C"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "RIN-04",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Alcance editorial ampliado por Kal el 17/09/2026. Antes de afirmar oferta, técnica, disponibilidad o ejecutor, confirmar esos datos; no inventarlos. Verificar ruta de evaluación/reserva antes de usar CTA comercial."
+      ],
+      "motivation": "MIEDO",
+      "objective": "EDUCACIÓN",
+      "order": 70,
+      "part": 1,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Cómo se explica la evolución y qué seguimiento se acuerda desde el inicio?",
+      "question": "¿Cómo se explica la evolución y qué seguimiento se acuerda desde el inicio?",
+      "reference_date": "2026-09-29",
+      "relationship": "RETORNO",
+      "series": "S6-coleccion-3",
+      "service": "S6",
+      "signal": "Cuando me quitaron el protector me gustó; después empecé a verla distinta.",
+      "source_ids": [
+        "R2"
+      ],
+      "title": "Evolución y seguimiento",
+      "total": 2
+    },
+    {
+      "audience": "CALIENTE",
+      "category": "C4",
+      "clinical_orientation": [
+        "C2"
+      ],
+      "content_id": null,
+      "cta": "Propuesta pendiente de verificar oferta y recorrido: Perfil → Landing → Servicio → Fecha → Hora → Datos → Reserva → WhatsApp; no usar hasta confirmar.",
+      "evidence_status": "Señal documentada en dossier; relectura pendiente",
+      "format": "PREGUNTA_RESPUESTA",
+      "hook_candidates": [
+        "F",
+        "J",
+        "A"
+      ],
+      "hook_status": "Familias propuestas; entrada, compatibilidad y rotación pendientes del guion.",
+      "key": "RIN-10",
+      "limits": [
+        "Investigar la respuesta clínica específica con fuentes primarias antes de redactar; auditar con 12.",
+        "La situación es una reformulación editorial, no una cita ni un paciente de Olano.",
+        "Alcance editorial ampliado por Kal el 17/09/2026. Antes de afirmar oferta, técnica, disponibilidad o ejecutor, confirmar esos datos; no inventarlos. Verificar ruta de evaluación/reserva antes de usar CTA comercial."
+      ],
+      "motivation": "OBJECIÓN",
+      "objective": "RESERVA",
+      "order": 71,
+      "part": 2,
+      "payoff": "Resolver esta pregunta con una distinción o criterio verificable: ¿Qué debe quedar explicado sobre controles, revisiones y costos antes de operar?",
+      "question": "¿Qué debe quedar explicado sobre controles, revisiones y costos antes de operar?",
+      "reference_date": "2026-09-30",
+      "relationship": "SIN RELACIÓN PRESUPUESTA",
+      "series": "S6-coleccion-3",
+      "service": "S6",
+      "signal": "No sabía que, si necesitaba otra operación, podía tener que pagar de nuevo.",
+      "source_ids": [
+        "R5"
+      ],
+      "title": "Controles, revisiones y costos",
+      "total": 2
+    }
+  ],
+  "hook_families": [
+    {
+      "id": "A",
+      "name": "INTERRUPCIÓN + PREVENCIÓN / CORRECCIÓN"
+    },
+    {
+      "id": "B",
+      "name": "PROBLEMA + CONSECUENCIA + URGENCIA / PÉRDIDA"
+    },
+    {
+      "id": "C",
+      "name": "CURIOSIDAD + BRECHA DE INFORMACIÓN / DESCUBRIMIENTO"
+    },
+    {
+      "id": "D",
+      "name": "CONTRASTE + REENCUADRE + VERDAD INCÓMODA"
+    },
+    {
+      "id": "E",
+      "name": "AUTOIDENTIFICACIÓN + POV + RELATABILIDAD"
+    },
+    {
+      "id": "F",
+      "name": "EDUCACIÓN + CONSEJO + AUTORIDAD"
+    },
+    {
+      "id": "G",
+      "name": "PROMESA + RESULTADO + RAPIDEZ"
+    },
+    {
+      "id": "H",
+      "name": "DIAGNÓSTICO + CAUSA + ERROR"
+    },
+    {
+      "id": "I",
+      "name": "PRUEBA + EXPERIMENTO + DEMOSTRACIÓN"
+    },
+    {
+      "id": "J",
+      "name": "RETENCIÓN + PATTERN INTERRUPT + OPEN LOOP"
+    },
+    {
+      "id": "K",
+      "name": "COMPARACIÓN + DIFERENCIACIÓN"
+    },
+    {
+      "id": "L",
+      "name": "VOZ DEL CLIENTE + INSIGHT SOCIAL"
+    },
+    {
+      "id": "M",
+      "name": "RUTINA + HÁBITOS + PROCESO PERSONAL"
+    },
+    {
+      "id": "N",
+      "name": "EXPERIENCIA + HISTORIA + APRENDIZAJE PERSONAL"
+    },
+    {
+      "id": "O",
+      "name": "REACCIÓN + CONTROVERSIA + OPINIÓN"
+    }
+  ],
+  "reserve": [
+    {
+      "key": "BIC-13",
+      "question": "¿Qué es lo que realmente quiere cambiar y en qué momentos lo nota?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S5",
+      "source_ids": []
+    },
+    {
+      "key": "BIC-14",
+      "question": "¿Qué preguntar cuando ofrecen dos procedimientos y tú solo buscabas uno?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S5",
+      "source_ids": []
+    },
+    {
+      "key": "BIC-15",
+      "question": "¿Qué organización personal debe conversar antes de fijar fecha?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S5",
+      "source_ids": []
+    },
+    {
+      "key": "BIC-16",
+      "question": "¿Cómo usar una referencia sin asumir que necesita el mismo tratamiento?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S5",
+      "source_ids": []
+    },
+    {
+      "key": "RIN-11",
+      "question": "¿Cómo convertir las referencias en una conversación clara sobre lo que quiere conservar y cambiar?",
+      "reason": "Interpretación de proveedor; no equivale a voz de audiencia.",
+      "service": "S6",
+      "source_ids": [
+        "R6"
+      ]
+    },
+    {
+      "key": "RIN-12",
+      "question": "¿Qué información de seguimiento conviene conocer antes de elegir fecha?",
+      "reason": "Interpretación de proveedor; no equivale a voz de audiencia.",
+      "service": "S6",
+      "source_ids": [
+        "R6"
+      ]
+    },
+    {
+      "key": "RIN-13",
+      "question": "¿Qué merece conversarse si la preocupación aparece sobre todo en ciertas fotos?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S6",
+      "source_ids": []
+    },
+    {
+      "key": "RIN-14",
+      "question": "¿Cómo comunicar qué rasgos quiere conservar?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S6",
+      "source_ids": []
+    },
+    {
+      "key": "RIN-15",
+      "question": "¿Qué plan individual necesita conversar respecto a lentes y actividades?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S6",
+      "source_ids": []
+    },
+    {
+      "key": "RIN-16",
+      "question": "¿Qué diferencia debe conversar entre volver a actividades y ver la evolución del resultado?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S6",
+      "source_ids": []
+    },
+    {
+      "key": "BOT-13",
+      "question": "¿Por qué la evaluación debe responder a una preocupación real y no a una edad viral?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S1",
+      "source_ids": []
+    },
+    {
+      "key": "BOT-14",
+      "question": "¿Qué información necesita para decidir sobre continuidad sin compromiso obligatorio?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S1",
+      "source_ids": []
+    },
+    {
+      "key": "BOT-15",
+      "question": "¿Cómo explicar en palabras sencillas la diferencia entre toxina y relleno?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S1",
+      "source_ids": []
+    },
+    {
+      "key": "BOT-16",
+      "question": "¿Qué conviene evaluar antes de asumir que el bótox es la respuesta?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S1",
+      "source_ids": []
+    },
+    {
+      "key": "PRP-13",
+      "question": "¿Cómo explicar el manejo de la muestra y las precauciones sin tecnicismos?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S2",
+      "source_ids": []
+    },
+    {
+      "key": "PRP-14",
+      "question": "¿Cómo mostrar la secuencia de una sesión sin imágenes innecesariamente fuertes?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S2",
+      "source_ids": []
+    },
+    {
+      "key": "PRP-15",
+      "question": "¿Qué objetivo tiene cada parte del plan y cómo se explica su elección?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S2",
+      "source_ids": []
+    },
+    {
+      "key": "PRP-16",
+      "question": "¿Cómo separar objetivos de piel y de volumen al conversar sobre opciones?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S2",
+      "source_ids": []
+    },
+    {
+      "key": "HID-13",
+      "question": "¿Qué pasos y objetivos tiene realmente el paquete del consultorio?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S3",
+      "source_ids": []
+    },
+    {
+      "key": "HID-14",
+      "question": "¿Qué puede explicar una evaluación sin prometer una nariz sin poros?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S3",
+      "source_ids": []
+    },
+    {
+      "key": "HID-15",
+      "question": "¿Qué información permite decidir si ese horario tiene sentido?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S3",
+      "source_ids": []
+    },
+    {
+      "key": "HID-16",
+      "question": "¿Qué incluye esta atención y qué decisiones se toman según la piel?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S3",
+      "source_ids": []
+    },
+    {
+      "key": "LIP-13",
+      "question": "¿Qué cambia con el ángulo y qué preocupación merece una evaluación presencial?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S4",
+      "source_ids": []
+    },
+    {
+      "key": "LIP-14",
+      "question": "¿Qué tareas concretas debe describir al profesional para organizarse?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S4",
+      "source_ids": []
+    },
+    {
+      "key": "LIP-15",
+      "question": "¿Qué incluye y qué no incluye la propuesta real del consultorio?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S4",
+      "source_ids": []
+    },
+    {
+      "key": "LIP-16",
+      "question": "¿Qué procedimiento se está ofreciendo realmente y qué diferencias importan?",
+      "reason": "Hipótesis sin señal observada: investigar antes de incorporarla.",
+      "service": "S4",
+      "source_ids": []
+    }
+  ],
+  "schema": "impulso.editorial-plan.v1",
+  "series": [
+    {
+      "episode_keys": [
+        "PRP-01",
+        "PRP-04",
+        "PRP-17",
+        "PRP-08"
+      ],
+      "key": "S2-coleccion-1",
+      "service": "S2",
+      "size": 4,
+      "title": "Entender el PRP",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "PRP-07",
+        "PRP-09",
+        "PRP-06"
+      ],
+      "key": "S2-coleccion-2",
+      "service": "S2",
+      "size": 3,
+      "title": "Resolver dudas antes de elegir",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "PRP-02",
+        "PRP-03"
+      ],
+      "key": "S2-coleccion-3",
+      "service": "S2",
+      "size": 2,
+      "title": "Qué comprobar en la atención",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "PRP-05",
+        "PRP-11",
+        "PRP-10",
+        "PRP-12"
+      ],
+      "key": "S2-coleccion-4",
+      "service": "S2",
+      "size": 4,
+      "title": "Organizar y revisar tu proceso",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "BOT-01",
+        "BOT-02",
+        "BOT-05",
+        "BOT-06"
+      ],
+      "key": "S1-coleccion-1",
+      "service": "S1",
+      "size": 4,
+      "title": "Tu primer acercamiento",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "BOT-03",
+        "BOT-04",
+        "BOT-07",
+        "BOT-08"
+      ],
+      "key": "S1-coleccion-2",
+      "service": "S1",
+      "size": 4,
+      "title": "Elegir con criterio",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "BOT-09",
+        "BOT-10",
+        "BOT-11",
+        "BOT-12"
+      ],
+      "key": "S1-coleccion-3",
+      "service": "S1",
+      "size": 4,
+      "title": "Acordar y revisar el plan",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "HID-03",
+        "HID-04",
+        "HID-06",
+        "HID-09",
+        "HID-10",
+        "HID-11",
+        "HID-12"
+      ],
+      "key": "S3-coleccion-1",
+      "service": "S3",
+      "size": 7,
+      "title": "Entender lo que tu piel necesita",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "HID-01",
+        "HID-02",
+        "HID-05",
+        "HID-07"
+      ],
+      "key": "S3-coleccion-2",
+      "service": "S3",
+      "size": 4,
+      "title": "Comparar y decidir",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "HID-08"
+      ],
+      "key": "S3-coleccion-3",
+      "service": "S3",
+      "size": 1,
+      "title": "Organizar tu visita",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "LIP-01",
+        "LIP-02",
+        "LIP-06",
+        "LIP-09"
+      ],
+      "key": "S4-coleccion-1",
+      "service": "S4",
+      "size": 4,
+      "title": "Entender el contorno",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "LIP-05",
+        "LIP-07",
+        "LIP-08"
+      ],
+      "key": "S4-coleccion-2",
+      "service": "S4",
+      "size": 3,
+      "title": "Decidir sobre la cirugía",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "LIP-03",
+        "LIP-04",
+        "LIP-10",
+        "LIP-11",
+        "LIP-12"
+      ],
+      "key": "S4-coleccion-3",
+      "service": "S4",
+      "size": 5,
+      "title": "Organización y seguimiento",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "BIC-01",
+        "BIC-02",
+        "BIC-03",
+        "BIC-04"
+      ],
+      "key": "S5-coleccion-1",
+      "service": "S5",
+      "size": 4,
+      "title": "Precisar qué quieres cambiar",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "BIC-05",
+        "BIC-06",
+        "BIC-08",
+        "BIC-10",
+        "BIC-11"
+      ],
+      "key": "S5-coleccion-2",
+      "service": "S5",
+      "size": 5,
+      "title": "Expectativas y decisión",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "BIC-09",
+        "BIC-12",
+        "BIC-07"
+      ],
+      "key": "S5-coleccion-3",
+      "service": "S5",
+      "size": 3,
+      "title": "Evaluación y seguimiento",
+      "version": 1
+    },
+    {
+      "episode_keys": [
+        "RIN-02",
+        "RIN-03",
+        "RIN-06",
+        "RIN-08"
+      ],
+      "key": "S6-coleccion-1",
+      "service": "S6",
+      "size": 4,
+      "title": "Entender la decisión",
+      "version": 2
+    },
+    {
+      "episode_keys": [
+        "RIN-01",
+        "RIN-05",
+        "RIN-07",
+        "RIN-09"
+      ],
+      "key": "S6-coleccion-2",
+      "service": "S6",
+      "size": 4,
+      "title": "Preguntas antes de operar",
+      "version": 2
+    },
+    {
+      "episode_keys": [
+        "RIN-04",
+        "RIN-10"
+      ],
+      "key": "S6-coleccion-3",
+      "service": "S6",
+      "size": 2,
+      "title": "Seguimiento explicado",
+      "version": 2
+    }
+  ],
+  "services": [
+    {
+      "id": "S2",
+      "name": "PRP facial",
+      "prefix": "PRP"
+    },
+    {
+      "id": "S1",
+      "name": "Toxina botulínica",
+      "prefix": "BOT"
+    },
+    {
+      "id": "S3",
+      "name": "Limpieza facial",
+      "prefix": "HID"
+    },
+    {
+      "id": "S4",
+      "name": "Liposucción de papada",
+      "prefix": "LIP"
+    },
+    {
+      "id": "S5",
+      "name": "Bichectomía",
+      "prefix": "BIC"
+    },
+    {
+      "id": "S6",
+      "name": "Rinoplastia",
+      "prefix": "RIN"
+    }
+  ],
+  "sources": [
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "B1",
+      "read_at": "2026-09-16",
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Bichectomia , feliz con los resultados - Bolas de Bichat - Clinicasesteticas.cl",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.clinicasesteticas.cl/experiencias/bolas-de-bichat/bichectomia-feliz-con-los-resultados-138235"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "B2",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Bichectomía con cirujano maxilofacial! Todo un éxito! - Bolsas de Bichat - Multiestetica.mx",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.multiestetica.mx/experiencias/bolsas-de-bichat/bichectomia-con-cirujano-maxilofacial-todo-un-exito-142955"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "B3",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Mi experiencia con la bichectomia, la mejor decisión - Bolsas de Bichat - Multiestetica.mx",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.multiestetica.mx/experiencias/bolsas-de-bichat/mi-experiencia-con-la-bichectomia-la-mejor-decision-136513"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "B4",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Esperaba mejores resultados de la bichectomia - Bolsas de Bichat - Multiestetica.mx",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.multiestetica.mx/experiencias/bolsas-de-bichat/esperaba-mejores-resultados-de-la-bichectomia-113040"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "B5",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Bichectomia",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/Ticos/comments/1rgbtwk/bichectomia/"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "B6",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Me decidí a hacerme una bichectomia y quede encantada! - Bolsas de Bichat - Multiestetica.mx",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.multiestetica.mx/experiencias/bolsas-de-bichat/me-decidi-a-hacerme-una-bichectomia-y-quede-encantada-32533"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "R1",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Rinoplastia en lima ayuda",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/Lima_Peru/comments/1gma638"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "R2",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Nariz asimétrica post rinoplastia ultrasónica",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/PlasticSurgery/comments/1sewwr5/nariz_asim%C3%A9trica_post_rinoplastia_ultras%C3%B3nica/"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "R3",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Me hice la rinoplastia, hagan sus preguntas",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/RedditPregunta/comments/yqdkh7"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "R4",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Rinoplastia en Lima",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/Lima_Peru/comments/1fpeppb/rinoplastia_en_lima/"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "R6",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Rinoplastia estética y funcional en Lima | Sbeltia",
+      "type": "INFORMACIÓN INSTITUCIONAL",
+      "url": "https://sbeltia.pe/rinoplastia.php"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "T1",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Tired of always looking angry. Can Botox help?",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/BotoxSupportCommunity/comments/1k2w8oe"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "T2",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Que piensan del botox?",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/rediturras/comments/1t8p93t/que_piensan_del_botox/"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "T3",
+      "read_at": "2026-09-16",
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Mi primer tratamiento con toxina botulínica - La Tercera",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.latercera.com/paula/mi-primer-tratamiento-con-toxina-botulinica/"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "T4",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Lugares para colocarse Botox",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/guatemala/comments/1pj3s0g/lugares_para_colocarse_botox/"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "T5",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Me puse potos en el tercio inferior por primera vez hace 3 días. Sólo quería entrecejo pero me dijo",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.doctoralia.es/preguntas-respuestas/me-puse-potos-en-el-tercio-inferior-por-primera-vez-hace-3-dias-solo-queria-entrecejo-pero-me-dijo"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "T6",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Me hice el Botox por primera vez, estoy en el día 14 y no puedo elevar las cejas en lo absoluto, una",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.doctoralia.es/preguntas-respuestas/me-hice-el-botox-por-primera-vez-estoy-en-el-dia-14-y-no-puedo-elevar-las-cejas-en-lo-absoluto-una"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "P1",
+      "read_at": "2026-09-16",
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Comienzo a sentir los resultados del PRP - Plasma rico en plaquetas - Clinicasesteticas.cl",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.clinicasesteticas.cl/experiencias/plasma-rico-en-plaquetas/comienzo-a-sentir-los-resultados-del-prp-160510"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "P2",
+      "read_at": "2026-09-16",
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Cuarta sesión se plasma rico en plaquetas - Plasma rico en plaquetas - Clinicasesteticas.cl",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.clinicasesteticas.cl/experiencias/plasma-rico-en-plaquetas/cuarta-sesion-se-plasma-rico-en-plaquetas-217442"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "P3",
+      "read_at": "2026-09-16",
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "No me gustan los hematomas que salen, pero sí he visto mejoría a causa del tratamiento PRP - Plasma Rico en Plaquetas - Multiestetica.mx",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.multiestetica.mx/experiencias/plasma-rico-en-plaquetas/no-me-gustan-los-hematomas-que-salen-pero-si-he-visto-mejoria-a-causa-del-tratamiento-prp-3885"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "P4",
+      "read_at": "2026-09-16",
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Es efectivo el traramiento con plasma para las manchas?",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.doctoralia.co/preguntas-respuestas/es-efectivo-el-traramiento-con-plasma-para-las-manchas"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "H1",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Necesito ayuda paraencontrar un centro de estética de confianza",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/Lima_Peru/comments/1w9hvvj/necesito_ayuda_paraencontrar_un_centro_de/"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "H2",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Base makeup help/texture",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/makeuptips/comments/1qwkj5f/base_makeup_helptexture/"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "H3",
+      "read_at": "2026-09-16",
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "¿Limpieza facial sin que te dejen la cara como un colador? | Cotilleando - El mejor foro de cotilleos | Desde 2004",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.cotilleando.com/threads/limpieza-facial-sin-que-te-dejen-la-cara-como-un-colador.155952/"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "H5",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Dato para sacar puntos negros en casa",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/ChileFemenino/comments/1tnu0l7/dato_para_sacar_puntos_negros_en_casa/"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "H6",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "¿Productos \"SKIN-CARE\" para hombres acá en Perú?",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/PERU/comments/11rxvai"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "L1",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "SABEN COMO QUITAR PAPADA",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/Bogota/comments/1i8l6lc"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "L2",
+      "read_at": "2026-09-16",
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Me realice una lipopapada,pero no podré utilizar la faja todo el día por el trabajo,hay consecuencia",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.doctoralia.com.mx/preguntas-respuestas/me-realice-una-lipopapada-pero-no-podre-utilizar-la-faja-todo-el-dia-por-el-trabajo-hay-consecuencia"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "L3",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Riesgos de una lipopada - Multiestetica.mx",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.multiestetica.mx/preguntas/cirugia-de-papada/riesgos-de-una-lipopada"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "L4",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Lipo de papada",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/Paraguay/comments/1fyhuz5"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "L5",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Masculino que se ha hecho unos cuantos procedimientos estéticos. AMA",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/Ticos/comments/1cii84v"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "R5",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Segunda rinoplastia",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/PERU/comments/16jkm0m"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "P5",
+      "read_at": "2026-09-16",
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Preguntas sobre Plasma Rico en Plaquetas",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.multiestetica.mx/preguntas/plasma-rico-en-plaquetas"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "P6",
+      "read_at": "2026-09-16",
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Primera y segunda sesión de plasma",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://community.clinicasesteticas.com.co/experiencias/plasma-rico-en-plaquetas/primera-sesion-de-plasma-86214"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "H4",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Hydrafacials, worth it? Advice on results",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.reddit.com/r/30PlusSkinCare/comments/1t3qfla/hydrafacials_worth_it_advice_on_results/"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "L6",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Lipo papada más de un mes",
+      "type": "SEÑAL DE AUDIENCIA",
+      "url": "https://www.multiestetica.mx/preguntas/liposuccion/lipo-papada-mas-de-un-mes"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "C1",
+      "read_at": "2026-09-16",
+      "scope": "Orientación general. Falta investigación primaria específica de los claims del guion.",
+      "title": "Buccal Fat Removal Candidates — ASPS",
+      "type": "ORIENTACIÓN CLÍNICA",
+      "url": "https://www.plasticsurgery.org/cosmetic-procedures/buccal-fat-removal/candidates"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "C2",
+      "read_at": "2026-09-16",
+      "scope": "Orientación general. Falta investigación primaria específica de los claims del guion.",
+      "title": "Rhinoplasty Questions — ASPS",
+      "type": "ORIENTACIÓN CLÍNICA",
+      "url": "https://www.plasticsurgery.org/cosmetic-procedures/rhinoplasty/questions"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "C3",
+      "read_at": "2026-09-16",
+      "scope": "Orientación general. Falta investigación primaria específica de los claims del guion.",
+      "title": "Botulinum toxin therapy: Overview — AAD",
+      "type": "ORIENTACIÓN CLÍNICA",
+      "url": "https://www.aad.org/public/cosmetic/wrinkles/botulinum-toxin-overview"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "C4",
+      "read_at": "2026-09-16",
+      "scope": "Orientación general. Falta investigación primaria específica de los claims del guion.",
+      "title": "PRP y rejuvenecimiento — AAD",
+      "type": "ORIENTACIÓN CLÍNICA",
+      "url": "https://www.aad.org/public/cosmetic/younger-looking/platelet-rich-plasma-secret-to-younger-skin?os=rokuZoazxZMs"
+    },
+    {
+      "access": "Página consultada: 16/09/2026",
+      "id": "C5",
+      "read_at": "2026-09-16",
+      "scope": "Orientación general. Falta investigación primaria específica de los claims del guion.",
+      "title": "Liposuction Candidates — ASPS",
+      "type": "ORIENTACIÓN CLÍNICA",
+      "url": "https://www.plasticsurgery.org/cosmetic-procedures/liposuction/candidates"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "C6",
+      "read_at": null,
+      "scope": "Orientación general. Falta investigación primaria específica de los claims del guion.",
+      "title": "Hydrafacial: Frequently Asked Questions",
+      "type": "ORIENTACIÓN CLÍNICA",
+      "url": "https://www.hydrafacial.com/pages/frequently-asked-questions"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "O1",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Perfil público de Kamo Martin Olano Paredes",
+      "type": "INFORMACIÓN INSTITUCIONAL",
+      "url": "https://www.doctoralia.pe/perfil/kamo-martin-olano-paredes"
+    },
+    {
+      "access": "Referencia heredada del dossier 17; no releída en esta construcción",
+      "id": "O2",
+      "read_at": null,
+      "scope": "Señal cualitativa externa; no prueba eficacia ni frecuencia local.",
+      "title": "Tarifario publicado de SISOL Carabayllo",
+      "type": "INFORMACIÓN INSTITUCIONAL",
+      "url": "https://web.sisol.gob.pe/tarifario/archivos/tarifario-carabayllo.pdf?v=37"
+    }
+  ],
+  "start_date": "2026-09-21",
+  "title": "Dr. Olano · Plan de contenido"
+}
