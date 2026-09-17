@@ -10,16 +10,15 @@ const statusNames={PLANNED:'Planificado',NEEDS_CAPTURE:'Requiere captura real',N
 const briefNames={NOT_REQUIRED:'Sin preparación adicional',USE_EXISTING_APPROVED:'Usar guion aprobado',READY_TO_SCRIPT:'Brief listo para guion',WAITING_CAPTURE:'Primero capturar material real',BLOCKED:'Bloqueado'};
 const fmt=d=>new Intl.DateTimeFormat('es-PE',{day:'numeric',month:'short'}).format(new Date(`${d}T12:00:00`));
 const esc=s=>String(s??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-const listHtml=items=>Array.isArray(items)&&items.length?`<ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'';
 async function load(){
  const root=document.querySelector('#calendarApp');
  try{
-  const {data:cal,error:ce}=await sb.from('content_calendarios_publicacion').select('*').eq('negocio_id',BUSINESS).eq('status','ACTIVE').order('week_start',{ascending:false}).limit(1).maybeSingle();
+  const {data:cal,error:ce}=await sb.from('content_calendarios_publicacion').select('id,negocio_id,calendar_key,week_start,week_end,strategy_name,strategy_version,bank_plan_key,status,hypothesis').eq('negocio_id',BUSINESS).eq('status','ACTIVE').order('week_start',{ascending:false}).limit(1).maybeSingle();
   if(ce||!cal)throw ce||new Error('No hay calendario activo');
   const [{data:slots,error:se},{data:plan,error:pe},{data:trans,error:te}]=await Promise.all([
-   sb.from('content_calendario_publicacion_slots').select('*').eq('calendario_id',cal.id).order('publish_date'),
+   sb.from('content_calendario_publicacion_slots').select('id,calendario_id,negocio_id,publish_date,strategic_role,service_key,source_bank,editorial_key,transversal_id,content_id,match_status,rationale,expected_signal,execution_note,status,actual_publication_id,brief_status').eq('calendario_id',cal.id).order('publish_date'),
    sb.from('content_planes_editoriales').select('document').eq('negocio_id',BUSINESS).eq('plan_key',cal.bank_plan_key).maybeSingle(),
-   sb.from('content_banco_transversal').select('*').eq('negocio_id',BUSINESS)
+   sb.from('content_banco_transversal').select('id,negocio_id,editorial_key,title,question,strategic_role,objective,audience,motivation,format,status').eq('negocio_id',BUSINESS)
   ]);
   if(se||pe||te)throw se||pe||te;
   const epMap=new Map((plan?.document?.episodes||[]).map(x=>[x.key,x]));
@@ -35,11 +34,7 @@ async function load(){
     const svc=s.service_key||'MARCA';
     const matchClass=s.match_status==='MATCH_FUERTE'?'strong':s.match_status==='NUEVO_TRANSVERSAL'?'new':'';
     const stClass=s.status==='APPROVED'?'approved':s.status==='NEEDS_CAPTURE'?'capture':'';
-    const brief=s.production_brief||{};
-    const instruction=brief.instruction||brief.desired_cta||'';
-    const capture=item?.capture_plan||{};
-    const captureDetails=s.brief_status==='WAITING_CAPTURE'?`<details class="section"><summary><b>Plan de captura real</b></summary><p>${esc(capture.purpose||'')}</p>${listHtml(capture.shot_list)}${capture.completion_criteria?`<b>Criterio para darla por capturada</b>${listHtml(capture.completion_criteria)}`:''}</details>`:'';
-    return `<article class="day" data-service="${svc}"><div class="day-head"><div class="dow">${dayNames[d.getDay()]}</div><div class="date">${d.getDate()}</div><span class="role">${esc(roleNames[s.strategic_role]||s.strategic_role)}</span></div><div class="body"><div class="service">${esc(service)}</div><h2 class="title">${esc(item?.title||'Necesidad editorial')}</h2><p class="question">${esc(item?.question||'')}</p><div class="section"><b>Por qué va aquí</b><p>${esc(s.rationale)}</p></div><div class="section"><b>Qué señal esperamos</b><p>${esc(s.expected_signal||'Por definir')}</p></div><div class="section"><b>Preparación</b><p><strong>${esc(briefNames[s.brief_status]||s.brief_status)}</strong>${instruction?` · ${esc(instruction)}`:''}</p></div>${captureDetails}<div class="section"><b>Ejecución</b><p>${esc(s.execution_note||'')}</p></div><div class="badges"><span class="badge ${matchClass}">${esc(s.match_status.replaceAll('_',' '))}</span><span class="badge ${stClass}">${esc(statusNames[s.status]||s.status)}</span><span class="badge">${esc(briefNames[s.brief_status]||s.brief_status)}</span>${s.editorial_key?`<span class="badge">${esc(s.editorial_key)}</span>`:''}${item?.editorial_key?`<span class="badge">${esc(item.editorial_key)}</span>`:''}</div></div></article>`;
+    return `<article class="day" data-service="${svc}"><div class="day-head"><div class="dow">${dayNames[d.getDay()]}</div><div class="date">${d.getDate()}</div><span class="role">${esc(roleNames[s.strategic_role]||s.strategic_role)}</span></div><div class="body"><div class="service">${esc(service)}</div><h2 class="title">${esc(item?.title||'Necesidad editorial')}</h2><p class="question">${esc(item?.question||'')}</p><div class="section"><b>Por qué va aquí</b><p>${esc(s.rationale)}</p></div><div class="section"><b>Qué señal esperamos</b><p>${esc(s.expected_signal||'Por definir')}</p></div><div class="section"><b>Preparación</b><p><strong>${esc(briefNames[s.brief_status]||s.brief_status)}</strong></p></div><div class="section"><b>Ejecución</b><p>${esc(s.execution_note||'')}</p></div><div class="badges"><span class="badge ${matchClass}">${esc((s.match_status||'').replaceAll('_',' '))}</span><span class="badge ${stClass}">${esc(statusNames[s.status]||s.status)}</span><span class="badge">${esc(briefNames[s.brief_status]||s.brief_status)}</span>${s.editorial_key?`<span class="badge">${esc(s.editorial_key)}</span>`:''}${item?.editorial_key?`<span class="badge">${esc(item.editorial_key)}</span>`:''}</div></div></article>`;
   }).join('');
  }catch(err){root.innerHTML=`<div class="error">No se pudo cargar el calendario estratégico: ${esc(err?.message||err)}</div>`}
 }
