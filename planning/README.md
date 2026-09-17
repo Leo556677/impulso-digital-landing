@@ -1,11 +1,11 @@
-# Plan editorial Dr. Olano · edición 1
+# Plan editorial Dr. Olano · edición 2
 
-71 preguntas propuestas en 19 colecciones cerradas: PRP 13 (4+3+2+4), toxina 12, limpieza 12, liposucción de papada 12, bichectomía 12, rinoplastia educativa 10. Otras 26 fichas están en reserva de investigación, fuera de numeración y calendario. La cantidad procede de preguntas distintas del dossier 16/17 y una pregunta adicional de proceso PRP respaldada por P1; no de multiplicar factores ni de cuotas de producción.
+71 preguntas propuestas en 19 colecciones cerradas: PRP 13 (4+3+2+4), toxina 12, limpieza 12, liposucción de papada 12, bichectomía 12, rinoplastia 10. Otras 26 fichas están en reserva de investigación, fuera de numeración y calendario. La cantidad procede de preguntas distintas del dossier 16/17 y una pregunta adicional de proceso PRP respaldada por P1; no de multiplicar factores ni de cuotas de producción.
 
 ## Uso
 
 1. Entrar en `plan-contenido.html` con la cuenta habitual y seleccionar Dr. Olano.
-2. Ver calendario, series, antecedentes y cobertura. Por defecto abre PRP, todas las audiencias y objetivos.
+2. Ver calendario, series, antecedentes y cobertura. Por defecto abre todos los servicios, todas las audiencias y objetivos.
 3. Abrir una ficha: conserva su pregunta, parte/total y fuentes; permite modificar fecha referencial y quitar fecha. La fecha no cambia estados ni obliga a grabar/publicar.
 4. Preparar pedido A/B/C, copiarlo al Chat 00 o descargarlo. El pedido incluye la selección, antecedentes, fuentes con acceso explícito, límites y contratos. No existe invocación automática a un modelo ni guardado automático de propuestas en MASTER_SCRIPT.
 5. Chat 00 investiga la respuesta, recupera contexto vivo, entrega tres guiones completos, audita y solicita la selección/aprobación según V4.3. La integración de escritura sigue 06/09/13. Los maestros subidos no se han reemplazado por este desarrollo.
@@ -13,9 +13,9 @@
 
 ## Numeración y cobertura
 
-Cada colección tiene edición, miembros fijos, episodios y total. Filtros y fechas no renumeran. Cambiar alcance exige otra edición. Las 71 piezas constituyen esta propuesta de ciclo, no un máximo de posibilidades, ni 71 guiones aprobados. Por elección expresa del usuario, las 13 piezas de PRP ocupan las primeras 13 fechas (21/09–19/10/2026). Después continúan los demás servicios conservando su orden relativo. El orden visible sigue las fechas y la numeración de cada colección permanece fija. Lunes/miércoles/viernes desde 21/09/2026 es una cadencia referencial editable, no capacidad de producción confirmada.
+Cada colección tiene edición, miembros fijos, episodios y total. Filtros y fechas no renumeran. Cambiar alcance exige otra edición. Las 71 piezas constituyen esta propuesta de ciclo, no un máximo de posibilidades, ni 71 guiones aprobados. Por elección expresa de Kal el 17/09/2026, los seis servicios avanzan en paralelo: una pieza de cada servicio por día natural desde el 21/09/2026. Se conserva la secuencia y numeración de cada colección. Los primeros diez días tienen seis piezas; después se ve la necesidad de ampliar las colecciones más cortas. Las fechas son referenciales y no obligan a grabar ni publicar. La edición anterior se conserva; la vigente usa olano-editorial-v2 y olano-plan-v2.json.
 
-La cobertura muestra 8 objetivos × 3 temperaturas y los 3 motivos, 9 categorías, 14 formatos, 15 familias. Distingue intención del plan y uso registrado. Los ceros en metadata heredada no prueban ausencia. RETORNO legado se advierte como relación, no se suma como cuarta temperatura. No se rellena RESERVA sin comprobar ruta/oferta. C5 y familias basadas en testimonios, rutinas, experiencias o experimentos requieren material real. S6 permanece educativo.
+La cobertura muestra 8 objetivos × 3 temperaturas y los 3 motivos, 9 categorías, 14 formatos, 15 familias. Distingue intención del plan y uso registrado. Los ceros en metadata heredada no prueban ausencia. RETORNO legado se advierte como relación, no se suma como cuarta temperatura. No se rellena RESERVA sin comprobar ruta/oferta. C5 y familias basadas en testimonios, rutinas, experiencias o experimentos requieren material real. S6 incluye los ocho objetivos; las afirmaciones de oferta, ejecutor y ruta de reserva requieren confirmación antes de usarlas en guiones.
 
 ## Fuentes y límites
 
@@ -41,4 +41,4 @@ Los seis antecedentes encontrados al instalar no se vinculan automáticamente po
 
 `node --test tests/editorial-plan.test.mjs tests/content-library.test.mjs`
 
-Incluye conservación de numeración, fechas inválidas, separación de marcas, estado publicado con registro real, filtros, S6 educativo y contrato A/B/C. La vista previa pública es de solo lectura, sin historial privado ni contadores ficticios de aprobación. RLS, guardado, conflictos y vínculos se comprobaron en la base real mediante transacciones revertidas. No se usan credenciales de prueba en producción.
+Incluye conservación de numeración, fechas inválidas, separación de marcas, estado publicado con registro real, filtros, ocho objetivos de S6 y contrato A/B/C. La vista previa pública es de solo lectura, sin historial privado ni contadores ficticios de aprobación. RLS, guardado, conflictos y vínculos se comprobaron en la base real mediante transacciones revertidas. No se usan credenciales de prueba en producción.
