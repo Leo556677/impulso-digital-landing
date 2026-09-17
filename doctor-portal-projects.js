@@ -64,7 +64,7 @@
   const nameOf=k=>serviceNames[k]||String(k||'Servicio').toLocaleLowerCase('es-PE').replace(/(^|\s|\/\s*)\p{L}/gu,m=>m.toLocaleUpperCase('es-PE'));
   const projectNo=p=>{const n=Number(p?.metadata?.project_ref_v1?.project_number);return Number.isFinite(n)&&n>0?n:null;};
   const projectSort=(a,b)=>{const an=projectNo(a?.pieza),bn=projectNo(b?.pieza);if(an&&bn&&an!==bn)return an-bn;if(an&&!bn)return-1;if(!an&&bn)return 1;return pt(a?.pieza).localeCompare(pt(b?.pieza),'es');};
-  const sig=()=>active().map(s=>`${s.id}:${s.recorded||0}:${s.total||0}`).sort().join('|');
+  const sig=()=>active().map(s=>`${s.id}:${s.recorded||0}:${s.total||0}`).sort().join('|')+'|'+(P?.calendar_items||[]).map(x=>`${x.content_id}:${x.publish_date}:${x.slot_status}`).sort().join('|');
   const invalidate=()=>{cache.signature='';cache.all=[];cache.groups=new Map();cache.loading=null;};
 
   async function loadItems(force=false){
@@ -75,7 +75,8 @@
       const sessions=active();
       if(!sessions.length){cache.signature=s;cache.all=[];cache.groups=new Map();cache.loading=null;return cache;}
       const details=await Promise.all(sessions.map(async session=>{const data=await api('session_get',{session_id:session.id});return{session:data.session,items:data.items||[]};}));
-      const all=details.flatMap(d=>(d.items||[]).map(item=>({...item,_session:d.session}))).sort(projectSort),groups=new Map();
+      const calendarMap=new Map((P?.calendar_items||[]).map(x=>[x.content_id,x]));
+      const all=details.flatMap(d=>(d.items||[]).map(item=>({...item,calendar:calendarMap.get(item?.pieza?.id)||null,_session:d.session}))).sort(projectSort),groups=new Map();
       for(const item of all){const key=keyOf(item?.pieza?.servicio);if(!groups.has(key))groups.set(key,{key,name:nameOf(key),items:[]});groups.get(key).items.push(item);}
       cache.signature=s;cache.all=all;cache.groups=groups;cache.loading=null;return cache;
     })().catch(e=>{cache.loading=null;throw e;});
@@ -96,7 +97,7 @@
     const pending0=active().reduce((n,s)=>n+Math.max(0,(s.total||0)-(s.recorded||0)),0),recorded0=active().reduce((n,s)=>n+(s.recorded||0),0);
     $('sum').innerHTML=`<div class="metric"><b>${ic('cam')}${pending0}</b><span>videos pendientes</span></div><div class="metric"><b>${ic('check')}${recorded0}</b><span>grabados en sesiones activas</span></div>`;
     $('sessions').className='service-grid';$('sessions').innerHTML='<div class="card empty service-loading">Organizando proyectos por servicio…</div>';
-    try{const data=await loadItems(),recorded=data.all.filter(isRecorded).length,pending=data.all.length-recorded;$('sum').innerHTML=`<div class="metric"><b>${ic('cam')}${pending}</b><span>videos pendientes</span></div><div class="metric"><b>${ic('check')}${recorded}</b><span>grabados en sesiones activas</span></div>`;renderServices(data.groups);}catch(e){console.warn('No se pudo agrupar por servicio',e);$('sessions').className='';oldRenderRecord();}
+    try{const data=await loadItems(),recorded=data.all.filter(isRecorded).length,pending=data.all.length-recorded;$('sum').innerHTML=`<div class="metric"><b>${ic('cam')}${pending}</b><span>videos pendientes</span></div><div class="metric"><b>${ic('check')}${recorded}</b><span>grabados en sesiones activas</span></div>`;renderServices(data.groups);}catch(e){console.error('No se pudo organizar por servicio',e);$('sessions').className='service-grid';$('sessions').innerHTML=`<div class="card empty service-loading"><b>No se pudieron cargar los proyectos por servicio.</b><br>${esc(e?.message||'Error de carga')}</div>`;}
   };
 
   async function openService(key){
