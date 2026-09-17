@@ -2,7 +2,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const SUPABASE_URL='https://xnlzsgulskqyecfgzhwa.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
-const PLAN_KEY='olano-editorial-v9';
+const PLAN_KEY='olano-editorial-v10';
 const BUSINESS_ID='48182e1a-06d5-4685-9627-7891d7aafacb';
 const live=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 
