@@ -21,18 +21,28 @@
   }catch{}
 
   const M=window.RecordingModel;
+  const oneStatus=(item)=>{
+    const p=item?.pieza||{},recorded=item?.estado==='GRABADO'||p.estado==='RECORDED',ready=p?.production_status?.PRODUCTION_READY===true,inCalendar=Boolean(item?.calendar);
+    if(recorded)return{text:'GRABADO',cls:'portal-status-recorded'};
+    if(inCalendar&&ready)return{text:'EN CALENDARIO · LISTO PARA GRABAR',cls:'portal-status-ready'};
+    if(inCalendar)return{text:'EN CALENDARIO · PREPARACIÓN PENDIENTE',cls:'portal-status-calendar'};
+    if(ready)return{text:'FUERA DEL CALENDARIO · LISTO PARA GRABAR',cls:'portal-status-ready'};
+    return{text:'FUERA DEL CALENDARIO · PREPARACIÓN PENDIENTE',cls:'portal-status-out'};
+  };
   if(typeof renderVideos==='function'){
     const richRenderVideos=renderVideos;
     renderVideos=function(items){
       richRenderVideos(items);
       document.querySelectorAll('#videos .jsV').forEach((el,i)=>{
-        const label=M?.projectLabel?.(items[i]?.pieza)||'';
-        if(!label||el.querySelector('.project-card-label'))return;
-        const title=el.querySelector('h3');
-        const tag=document.createElement('p');
-        tag.className='project-card-label';
-        tag.textContent=label;
-        title?.before(tag);
+        const item=items[i],status=oneStatus(item),pill=el.querySelector('.pill'),cta=el.querySelector('.cta');
+        if(pill){pill.className='pill portal-one-status '+status.cls;pill.textContent=status.text;}
+        const ready=item?.pieza?.production_status?.PRODUCTION_READY===true||item?.pieza?.estado==='RECORDED'||item?.estado==='GRABADO';
+        if(cta&&!ready)cta.textContent='Abrir proyecto';
+        const label=M?.projectLabel?.(item?.pieza)||'';
+        if(label&&!el.querySelector('.project-card-label')){
+          const title=el.querySelector('h3'),tag=document.createElement('p');
+          tag.className='project-card-label';tag.textContent=label;title?.before(tag);
+        }
       });
     };
   }
@@ -73,15 +83,15 @@
   function ordered(groups){return[...groups.values()].sort((a,b)=>{const ai=serviceOrder.indexOf(a.key),bi=serviceOrder.indexOf(b.key);if(ai>=0||bi>=0){if(ai<0)return 1;if(bi<0)return-1;if(ai!==bi)return ai-bi;}return a.name.localeCompare(b.name,'es');});}
   function renderServices(groups){
     const host=$('sessions'),list=ordered(groups);host.className='service-grid';
-    host.innerHTML=list.length?list.map(g=>{const total=g.items.length,recorded=g.items.filter(x=>x.estado==='GRABADO').length,pending=total-recorded,pc=total?Math.round(recorded/total*100):0;return`<article class="card service-category jsService" data-service="${esc(g.key)}" tabindex="0" role="button" aria-label="Abrir ${esc(g.name)}"><div class="service-card-top"><div><div class="service-eyebrow">SERVICIO</div><h3>${esc(g.name)}</h3><p>${pending} ${pending===1?'proyecto pendiente':'proyectos pendientes'}</p></div><span class="service-arrow">${ic('right')}</span></div><div class="service-card-foot"><span>${recorded}/${total} grabados</span><span>${total} ${total===1?'listo para grabar':'listos para grabar'}</span></div><div class="prog"><span style="width:${pc}%"></span></div></article>`;}).join(''):'<div class="card empty"><b>No tienes proyectos pendientes de grabación.</b><br>Cuando Producción deje una pieza lista para grabar, aparecerá dentro de su servicio.</div>';
+    host.innerHTML=list.length?list.map(g=>{const total=g.items.length,recorded=g.items.filter(x=>x.estado==='GRABADO').length,pending=total-recorded,pc=total?Math.round(recorded/total*100):0;return`<article class="card service-category jsService" data-service="${esc(g.key)}" tabindex="0" role="button" aria-label="Abrir ${esc(g.name)}"><div class="service-card-top"><div><div class="service-eyebrow">SERVICIO</div><h3>${esc(g.name)}</h3><p>${pending} ${pending===1?'proyecto pendiente':'proyectos pendientes'}</p></div><span class="service-arrow">${ic('right')}</span></div><div class="service-card-foot"><span>${recorded}/${total} grabados</span><span>${total} ${total===1?'proyecto':'proyectos'}</span></div><div class="prog"><span style="width:${pc}%"></span></div></article>`;}).join(''):'<div class="card empty"><b>No tienes proyectos pendientes de grabación.</b><br>Cuando exista contenido de producción, aparecerá dentro de su servicio con una etiqueta de estado.</div>';
     host.querySelectorAll('.jsService').forEach(el=>{const open=()=>openService(el.dataset.service);el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}};});
   }
 
   const oldRenderRecord=renderRecord;
   renderRecord=async function(){
     const hero=D.querySelector('#rhome .hero p'),h=D.querySelector('#rhome .sec h2'),p=D.querySelector('#rhome .sec p');
-    if(hero)hero.textContent='Elige un servicio y luego abre el proyecto que vas a grabar. Guion, imágenes e indicaciones siguen juntos.';
-    if(h)h.textContent='Servicios para grabar';if(p)p.textContent='Entra a un servicio para ver únicamente los proyectos que ya están listos para grabar.';
+    if(hero)hero.textContent='Elige un servicio y abre cualquier proyecto. Una sola etiqueta indica si está en calendario y qué le falta antes de grabar.';
+    if(h)h.textContent='Servicios para grabar';if(p)p.textContent='Entra a un servicio para ver todos los proyectos de producción y su estado real.';
     const pending0=active().reduce((n,s)=>n+Math.max(0,(s.total||0)-(s.recorded||0)),0),recorded0=active().reduce((n,s)=>n+(s.recorded||0),0);
     $('sum').innerHTML=`<div class="metric"><b>${ic('cam')}${pending0}</b><span>videos pendientes</span></div><div class="metric"><b>${ic('check')}${recorded0}</b><span>grabados en sesiones activas</span></div>`;
     $('sessions').className='service-grid';$('sessions').innerHTML='<div class="card empty service-loading">Organizando proyectos por servicio…</div>';
@@ -89,11 +99,12 @@
   };
 
   async function openService(key){
-    try{const data=await loadItems(),g=data.groups.get(key);if(!g||!g.items.length){resetViews();tab('record');return;}backTab='record';S={_serviceKey:key,session:{id:null,nombre:g.name,fecha:null,lugar:null,notas:null},items:g.items};tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';$('sbacktxt').textContent='Volver a servicios';$('vback').innerHTML=`${ic('left')}Volver al servicio`;const total=g.items.length,recorded=g.items.filter(x=>x.estado==='GRABADO').length,pc=total?Math.round(recorded/total*100):0;$('shero').innerHTML=`<div class="card detail service-detail"><div class="date">SERVICIO</div><h2>${esc(g.name)}</h2><div class="service-detail-copy">Elige el proyecto que vas a grabar.</div><div class="prog"><span style="width:${pc}%"></span></div><small>${recorded} de ${total} videos grabados</small></div>`;$('setup').innerHTML=`<div class="card setup service-setup"><b>Proyectos de ${esc(g.name)}</b><br>Cada tarjeta corresponde a una pieza ya preparada y lista para grabar. Ábrela para ver escenas, imágenes de referencia y teleprompter.</div>`;renderVideos(g.items);scrollTo(0,0);}catch(e){err(e.message)}
+    try{const data=await loadItems(),g=data.groups.get(key);if(!g||!g.items.length){resetViews();tab('record');return;}backTab='record';S={_serviceKey:key,session:{id:null,nombre:g.name,fecha:null,lugar:null,notas:null},items:g.items};tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';$('sbacktxt').textContent='Volver a servicios';$('vback').innerHTML=`${ic('left')}Volver al servicio`;const total=g.items.length,recorded=g.items.filter(x=>x.estado==='GRABADO').length,pc=total?Math.round(recorded/total*100):0;$('shero').innerHTML=`<div class="card detail service-detail"><div class="date">SERVICIO</div><h2>${esc(g.name)}</h2><div class="service-detail-copy">Elige el proyecto que vas a grabar.</div><div class="prog"><span style="width:${pc}%"></span></div><small>${recorded} de ${total} videos grabados</small></div>`;$('setup').innerHTML=`<div class="card setup service-setup"><b>Proyectos de ${esc(g.name)}</b><br>Cada tarjeta conserva el proyecto. La etiqueta indica si está en calendario, si sigue en preparación o si ya puede grabarse.</div>`;renderVideos(g.items);scrollTo(0,0);}catch(e){err(e.message)}
   }
 
   const oldSBack=$('sback').onclick;$('sback').onclick=()=>{if(S?._serviceKey){S=null;resetViews();tab('record');return;}if(typeof oldSBack==='function')oldSBack();};
   const oldOpenSession=openSession;openSession=async function(id,from='record'){$('vback').innerHTML=`${ic('left')}Volver a la sesión`;return oldOpenSession(id,from);};
+  const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,ready=item?.pieza?.production_status?.PRODUCTION_READY===true||item?.pieza?.estado==='RECORDED'||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}};
   const oldToggleRec=toggleRec;toggleRec=async function(x){if(!S?._serviceKey)return oldToggleRec(x);const key=S._serviceKey;try{await api('mark_piece',{session_piece_id:x.session_piece_id,estado:x.estado==='GRABADO'?'PENDIENTE':'GRABADO'});P=await api('portal_get');invalidate();renderCal();renderHist();await renderRecord();const data=await loadItems();if(data.groups.has(key))await openService(key);else{S=null;resetViews();tab('record');}}catch(e){alert(e.message)}};
 
   const wait=()=>{if(typeof P!=='undefined'&&P){renderRecord();return;}setTimeout(wait,120);};setTimeout(wait,0);
