@@ -7,8 +7,10 @@ const names={S1:'Toxina botulínica',S2:'PRP facial',S3:'Limpieza facial',S4:'Li
 const dayNames=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 const roleNames={DOLOR_IDENTIFICACION:'Dolor / identificación',VALOR_EDUCACION:'Valor / educación',AUTORIDAD_CONFIANZA:'Autoridad / confianza',OBJECION:'Objeción',VENTA_SUAVE:'Venta suave',HUMANIZACION:'Humanización',COMUNIDAD_RELACION:'Comunidad / relación'};
 const statusNames={PLANNED:'Planificado',NEEDS_CAPTURE:'Requiere captura real',NEEDS_SCRIPT:'Falta guion',SCRIPTED:'Guion listo',APPROVED:'Aprobado',RECORDED:'Grabado',READY:'Listo para publicar',PUBLISHED:'Publicado',SKIPPED:'Omitido'};
+const briefNames={NOT_REQUIRED:'Sin preparación adicional',USE_EXISTING_APPROVED:'Usar guion aprobado',READY_TO_SCRIPT:'Brief listo para guion',WAITING_CAPTURE:'Primero capturar material real',BLOCKED:'Bloqueado'};
 const fmt=d=>new Intl.DateTimeFormat('es-PE',{day:'numeric',month:'short'}).format(new Date(`${d}T12:00:00`));
-const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const esc=s=>String(s??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const listHtml=items=>Array.isArray(items)&&items.length?`<ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'';
 async function load(){
  const root=document.querySelector('#calendarApp');
  try{
@@ -25,7 +27,7 @@ async function load(){
   document.querySelector('#weekTitle').textContent=`${fmt(cal.week_start)} – ${fmt(cal.week_end)} · 2026`;
   document.querySelector('#strategyName').textContent=cal.strategy_name;
   document.querySelector('#strategyText').textContent=cal.hypothesis?.principle||'';
-  document.querySelector('#stats').innerHTML=`<div class="stat"><b>${slots.length}</b><span>publicaciones reales</span></div><div class="stat"><b>${new Set(slots.filter(x=>x.service_key).map(x=>x.service_key)).size}/6</b><span>servicios esta semana</span></div><div class="stat"><b>${slots.filter(x=>x.match_status==='MATCH_FUERTE').length}</b><span>match fuerte</span></div><div class="stat"><b>${slots.filter(x=>x.status==='NEEDS_CAPTURE').length}</b><span>captura real pendiente</span></div>`;
+  document.querySelector('#stats').innerHTML=`<div class="stat"><b>${slots.length}</b><span>publicaciones reales</span></div><div class="stat"><b>${new Set(slots.filter(x=>x.service_key).map(x=>x.service_key)).size}/6</b><span>servicios esta semana</span></div><div class="stat"><b>${slots.filter(x=>x.brief_status==='READY_TO_SCRIPT').length}</b><span>briefs listos para guion</span></div><div class="stat"><b>${slots.filter(x=>x.brief_status==='WAITING_CAPTURE').length}</b><span>captura real pendiente</span></div>`;
   root.innerHTML=slots.map(s=>{
     const d=new Date(`${s.publish_date}T12:00:00`);
     const item=s.source_bank==='SERVICE_BANK'?epMap.get(s.editorial_key):trMap.get(s.transversal_id);
@@ -33,7 +35,11 @@ async function load(){
     const svc=s.service_key||'MARCA';
     const matchClass=s.match_status==='MATCH_FUERTE'?'strong':s.match_status==='NUEVO_TRANSVERSAL'?'new':'';
     const stClass=s.status==='APPROVED'?'approved':s.status==='NEEDS_CAPTURE'?'capture':'';
-    return `<article class="day" data-service="${svc}"><div class="day-head"><div class="dow">${dayNames[d.getDay()]}</div><div class="date">${d.getDate()}</div><span class="role">${esc(roleNames[s.strategic_role]||s.strategic_role)}</span></div><div class="body"><div class="service">${esc(service)}</div><h2 class="title">${esc(item?.title||'Necesidad editorial')}</h2><p class="question">${esc(item?.question||'')}</p><div class="section"><b>Por qué va aquí</b><p>${esc(s.rationale)}</p></div><div class="section"><b>Qué señal esperamos</b><p>${esc(s.expected_signal||'Por definir')}</p></div><div class="section"><b>Ejecución</b><p>${esc(s.execution_note||'')}</p></div><div class="badges"><span class="badge ${matchClass}">${esc(s.match_status.replaceAll('_',' '))}</span><span class="badge ${stClass}">${esc(statusNames[s.status]||s.status)}</span>${s.editorial_key?`<span class="badge">${esc(s.editorial_key)}</span>`:''}${item?.editorial_key?`<span class="badge">${esc(item.editorial_key)}</span>`:''}</div></div></article>`;
+    const brief=s.production_brief||{};
+    const instruction=brief.instruction||brief.desired_cta||'';
+    const capture=item?.capture_plan||{};
+    const captureDetails=s.brief_status==='WAITING_CAPTURE'?`<details class="section"><summary><b>Plan de captura real</b></summary><p>${esc(capture.purpose||'')}</p>${listHtml(capture.shot_list)}${capture.completion_criteria?`<b>Criterio para darla por capturada</b>${listHtml(capture.completion_criteria)}`:''}</details>`:'';
+    return `<article class="day" data-service="${svc}"><div class="day-head"><div class="dow">${dayNames[d.getDay()]}</div><div class="date">${d.getDate()}</div><span class="role">${esc(roleNames[s.strategic_role]||s.strategic_role)}</span></div><div class="body"><div class="service">${esc(service)}</div><h2 class="title">${esc(item?.title||'Necesidad editorial')}</h2><p class="question">${esc(item?.question||'')}</p><div class="section"><b>Por qué va aquí</b><p>${esc(s.rationale)}</p></div><div class="section"><b>Qué señal esperamos</b><p>${esc(s.expected_signal||'Por definir')}</p></div><div class="section"><b>Preparación</b><p><strong>${esc(briefNames[s.brief_status]||s.brief_status)}</strong>${instruction?` · ${esc(instruction)}`:''}</p></div>${captureDetails}<div class="section"><b>Ejecución</b><p>${esc(s.execution_note||'')}</p></div><div class="badges"><span class="badge ${matchClass}">${esc(s.match_status.replaceAll('_',' '))}</span><span class="badge ${stClass}">${esc(statusNames[s.status]||s.status)}</span><span class="badge">${esc(briefNames[s.brief_status]||s.brief_status)}</span>${s.editorial_key?`<span class="badge">${esc(s.editorial_key)}</span>`:''}${item?.editorial_key?`<span class="badge">${esc(item.editorial_key)}</span>`:''}</div></div></article>`;
   }).join('');
  }catch(err){root.innerHTML=`<div class="error">No se pudo cargar el calendario estratégico: ${esc(err?.message||err)}</div>`}
 }
