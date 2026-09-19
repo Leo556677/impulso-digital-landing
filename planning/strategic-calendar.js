@@ -121,9 +121,10 @@ function calendarColumns(cal){
  const byDate=new Map(slotsFor(cal).map(s=>[s.publish_date,s]));
  return Array.from({length:7},(_,i)=>{const date=addDays(cal.week_start,i),slot=byDate.get(date)||null;return{date,slot}})
 }
-function emptyDay(date){
+function emptyDay(date,hadSlot=false){
  const d=dval(date),weekday=new Intl.DateTimeFormat('es-PE',{weekday:'short'}).format(d).replace('.','').toUpperCase();
- return `<article class="day day-empty"><div class="day-toggle"><div class="day-head"><span class="weekday">${weekday}</span><strong>${d.getDate()}</strong></div><div class="empty-day-copy">Sin resultado con estos filtros</div></div></article>`;
+ const copy=hadSlot?'Sin resultado con estos filtros':'Sin publicación programada';
+ return `<article class="day day-empty"><div class="day-toggle"><div class="day-head"><span class="weekday">${weekday}</span><strong>${d.getDate()}</strong></div><div class="empty-day-copy">${copy}</div></div></article>`;
 }
 function renderDetail(){
  const host=document.querySelector('#dayDetail'),s=slots.find(x=>x.id===openId);
@@ -180,7 +181,7 @@ function render(){
  const global=globalMatches(),week=currentMatches(),root=document.querySelector('#calendarApp'),cal=calendars[current],visibleIds=new Set(week.map(s=>s.id));
  document.querySelector('#strategyResultCount').textContent=`${global.length} resultado${global.length===1?'':'s'} · ${new Set(global.map(x=>x.calendario_id)).size} semana${new Set(global.map(x=>x.calendario_id)).size===1?'':'s'}`;
  renderWeekNav();renderStats(week);
- const cards=calendarColumns(cal).map(({date,slot})=>slot&&visibleIds.has(slot.id)?compactCard(slot):emptyDay(date)).join('');
+ const cards=calendarColumns(cal).map(({date,slot})=>slot&&visibleIds.has(slot.id)?compactCard(slot):emptyDay(date,Boolean(slot))).join('');
  root.innerHTML=`<div class="calendar-shell"><div class="day-grid">${cards}</div></div>`;
  root.querySelectorAll('[data-slot]').forEach(btn=>btn.addEventListener('click',()=>{openId=openId===btn.dataset.slot?null:btn.dataset.slot;render()}));
  renderDetail();
