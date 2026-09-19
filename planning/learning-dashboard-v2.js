@@ -135,7 +135,7 @@ function audience(m){
   });
   const cards=['TIKTOK','INSTAGRAM','FACEBOOK'].map(p=>{
     const rows=m.latest.filter(x=>x.platform===p);
-    return '<article class="audience-card"><h3>'+esc(P[p])+'</h3><h4>Edad</h4>'+bars(weightedMap(rows,'age_pct'))+'<h4>Género</h4>'+bars(weightedMap(rows,'gender_pct'))+'<h4>Ubicación</h4>'+bars(weightedMap(rows,'locations_pct'))+'<h4>Seguidores / no seguidores</h4>'+bars(weightedMap(rows,'audience_follow_status_pct'))+'</article>';
+    return '<article class="audience-card"><h3>'+esc(P[p])+'</h3><h4>Edad</h4>'+bars(weightedMap(rows,'age_pct'))+'<h4>Género</h4>'+bars(weightedMap(rows,'gender_pct'))+'<h4>Ubicación</h4>'+bars(weightedMap(rows,'locations_pct'))+'<h4>Seguidores / no seguidores</h4>'+bars(weightedMap(rows,'audience_follow_status_pct'))+'<h4>Actividad por hora</h4>'+bars(weightedMap(rows,'activity_by_hour_pct'))+'<h4>Actividad por día</h4>'+bars(weightedMap(rows,'activity_by_day_pct'))+'</article>';
   });
   return '<section class="learn-section"><div class="section-head"><div><span>AUDIENCIA + HORARIOS</span><h2>Quién responde y cuándo</h2><p>Se analiza por plataforma; una sola publicación no define la mejor hora.</p></div></div><div class="audience-grid">'+cards.join('')+'</div><div class="timing-grid"><div><h3>Horas observadas · '+TZ+'</h3><p>'+esc(observed.length?observed.join(' · '):'No registradas')+'</p></div><div><h3>Recomendación</h3>'+(timeRecs.length?timeRecs.slice(0,2).map(r=>'<p>'+pill(EVID[r.evidence_level]||r.evidence_level,r.evidence_level==='INSUFFICIENT'?'warn':'ok')+' '+esc(r.recommendation)+'</p>').join(''):'<p class="muted">Sin evidencia suficiente.</p>')+'</div></div></section>';
 }
