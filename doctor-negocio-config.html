@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="theme-color" content="#111827">
+  <title>Dr. Olano · Configuración del negocio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./doctor-negocio-config.css?v=1">
+</head>
+<body>
+  <div id="authGate" class="gate">
+    <div class="gate-card">
+      <div class="gate-mark">DO</div>
+      <h1>Configuración del negocio</h1>
+      <p id="gateCopy">Validando tu sesión y tus permisos para Dr. Olano…</p>
+      <a id="loginLink" class="button primary" href="./cliente-acceso.html" hidden>Iniciar sesión</a>
+    </div>
+  </div>
+
+  <div id="app" class="app" hidden>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="./doctor-portal.html">
+          <span class="brand-mark">DO</span>
+          <span>
+            <strong>Dr. Olano</strong>
+            <small>Configuración del negocio</small>
+          </span>
+        </a>
+        <div class="top-actions">
+          <a class="button ghost" href="https://doctorolano.pe/" target="_blank" rel="noopener noreferrer">Ver web pública ↗</a>
+          <button id="refreshAll" class="button ghost" type="button">Actualizar</button>
+          <button id="logoutBtn" class="button subtle" type="button">Salir</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="hero panel">
+        <div>
+          <div class="eyebrow">PANEL PRIVADO · NO INDEXADO</div>
+          <h1>Control del negocio</h1>
+          <p>Administra los datos que alimentan reservas y la configuración pública de <strong>doctorolano.pe</strong> sin editar código cada vez.</p>
+        </div>
+        <div class="hero-status">
+          <span id="rolePill" class="pill">Rol: —</span>
+          <span id="syncPill" class="pill neutral">Sincronizando…</span>
+        </div>
+      </section>
+
+      <div id="readOnlyBanner" class="notice warning" hidden>
+        Tu rol permite ver la configuración, pero no modificarla. Para editar necesitas rol propietario o administrador.
+      </div>
+
+      <nav class="tabs" aria-label="Configuración del negocio">
+        <button class="tab active" data-tab="agenda" type="button">Agenda</button>
+        <button class="tab" data-tab="categorias" type="button">Categorías</button>
+        <button class="tab" data-tab="servicios" type="button">Servicios</button>
+        <button class="tab" data-tab="promociones" type="button">Promociones</button>
+        <button class="tab" data-tab="vista-publica" type="button">Vista pública</button>
+      </nav>
+
+      <div id="globalStatus" class="status" role="status" aria-live="polite"></div>
+
+      <section class="tab-panel active" data-panel="agenda">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">RESERVAS</div>
+            <h2>Días y horarios de atención</h2>
+            <p>La disponibilidad pública se calcula desde estas reglas, los horarios y la asignación de cada servicio.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <article class="panel card">
+            <div class="card-head">
+              <div><span class="step">1</span><h3>Reglas generales</h3></div>
+              <span id="agendaStateBadge" class="pill neutral">—</span>
+            </div>
+            <form id="agendaForm" class="form-grid">
+              <label class="toggle-line full">
+                <input id="agendaActiva" type="checkbox">
+                <span>Agenda pública activa</span>
+              </label>
+              <label>
+                <span>Intervalo entre inicios</span>
+                <div class="input-suffix"><input id="intervaloInicio" type="number" min="5" max="240" step="5" required><em>min</em></div>
+              </label>
+              <label>
+                <span>Anticipación mínima</span>
+                <div class="input-suffix"><input id="anticipacionMin" type="number" min="0" max="525600" required><em>min</em></div>
+              </label>
+              <label>
+                <span>Días visibles hacia adelante</span>
+                <input id="horizonteDias" type="number" min="1" max="365" required>
+              </label>
+              <label>
+                <span>Capacidad por hora</span>
+                <input id="capacidadHora" type="number" min="1" max="20" required>
+              </label>
+              <button class="button primary full write-control" type="submit">Guardar reglas</button>
+            </form>
+          </article>
+
+          <article class="panel card">
+            <div class="card-head">
+              <div><span class="step">2</span><h3>Quién o qué atiende</h3></div>
+              <button id="newResourceBtn" class="button mini write-control" type="button">+ Agregar</button>
+            </div>
+            <p class="muted">Un recurso puede ser un profesional, consultorio o equipo con horario propio. No atribuyas servicios a una persona si no corresponde.</p>
+            <form id="resourceForm" class="form-grid compact" hidden>
+              <input id="resourceId" type="hidden">
+              <label class="full"><span>Nombre</span><input id="resourceName" maxlength="120" required placeholder="Ej. Dr. Olano / Consultorio 1"></label>
+              <label><span>Tipo</span><select id="resourceType"><option value="persona">Persona</option><option value="recurso">Recurso</option></select></label>
+              <label class="toggle-line"><input id="resourceActive" type="checkbox" checked><span>Activo</span></label>
+              <div class="form-actions full">
+                <button class="button primary write-control" type="submit">Guardar</button>
+                <button id="cancelResourceBtn" class="button ghost" type="button">Cancelar</button>
+              </div>
+            </form>
+            <div id="resourceList" class="stack"></div>
+          </article>
+        </div>
+
+        <article class="panel card section-gap">
+          <div class="card-head">
+            <div><span class="step">3</span><h3>Horarios semanales</h3></div>
+            <button id="newScheduleBtn" class="button mini write-control" type="button">+ Agregar horario</button>
+          </div>
+          <p class="muted">Puedes crear uno o varios bloques por día. Ejemplo: 09:00–12:00 y 14:00–21:00.</p>
+          <form id="scheduleForm" class="form-grid schedule-form" hidden>
+            <input id="scheduleId" type="hidden">
+            <label><span>Quién atiende</span><select id="scheduleResource" required></select></label>
+            <label><span>Día</span><select id="scheduleDay" required>
+              <option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option>
+              <option value="4">Jueves</option><option value="5">Viernes</option><option value="6">Sábado</option><option value="0">Domingo</option>
+            </select></label>
+            <label><span>Desde</span><input id="scheduleStart" type="time" required></label>
+            <label><span>Hasta</span><input id="scheduleEnd" type="time" required></label>
+            <label class="toggle-line"><input id="scheduleActive" type="checkbox" checked><span>Activo</span></label>
+            <div class="form-actions full">
+              <button class="button primary write-control" type="submit">Guardar horario</button>
+              <button id="cancelScheduleBtn" class="button ghost" type="button">Cancelar</button>
+            </div>
+          </form>
+          <div id="scheduleBoard" class="schedule-board"></div>
+        </article>
+      </section>
+
+      <section class="tab-panel" data-panel="categorias">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">CATÁLOGO</div>
+            <h2>Categorías e iconos SVG</h2>
+            <p>Ordena los servicios como quieres presentarlos públicamente. El SVG se almacena como dato y se muestra de forma segura como imagen.</p>
+          </div>
+          <button id="newCategoryBtn" class="button primary write-control" type="button">+ Nueva categoría</button>
+        </div>
+
+        <div class="grid category-layout">
+          <article class="panel card">
+            <form id="categoryForm" class="form-grid" hidden>
+              <input id="categoryId" type="hidden">
+              <label class="full"><span>Nombre</span><input id="categoryName" maxlength="120" required placeholder="Ej. Medicina Estética"></label>
+              <label><span>Slug</span><input id="categorySlug" maxlength="80" required placeholder="medicina-estetica"></label>
+              <label><span>Orden</span><input id="categoryOrder" type="number" min="-9999" max="9999" value="0"></label>
+              <label class="full"><span>Descripción pública</span><textarea id="categoryDescription" maxlength="500" rows="3" placeholder="Descripción breve opcional"></textarea></label>
+              <label class="full"><span>Icono SVG</span><textarea id="categorySvg" maxlength="20000" rows="8" spellcheck="false" placeholder="<svg viewBox=&quot;0 0 24 24&quot; ...>...</svg>"></textarea><small class="help">No se aceptan scripts, eventos HTML, iframes, estilos externos ni enlaces remotos.</small></label>
+              <div class="svg-preview full">
+                <div id="categoryIconPreview" class="icon-preview empty">SVG</div>
+                <span>Vista previa segura</span>
+              </div>
+              <label class="toggle-line"><input id="categoryFeatured" type="checkbox"><span>Destacada en web</span></label>
+              <label class="toggle-line"><input id="categoryActive" type="checkbox" checked><span>Activa</span></label>
+              <div class="form-actions full">
+                <button class="button primary write-control" type="submit">Guardar categoría</button>
+                <button id="cancelCategoryBtn" class="button ghost" type="button">Cancelar</button>
+              </div>
+            </form>
+            <div id="categoryFormEmpty" class="empty-state">Selecciona una categoría para editarla o crea una nueva.</div>
+          </article>
+
+          <div id="categoryList" class="cards"></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="servicios">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">CATÁLOGO + RESERVAS</div>
+            <h2>Servicios, precios y asignación</h2>
+            <p>Un servicio visible aparece en la configuración pública; para generar horarios reservables debe tener un recurso asignado.</p>
+          </div>
+          <button id="newServiceBtn" class="button primary write-control" type="button">+ Nuevo servicio</button>
+        </div>
+
+        <div class="grid service-layout">
+          <article class="panel card sticky-card">
+            <form id="serviceForm" class="form-grid" hidden>
+              <input id="serviceId" type="hidden">
+              <label class="full"><span>Nombre</span><input id="serviceName" maxlength="160" required></label>
+              <label class="full"><span>Categoría</span><select id="serviceCategory" required></select></label>
+              <label class="full"><span>Descripción pública</span><textarea id="serviceDescription" maxlength="1000" rows="3"></textarea></label>
+              <label><span>Precio PEN</span><input id="servicePricePen" type="number" min="0" step="0.01" placeholder="Opcional"></label>
+              <label class="toggle-line price-toggle"><input id="servicePriceFrom" type="checkbox"><span>Mostrar “desde”</span></label>
+              <label><span>Duración</span><div class="input-suffix"><input id="serviceDuration" type="number" min="5" max="1440" step="5" placeholder="Opcional"><em>min</em></div></label>
+              <label><span>Orden en web</span><input id="serviceOrder" type="number" min="-9999" max="9999" value="0"></label>
+              <label class="full"><span>Quién/recurso lo atiende</span><select id="serviceResource" required></select><small class="help">La reserva pública usará el horario del recurso seleccionado.</small></label>
+              <fieldset class="full">
+                <legend>Días disponibles para este servicio</legend>
+                <div id="serviceWeekdays" class="weekday-checks"></div>
+              </fieldset>
+              <label class="toggle-line"><input id="serviceVisible" type="checkbox" checked><span>Visible en web/reservas</span></label>
+              <label class="toggle-line"><input id="serviceActive" type="checkbox" checked><span>Servicio activo</span></label>
+              <div class="form-actions full">
+                <button class="button primary write-control" type="submit">Guardar servicio</button>
+                <button id="cancelServiceBtn" class="button ghost" type="button">Cancelar</button>
+              </div>
+            </form>
+            <div id="serviceFormEmpty" class="empty-state">Selecciona un servicio para editarlo o crea uno nuevo.</div>
+          </article>
+
+          <div>
+            <div class="toolbar panel">
+              <input id="serviceSearch" type="search" placeholder="Buscar servicio…">
+              <select id="serviceCategoryFilter"><option value="">Todas las categorías</option></select>
+              <span id="serviceCount" class="pill neutral">0 servicios</span>
+            </div>
+            <div id="serviceList" class="cards service-cards"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="promociones">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">OFERTAS</div>
+            <h2>Promoción activa</h2>
+            <p>Configura texto, descuento, contador, fechas y alcance. El backend de la oferta pública usa estos valores en tiempo real.</p>
+          </div>
+          <button id="newPromotionBtn" class="button primary write-control" type="button">+ Nueva promoción</button>
+        </div>
+
+        <div class="grid promo-layout">
+          <article class="panel card">
+            <form id="promotionForm" class="form-grid" hidden>
+              <input id="promotionId" type="hidden">
+              <label class="full"><span>Nombre interno</span><input id="promotionInternalName" maxlength="160" required></label>
+              <label class="full"><span>Título público</span><input id="promotionTitle" maxlength="160" required></label>
+              <label class="full"><span>Mensaje público</span><textarea id="promotionMessage" maxlength="800" rows="3" required></textarea></label>
+              <label class="full"><span>Texto del botón</span><input id="promotionCta" maxlength="100" required></label>
+              <label><span>Descuento</span><div class="input-suffix"><input id="promotionDiscount" type="number" min="0" max="100" step="0.01" required><em>%</em></div></label>
+              <label><span>Contador</span><div class="input-suffix"><input id="promotionCountdown" type="number" min="30" max="86400" step="30" required><em>seg</em></div></label>
+              <label class="full"><span>Alcance</span><select id="promotionScope">
+                <option value="all_services">Todos los servicios</option>
+                <option value="category">Una categoría</option>
+                <option value="service">Un servicio</option>
+              </select></label>
+              <label id="promotionCategoryWrap" class="full" hidden><span>Categoría</span><select id="promotionCategory"></select></label>
+              <label id="promotionServiceWrap" class="full" hidden><span>Servicio</span><select id="promotionService"></select></label>
+              <label><span>Inicio (opcional)</span><input id="promotionStart" type="datetime-local"></label>
+              <label><span>Fin (opcional)</span><input id="promotionEnd" type="datetime-local"></label>
+              <label class="full"><span>Imagen URL (opcional)</span><input id="promotionImage" type="url" maxlength="1000" placeholder="https://…"></label>
+              <label class="full"><span>Nota legal (opcional)</span><textarea id="promotionLegal" maxlength="1000" rows="2"></textarea></label>
+              <label class="toggle-line"><input id="promotionReferential" type="checkbox" checked><span>Precio referencial</span></label>
+              <label class="toggle-line"><input id="promotionActive" type="checkbox"><span>Promoción activa</span></label>
+              <div class="form-actions full">
+                <button class="button primary write-control" type="submit">Guardar promoción</button>
+                <button id="cancelPromotionBtn" class="button ghost" type="button">Cancelar</button>
+              </div>
+            </form>
+            <div id="promotionFormEmpty" class="empty-state">Selecciona una promoción para editarla o crea una nueva.</div>
+          </article>
+
+          <div>
+            <article class="promo-preview panel" id="promotionPreview">
+              <div class="promo-badge">VISTA PREVIA</div>
+              <h3 id="previewPromoTitle">Sin promoción seleccionada</h3>
+              <p id="previewPromoMessage">El texto que verá el visitante aparecerá aquí.</p>
+              <div class="promo-preview-bottom">
+                <strong id="previewPromoDiscount">—</strong>
+                <span id="previewPromoCountdown">—</span>
+              </div>
+              <button id="previewPromoCta" type="button" disabled>Botón</button>
+            </article>
+            <div id="promotionList" class="cards section-gap"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="vista-publica">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">LECTURA PÚBLICA</div>
+            <h2>Qué está entregando el sistema a la web</h2>
+            <p>Esta comprobación lee el endpoint público de configuración. Sirve para verificar que el panel y la fuente pública están sincronizados.</p>
+          </div>
+          <button id="refreshPublicBtn" class="button primary" type="button">Comprobar ahora</button>
+        </div>
+        <div id="publicConfigStatus" class="notice neutral">Aún no se ha comprobado.</div>
+        <div id="publicSummary" class="public-summary"></div>
+        <details class="panel raw-data">
+          <summary>Ver respuesta técnica</summary>
+          <pre id="publicConfigRaw">{}</pre>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./doctor-negocio-config.js?v=1"></script>
+</body>
+</html>
