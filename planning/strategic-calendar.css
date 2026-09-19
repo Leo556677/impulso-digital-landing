@@ -38,6 +38,9 @@ h1{font-family:Georgia,"Times New Roman",serif;font-size:42px;line-height:1;marg
 .day-toggle{width:100%;height:100%;min-height:360px;border:0;background:#fff;text-align:left;padding:0 12px 12px;display:flex;flex-direction:column;color:inherit;cursor:pointer}
 .day-toggle:hover{background:#fcfdff}.accent{height:4px;background:var(--svc,#8194aa);margin:0 -12px 12px}
 .day-head{display:flex;flex-direction:column;gap:1px;margin-bottom:14px}.weekday{font-size:10px;font-weight:800;color:#5f7190}.day-head strong{font-size:27px;line-height:1;color:#102750}
+.project-badge{align-self:flex-start;margin:-4px 0 12px;padding:6px 9px;border-radius:7px;font-size:10px;font-weight:900;letter-spacing:.045em;line-height:1;box-shadow:inset 0 1px 0 rgba(255,255,255,.16)}
+.project-badge.has-project{background:linear-gradient(135deg,#123d76,#2468b5);color:#fff;border:1px solid #1b5798}
+.project-badge.pending-project{background:#fff2d8;color:#9c5e05;border:1px solid #e9c26f}
 .service-mark{width:46px;height:46px;border-radius:50%;background:#f0f4f8;border:1px solid #e0e7ef;display:grid;place-items:center;font-family:Georgia,"Times New Roman",serif;font-size:13px;font-weight:700;color:var(--svc,#496886);margin-bottom:12px}
 .service{font-size:10px;font-weight:800;color:#5e7293;margin-bottom:8px}.title{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.15;margin:0 0 11px;color:#112852;letter-spacing:-.2px}
 .role{font-size:11px;color:#607395;margin:0 0 14px}.status-band{margin-top:auto;display:flex;align-items:center;gap:7px;border-radius:8px;padding:9px 10px;font-size:10px;font-weight:850;letter-spacing:.01em}
@@ -48,11 +51,16 @@ h1{font-family:Georgia,"Times New Roman",serif;font-size:42px;line-height:1;marg
 .day-detail{margin-top:14px;background:#fff;border:1px solid #dbe4ed;border-radius:11px;box-shadow:var(--shadow);display:grid;grid-template-columns:330px minmax(0,1fr);overflow:hidden}
 .detail-visual{background:linear-gradient(180deg,#eaf1f8,#f4f7fb);padding:20px;display:flex;flex-direction:column}
 .detail-date{font-family:Georgia,"Times New Roman",serif;font-size:18px;color:#263f64;text-transform:capitalize;margin-bottom:12px}
+.detail-project-badge{align-self:flex-start;margin:-4px 0 12px;padding:7px 10px;border-radius:7px;font-size:10px;font-weight:900;letter-spacing:.05em}
+.detail-project-badge.has-project,.detail-project-inline.has-project{background:#143f77;color:#fff;border:1px solid #1a568f}
+.detail-project-badge.pending-project,.detail-project-inline.pending-project{background:#fff2d8;color:#9c5e05;border:1px solid #e9c26f}
 .visual-link{display:block;border-radius:9px;overflow:hidden;background:#dfe6ee;min-height:260px}
 .visual-link img{width:100%;height:100%;min-height:260px;max-height:340px;display:block;object-fit:cover}
 .visual-meta{margin-top:12px;display:grid;gap:3px}.visual-meta b{font-size:10px;letter-spacing:.05em;color:#536987}.visual-meta span{font-size:11px;color:#6b7d98}
 .detail-dossier{padding:22px 24px}.detail-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;padding-bottom:10px;border-bottom:1px solid #e3e9f0}
-.detail-kicker{font-size:10px;color:#667b9c;text-transform:uppercase;font-weight:800;letter-spacing:.05em}.detail-head h2{font-family:Georgia,"Times New Roman",serif;font-size:27px;line-height:1.15;margin:3px 0 0;color:#112852}
+.detail-kicker{font-size:10px;color:#667b9c;text-transform:uppercase;font-weight:800;letter-spacing:.05em}
+.detail-project-inline{display:inline-block;margin:6px 0 2px;padding:5px 8px;border-radius:6px;font-size:9px;font-weight:900;letter-spacing:.05em}
+.detail-head h2{font-family:Georgia,"Times New Roman",serif;font-size:27px;line-height:1.15;margin:5px 0 0;color:#112852}
 .detail-close{border:0;background:transparent;color:#436080;font-size:25px;line-height:1;cursor:pointer}
 .dossier-row{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:start;padding:14px 2px;border-bottom:1px solid #e8edf3}.dossier-label{font-size:11px;font-weight:800;color:#344d72}.dossier-row p{margin:0;color:#60718e;font-size:12px;line-height:1.5}.dossier-row.production{align-items:center;border-bottom:0}.dossier-row.production .status-band{margin:0;justify-self:start;min-width:180px}
 .footer{margin:22px 0 0;padding-top:14px;border-top:1px solid #dde5ee;color:#8290a3;font-size:10px}.loading,.error{padding:28px;background:#fff;border:1px solid var(--line);border-radius:10px;text-align:center;color:#687b98}
