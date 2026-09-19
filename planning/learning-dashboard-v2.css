@@ -396,3 +396,24 @@
   .learning-dark .summary-audience-grid,.learning-dark .summary-evidence-grid{grid-template-columns:1fr}
   .learning-dark .dark-learning-footer{grid-template-columns:34px 1fr}.learning-dark .dark-learning-footer strong{display:none}
 }
+
+/* DARK V9 ICON FIXES */
+.learning-dark .filter-brand-icon.tiktok,
+.learning-dark .platform-brand-icon.tiktok,
+.learning-dark .platform-mini-brand.tiktok,
+.learning-dark .table-network-icon.tiktok,
+.learning-dark .table-brand.tiktok,
+.learning-dark .chart-brand.tiktok{color:#fff}
+.learning-dark .filter-brand-icon.instagram,
+.learning-dark .platform-brand-icon.instagram,
+.learning-dark .platform-mini-brand.instagram,
+.learning-dark .table-network-icon.instagram,
+.learning-dark .table-brand.instagram,
+.learning-dark .chart-brand.instagram{color:#ef57de}
+.learning-dark .filter-brand-icon.facebook,
+.learning-dark .platform-brand-icon.facebook,
+.learning-dark .platform-mini-brand.facebook,
+.learning-dark .table-network-icon.facebook,
+.learning-dark .table-brand.facebook,
+.learning-dark .chart-brand.facebook{color:#5b8fff}
+.learning-dark .platform-brand-wrap{background:#0d1931;border-color:#29466d}
