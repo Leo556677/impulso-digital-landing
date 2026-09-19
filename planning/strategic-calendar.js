@@ -33,7 +33,7 @@ const svgSummary=kind=>kind==='services'
  ?'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>'
  :'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 17h.01"/></svg>';
 
-let calendars=[],slots=[],planMaps=new Map(),trMap=new Map(),projectMap=new Map(),current=0,openId=null;
+let calendars=[],slots=[],planMaps=new Map(),trMap=new Map(),projectMap=new Map(),pieceMap=new Map(),current=0,openId=null;
 
 async function mountCalendarBusinessSwitcher(ctx){
  const host=document.querySelector('.brandline');
@@ -92,6 +92,21 @@ function itemFor(s){if(s.source_bank==='TRANSVERSAL_BANK')return trMap.get(s.tra
 function serviceName(s){return s.service_key?names[s.service_key]:'Marca / equipo'}
 function visualFor(s){return visuals[s.service_key||'MARCA']||visuals.MARCA}
 function projectInfo(s){return s?.content_id?projectMap.get(s.content_id)||null:null}
+function pieceFor(s){return s?.content_id?pieceMap.get(s.content_id)||null:null}
+function scriptInfo(s){
+ const piece=pieceFor(s),meta=piece?.metadata||{},recording=meta.recording_view_v1||{},status=piece?.production_status||{};
+ const text=String(recording.teleprompter_text||piece?.master_script||'').trim();
+ const version=recording.approved_script_version||meta.script_revision_v1?.approved_script_version||meta.approved_script_version||meta.script_version||'Versión aprobada';
+ const recorded=Boolean(status.RECORDED);
+ const ready=Boolean(status.PRODUCTION_READY);
+ const label=recorded?'Guion usado en grabación':ready?'Guion listo para grabar':'Guion aprobado para grabar';
+ const source=recording.teleprompter_text?'Vista de teleprompter':'Guion maestro aprobado';
+ const preview=text?text.split(/\n\s*\n/)[0]:'';
+ return {piece,text,version,recorded,ready,label,source,preview};
+}
+function scriptParagraphs(text){
+ return String(text||'').split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean).map((p,i)=>`<p data-script-paragraph="${i+1}">${esc(p)}</p>`).join('');
+}
 function projectLabel(s){
  const n=Number(projectInfo(s)?.project_display_number);
  return Number.isFinite(n)&&n>0?`PROYECTO ${String(n).padStart(3,'0')}`:'PROYECTO PENDIENTE'
@@ -177,8 +192,44 @@ function emptyDay(date,hadSlot=false){
 function renderDetail(){
  const host=document.querySelector('#dayDetail'),s=slots.find(x=>x.id===openId);
  if(!s||s.calendario_id!==calendars[current]?.id||!matches(s)){host.hidden=true;host.innerHTML='';return}
- const item=itemFor(s),svc=s.service_key||'MARCA',visual=visualFor(s),d=s.publish_date;
+ const item=itemFor(s),svc=s.service_key||'MARCA',visual=visualFor(s),d=s.publish_date,script=scriptInfo(s);
  host.hidden=false;host.dataset.service=svc;
+ const scriptBlock=script.text?`
+   <details class="script-reader">
+     <summary>
+       <span class="script-reader-icon">
+         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6M9 19h4"/></svg>
+       </span>
+       <span class="script-reader-summary">
+         <span class="script-reader-kicker">GUIÓN</span>
+         <b>${esc(script.label)}</b>
+         <small>${esc(script.version)} · ${esc(script.source)}</small>
+         <span class="script-reader-preview">${esc(script.preview)}</span>
+       </span>
+       <span class="script-reader-action">Leer guion completo ${svgChevron('down')}</span>
+     </summary>
+     <div class="script-reader-body">
+       <div class="script-reader-toolbar">
+         <div>
+           <span class="script-status ${script.recorded?'recorded':script.ready?'ready':'approved'}">${script.recorded?'GRABADO':script.ready?'LISTO PARA GRABAR':'APROBADO'}</span>
+           <span class="script-version">Versión ${esc(script.version)}</span>
+         </div>
+         <button id="copyScript" type="button" class="copy-script-btn">
+           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
+           <span>Copiar guion</span>
+         </button>
+       </div>
+       <div class="script-paper">
+         ${scriptParagraphs(script.text)}
+       </div>
+     </div>
+   </details>`:`
+   <div class="script-reader script-reader-empty">
+     <span class="script-reader-icon">
+       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M9 12h6M9 16h4"/></svg>
+     </span>
+     <div><b>Guion todavía no disponible</b><span>Esta pieza no tiene un texto aprobado vinculado.</span></div>
+   </div>`;
  host.innerHTML=`
    <div class="detail-visual">
      <div class="detail-date">${esc(fmtLong(d))}</div>
@@ -220,8 +271,22 @@ function renderDetail(){
        <span class="dossier-label">Estado de producción</span>
        <div class="status-band ${badgeClass(s)}"><span class="status-dot"></span>${esc(statusLabel(s).toUpperCase())}</div>
      </div>
+     ${scriptBlock}
    </div>`;
  document.querySelector('#closeDetail')?.addEventListener('click',()=>{openId=null;render()});
+ document.querySelector('#copyScript')?.addEventListener('click',async e=>{
+   e.preventDefault();e.stopPropagation();
+   const btn=e.currentTarget,label=btn.querySelector('span');
+   try{
+     await navigator.clipboard.writeText(script.text);
+     label.textContent='Copiado';
+     btn.classList.add('copied');
+     setTimeout(()=>{label.textContent='Copiar guion';btn.classList.remove('copied')},1600);
+   }catch(_){
+     label.textContent='No se pudo copiar';
+     setTimeout(()=>{label.textContent='Copiar guion'},1600);
+   }
+ });
  host.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function render(){
@@ -250,17 +315,19 @@ async function load(){
   if(ce)throw ce;if(!cals?.length)throw new Error('No hay semanas publicadas');
   calendars=cals;
   const ids=calendars.map(c=>c.id),planKeys=[...new Set(calendars.map(c=>c.bank_plan_key))];
-  const [{data:ss,error:se},{data:plans,error:pe},{data:trans,error:te},{data:projects,error:pre}]=await Promise.all([
+  const [{data:ss,error:se},{data:plans,error:pe},{data:trans,error:te},{data:projects,error:pre},{data:pieces,error:pce}]=await Promise.all([
    sb.from('content_calendario_publicacion_slots').select('id,calendario_id,negocio_id,publish_date,strategic_role,service_key,source_bank,editorial_key,transversal_id,content_id,match_status,rationale,expected_signal,execution_note,status,actual_publication_id,brief_status').in('calendario_id',ids).order('publish_date'),
    sb.from('content_planes_editoriales').select('plan_key,document').eq('negocio_id',BUSINESS).in('plan_key',planKeys),
    sb.from('content_banco_transversal').select('id,negocio_id,editorial_key,title,question,strategic_role,objective,audience,motivation,format,status').eq('negocio_id',BUSINESS),
-   sb.from('content_public_project_labels').select('content_id,project_display_number,project_created_at').eq('negocio_id',BUSINESS)
+   sb.from('content_public_project_labels').select('content_id,project_display_number,project_created_at').eq('negocio_id',BUSINESS),
+   sb.from('content_piezas').select('id,content_code,estado,master_script,metadata,production_status,approved_at').eq('negocio_id',BUSINESS)
   ]);
-  if(se||pe||te||pre)throw se||pe||te||pre;
+  if(se||pe||te||pre||pce)throw se||pe||te||pre||pce;
   slots=ss||[];
   planMaps=new Map((plans||[]).map(p=>[p.plan_key,p.document]));
   trMap=new Map((trans||[]).map(x=>[x.id,x]));
   projectMap=new Map((projects||[]).map(x=>[x.content_id,x]));
+  pieceMap=new Map((pieces||[]).map(x=>[x.id,x]));
   current=chooseInitial();
   renderFilters();render();
   document.querySelector('#prevWeek').addEventListener('click',()=>{if(current>0){current--;openId=null;render()}});
