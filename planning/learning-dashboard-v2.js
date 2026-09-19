@@ -397,7 +397,7 @@ function metricRibbon(base,m){
   ];
   return '<div class="metric-ribbon">'+cards.map(([label,val,pv,tone,ico])=>{
     const c=WORKSPACE.compare==='previous'&&pv!==null?compareText(val,pv):null;
-    return '<article class="metric-tile '+tone+'"><div class="metric-icon">'+uiIcon(ico)+'</div><div><span>'+esc(label)+'</span><strong>'+esc(fmt(val))+'</strong>'+(c?'<small class="'+c.cls+'">'+esc(c.text)+' vs. periodo anterior</small>':'<small class="neutral">Datos propios</small>')+'</div></article>';
+    return '<article class="metric-tile '+tone+'" data-hover-card="kpi"><div class="metric-icon">'+uiIcon(ico)+'</div><div class="metric-copy"><span class="metric-label">'+esc(label)+'</span><strong>'+esc(fmt(val))+'</strong>'+(c?'<small class="'+c.cls+'">'+esc(c.text)+' vs. periodo anterior</small>':'<small class="neutral">Datos propios</small>')+'</div></article>';
   }).join('')+'</div>';
 }
 function seriesByDate(m,kind='views'){
@@ -419,21 +419,40 @@ function shortDate(iso){
   return new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'short',timeZone:'UTC'}).format(new Date(iso+'T12:00:00Z')).replace('.','');
 }
 function lineChart(m,kind='views'){
-  const data=seriesByDate(m,kind),W=1100,H=300,L=58,R=22,T=24,B=48;
+  const data=seriesByDate(m,kind),W=1100,H=320,L=64,R=28,T=34,B=58;
   if(!data.dates.length)return '<div class="analytics-empty">'+uiIcon('chart')+'<span>No hay datos para graficar con estos filtros.</span></div>';
-  const vals=Object.values(data.series).flat(),max=Math.max(1,...vals),x=i=>data.dates.length===1?(L+(W-R-L)/2):L+i*(W-R-L)/(data.dates.length-1),y=v=>T+(H-B-T)*(1-v/max);
-  const colors={TIKTOK:'#1f2937',INSTAGRAM:'#d9559f',FACEBOOK:'#2f80ed'};
+  const colors={TIKTOK:'#111827',INSTAGRAM:'#e43f89',FACEBOOK:'#2878d4'};
+  const unit=kind==='views'?'visualizaciones':'interacciones';
+  const legend=Object.keys(data.series).map(p=>'<span>'+brandIcon(p,'chart-brand')+' '+esc(P[p])+'</span>').join('');
+  if(data.dates.length===1){
+    const date=data.dates[0];
+    const entries=Object.entries(data.series).map(([p,arr])=>({p,value:Number(arr[0]||0)}));
+    const max=Math.max(1,...entries.map(x=>x.value));
+    const plotW=W-L-R,baseY=H-B,barW=Math.min(150,plotW/(entries.length*2.2)),gap=(plotW-entries.length*barW)/(entries.length+1);
+    const grid=Array.from({length:5},(_,i)=>{const v=max*(4-i)/4,yy=T+i*(baseY-T)/4;return '<g><line x1="'+L+'" y1="'+yy+'" x2="'+(W-R)+'" y2="'+yy+'" class="chart-grid"/><text x="'+(L-12)+'" y="'+(yy+4)+'" text-anchor="end" class="chart-axis">'+esc(fmt(v))+'</text></g>'}).join('');
+    const bars=entries.map((row,i)=>{
+      const h=(row.value/max)*(baseY-T-8),x=L+gap+(barW+gap)*i,y=baseY-h;
+      return '<g class="chart-bar-group" data-chart-tip="'+esc(P[row.p]+' · '+fmt(row.value)+' '+unit)+'">'+
+        '<rect class="chart-bar chart-bar-'+row.p.toLowerCase()+'" x="'+x+'" y="'+y+'" width="'+barW+'" height="'+Math.max(3,h)+'" rx="10" fill="'+colors[row.p]+'"/>'+
+        '<text x="'+(x+barW/2)+'" y="'+Math.max(T+16,y-12)+'" text-anchor="middle" class="chart-value">'+esc(fmt(row.value))+'</text>'+
+        '<text x="'+(x+barW/2)+'" y="'+(baseY+30)+'" text-anchor="middle" class="chart-category">'+esc(P[row.p])+'</text>'+
+      '</g>';
+    }).join('');
+    return '<div class="chart-card chart-card-single"><div class="chart-head"><div><b>'+(kind==='views'?'Visualizaciones por red':'Interacciones por red')+'</b><span>'+esc(shortDate(date))+' · compara las plataformas del mismo corte.</span></div><div class="chart-legend">'+legend+'</div></div>'+
+      '<svg class="analytics-line-chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(kind==='views'?'Visualizaciones por plataforma':'Interacciones por plataforma')+'">'+grid+bars+'</svg>'+
+      '<div class="chart-reading"><b>Cómo leerlo:</b> cada barra es una red social. Más altura = más '+unit+' en este corte.</div></div>';
+  }
+  const vals=Object.values(data.series).flat(),max=Math.max(1,...vals),x=i=>L+i*(W-R-L)/(data.dates.length-1),y=v=>T+(H-B-T)*(1-v/max);
   const grid=Array.from({length:5},(_,i)=>{const v=max*(4-i)/4,yy=T+i*(H-B-T)/4;return '<g><line x1="'+L+'" y1="'+yy+'" x2="'+(W-R)+'" y2="'+yy+'" class="chart-grid"/><text x="'+(L-10)+'" y="'+(yy+4)+'" text-anchor="end" class="chart-axis">'+esc(fmt(v))+'</text></g>'}).join('');
-  const bars=data.posts.map((v,i)=>{const bw=Math.min(22,(W-R-L)/Math.max(2,data.dates.length)*.35);return v?'<rect x="'+(x(i)-bw/2)+'" y="'+(H-B-16-Math.min(55,v*12))+'" width="'+bw+'" height="'+Math.min(55,v*12)+'" rx="4" class="chart-post-bar"/>':''}).join('');
   const lines=Object.entries(data.series).map(([p,arr])=>{
     const pts=arr.map((v,i)=>x(i)+','+y(v)).join(' ');
-    const circles=arr.map((v,i)=>'<circle cx="'+x(i)+'" cy="'+y(v)+'" r="4.5" fill="'+colors[p]+'" class="chart-point"><title>'+esc(P[p])+' · '+esc(shortDate(data.dates[i]))+' · '+esc(fmt(v))+'</title></circle>').join('');
-    return (arr.length>1?'<polyline points="'+pts+'" fill="none" stroke="'+colors[p]+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>':'')+circles;
+    const circles=arr.map((v,i)=>'<circle cx="'+x(i)+'" cy="'+y(v)+'" r="5" fill="'+colors[p]+'" class="chart-point" data-chart-tip="'+esc(P[p]+' · '+shortDate(data.dates[i])+' · '+fmt(v)+' '+unit)+'"/>').join('');
+    return '<polyline points="'+pts+'" fill="none" stroke="'+colors[p]+'" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="chart-line"/>'+circles;
   }).join('');
-  const labels=data.dates.map((d,i)=>'<text x="'+x(i)+'" y="'+(H-15)+'" text-anchor="middle" class="chart-axis">'+esc(shortDate(d))+'</text>').join('');
-  const legend=Object.keys(data.series).map(p=>'<span>'+brandIcon(p,'chart-brand')+' '+esc(P[p])+'</span>').join('');
-  return '<div class="chart-card"><div class="chart-head"><div><b>'+(kind==='views'?'Visualizaciones por fecha':'Interacciones por fecha')+'</b><span>Las barras muestran cuántas publicaciones hubo ese día.</span></div><div class="chart-legend">'+legend+'</div></div><svg class="analytics-line-chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(kind==='views'?'Evolución de visualizaciones':'Evolución de interacciones')+'">'+grid+bars+lines+labels+'</svg></div>';
+  const labels=data.dates.map((d,i)=>'<text x="'+x(i)+'" y="'+(H-18)+'" text-anchor="middle" class="chart-axis">'+esc(shortDate(d))+'</text>').join('');
+  return '<div class="chart-card"><div class="chart-head"><div><b>'+(kind==='views'?'Evolución de visualizaciones':'Evolución de interacciones')+'</b><span>Cada punto es una fecha; sigue el movimiento de cada red a lo largo del tiempo.</span></div><div class="chart-legend">'+legend+'</div></div><svg class="analytics-line-chart" viewBox="0 0 '+W+' '+H+'" role="img">'+grid+lines+labels+'</svg><div class="chart-reading"><b>Cómo leerlo:</b> subidas y bajadas muestran cómo cambió cada red entre fechas.</div></div>';
 }
+
 function trafficMap(rows){
   const totals={},weights={};
   rows.forEach(r=>{
@@ -626,6 +645,24 @@ function hashtagsWorkspace(m){
 function learningWorkspace(m){
   return '<div class="workspace-view">'+actionDeck(m)+creativePremium(m)+voicePremium(m)+evidencePremium(m)+deepDivePremium(m)+'</div>';
 }
+function bindDashboardHover(){
+  let tip=document.querySelector('#dashboardHoverTip');
+  if(!tip){
+    tip=document.createElement('div');
+    tip.id='dashboardHoverTip';
+    tip.className='dashboard-hover-tip';
+    document.body.appendChild(tip);
+  }
+  const move=(e)=>{
+    const pad=16,x=Math.min(window.innerWidth-240,e.clientX+pad),y=Math.min(window.innerHeight-70,e.clientY+pad);
+    tip.style.left=x+'px';tip.style.top=y+'px';
+  };
+  document.querySelectorAll('[data-chart-tip]').forEach(el=>{
+    el.addEventListener('pointerenter',e=>{tip.textContent=el.dataset.chartTip||'';tip.classList.add('show');move(e)});
+    el.addEventListener('pointermove',move);
+    el.addEventListener('pointerleave',()=>tip.classList.remove('show'));
+  });
+}
 function bindWorkspace(){
   document.querySelectorAll('[data-work-view]').forEach(btn=>btn.addEventListener('click',()=>{WORKSPACE.view=btn.dataset.workView||'summary';renderLearning()}));
   document.querySelector('[data-work-compare]')?.addEventListener('change',e=>{WORKSPACE.compare=e.target.value;renderLearning()});
@@ -643,7 +680,7 @@ function workspaceContent(base,m){
 function renderLearning(){
   if(!LEARNING_BASE)return;const m=filteredModel(LEARNING_BASE);
   root().innerHTML=workspaceToolbar(LEARNING_BASE,m)+workspaceContent(LEARNING_BASE,m);
-  bindFilters();bindPremiumInteractions();bindWorkspace();
+  bindFilters();bindPremiumInteractions();bindWorkspace();bindDashboardHover();
 }
 
 function dimensionLabel(v){
