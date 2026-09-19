@@ -370,6 +370,16 @@ function bindPremiumInteractions(){
     document.querySelectorAll('[data-audience-tab]').forEach(x=>x.classList.toggle('active',x===btn));
     document.querySelectorAll('[data-audience-panel]').forEach(x=>x.classList.toggle('active',x.dataset.audiencePanel===p));
   }));
+  const links=[...document.querySelectorAll('.learning-section-nav a[href^="#"]')];
+  const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  if('IntersectionObserver' in window&&sections.length){
+    const obs=new IntersectionObserver(entries=>{
+      const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+      if(!visible)return;
+      links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+visible.target.id));
+    },{rootMargin:'-18% 0px -68% 0px',threshold:[0,.15,.35]});
+    sections.forEach(s=>obs.observe(s));
+  }
 }
 
 function render(m){root().innerHTML=executiveOverview(m)+actionDeck(m)+projectSpotlight(m)+platformComparisonPremium(m)+audienceExplorer(m)+creativePremium(m)+voicePremium(m)+evidencePremium(m)+deepDivePremium(m);bindPremiumInteractions()}
