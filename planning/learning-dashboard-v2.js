@@ -55,7 +55,7 @@ const projectLabel=x=>'PROYECTO '+String(Number(x)||0).padStart(4,'0');
 
 function latestSnapshots(rows){
   const m=new Map();
-  rows.forEach(r=>{const p=m.get(r.publication_id);if(!p||new Date(r.corte_at)>new Date(p.corte_at))m.set(r.publication_id,r)});
+  rows.forEach(r=>{const p=m.get(r.publication_id);if(!p||new Date(r.snapshot_at)>new Date(p.snapshot_at))m.set(r.publication_id,r)});
   return [...m.values()];
 }
 function weightedMap(rows,field){
@@ -89,7 +89,7 @@ async function loadData(){
   const q=await Promise.all([
     sb.from('content_piezas').select('id,content_num,content_code,titulo,servicio,objetivo,categoria,formato,hook_family,hook_id,hook_verbal,rehooks,cta_family,cta_master,master_script,metadata,estado').eq('negocio_id',ctx.negocioId),
     sb.from('content_publicaciones').select('id,content_id,plataforma,estado,url,caption,hashtags,published_at,metricas,resultado,metadata,publication_package_id,package_match_status').eq('negocio_id',ctx.negocioId),
-    sb.from('content_metric_cortes').select('*').eq('negocio_id',ctx.negocioId).order('corte_at',{ascending:false}),
+    sb.from('content_metric_snapshots').select('*').eq('negocio_id',ctx.negocioId).order('snapshot_at',{ascending:false}),
     sb.from('content_publication_packages').select('*').eq('negocio_id',ctx.negocioId).order('prepared_at',{ascending:false}),
     sb.from('content_public_project_labels').select('*').eq('negocio_id',ctx.negocioId),
     sb.from('content_strategy_signals').select('*').eq('negocio_id',ctx.negocioId).order('created_at',{ascending:false}),
@@ -114,12 +114,12 @@ function summary(m){
   const views=m.latest.reduce((a,x)=>a+(metric(x.metrics,'views')||0),0);
   const ints=m.latest.reduce((a,x)=>a+interactions(x.metrics),0);
   const clicks=m.latest.reduce((a,x)=>a+(metric(x.metrics,'clicks')||0),0);
-  return '<section class="learn-section"><div class="section-head"><div><span>RESUMEN</span><h2>Estado de aprendizaje</h2></div>'+pill(m.snaps.length+' cortes','info')+'</div><div class="learn-stats">'+
+  return '<section class="learn-section"><div class="section-head"><div><span>RESUMEN</span><h2>Estado de aprendizaje</h2></div>'+pill(m.snaps.length+' snapshots','info')+'</div><div class="learn-stats">'+
     stat('Publicaciones reales',m.pubs.filter(x=>x.estado==='PUBLISHED').length,'registros por plataforma')+
-    stat('Views observadas',fmt(views),'última lectura disponible')+
+    stat('Views observadas',fmt(views),'último snapshot de cada publicación')+
     stat('Interacciones',fmt(ints),'según cada plataforma')+
     stat('Clics',fmt(clicks),'cuando están disponibles')+
-    stat('Videos medidos',new Set(m.latest.map(x=>x.content_id)).size,'con al menos un corte')+
+    stat('Videos medidos',new Set(m.latest.map(x=>x.content_id)).size,'con al menos un snapshot')+
     stat('Comentarios con texto',m.comments.filter(x=>!x.is_creator_reply).length,'voz de audiencia ingerida')+
     stat('Hipótesis abiertas',m.hyps.filter(x=>x.status!=='RETIRED').length,'con siguiente prueba')+
   '</div></section>';
@@ -161,9 +161,9 @@ function platforms(m){
 function evolution(m){
   const by=new Map();m.snaps.forEach(s=>{if(!by.has(s.publication_id))by.set(s.publication_id,[]);by.get(s.publication_id).push(s)});
   const rows=m.pubs.filter(x=>by.has(x.id));
-  return '<section class="learn-section"><div class="section-head"><div><span>EVOLUCIÓN</span><h2>T+12h → T+24h → T+72h → T+7d</h2><p>Los cortes no se sobrescriben.</p></div></div><div class="timeline-list">'+(rows.length?rows.map(pub=>{
-    const snaps=by.get(pub.id).sort((a,b)=>new Date(a.corte_at)-new Date(b.corte_at));
-    return '<article><b>'+esc(pub.project)+' · '+esc(P[pub.plataforma])+'</b>'+snaps.map(s=>'<div class="time-point"><i></i><span><b>'+esc(s.corte_stage)+'</b> '+esc(dt(s.corte_at))+' · '+esc(fmt(metric(s.metrics,'views')))+' views · '+esc(fmt(interactions(s.metrics)))+' int.</span></div>').join('')+'</article>';
+  return '<section class="learn-section"><div class="section-head"><div><span>EVOLUCIÓN</span><h2>T+12h → T+24h → T+72h → T+7d</h2><p>Los snapshots no se sobrescriben.</p></div></div><div class="timeline-list">'+(rows.length?rows.map(pub=>{
+    const snaps=by.get(pub.id).sort((a,b)=>new Date(a.snapshot_at)-new Date(b.snapshot_at));
+    return '<article><b>'+esc(pub.project)+' · '+esc(P[pub.plataforma])+'</b>'+snaps.map(s=>'<div class="time-point"><i></i><span><b>'+esc(s.snapshot_stage)+'</b> '+esc(dt(s.snapshot_at))+' · '+esc(fmt(metric(s.metrics,'views')))+' views · '+esc(fmt(interactions(s.metrics)))+' int.</span></div>').join('')+'</article>';
   }).join(''):'<p class="muted">Sin evolución suficiente.</p>')+'</div></section>';
 }
 function audience(m){
@@ -202,7 +202,7 @@ function commentInsights(m){
   const chips=rows=>rows.length?'<div class="comment-chips">'+rows.map(([k,v])=>'<span><b>'+esc(k)+'</b> × '+esc(v)+'</span>').join('')+'</div>':'<p class="muted">Aún sin muestra suficiente.</p>';
   return '<section class="learn-section"><div class="section-head"><div><span>COMENTARIOS</span><h2>Qué piensa y cómo habla la audiencia</h2><p>El conteo y el texto son datos distintos. El análisis cualitativo usa solo comentarios cuyo texto fue realmente ingerido.</p></div>'+pill(audience.length+' textos','info')+'</div>'+
   '<div class="comment-coverage">'+
-    stat('Comentarios reportados',reported||0,'según último corte por publicación')+
+    stat('Comentarios reportados',reported||0,'según último snapshot por publicación')+
     stat('Textos ingeridos',audience.length,'sin respuestas de la marca')+
     stat('Analizados',analyzed.length,'clasificación multi-etiqueta')+
     stat('Pendientes de texto',pending,'conteo sin contenido semántico disponible')+
@@ -247,52 +247,41 @@ const UI_ICONS={
 function uiIcon(name,cls='ui-icon'){return '<svg class="'+esc(cls)+'" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+(UI_ICONS[name]||UI_ICONS.spark)+'</svg>'}
 function brandIcon(platform,cls='brand-platform-icon'){
   const p=String(platform||'').toUpperCase();
-  if(p==='INSTAGRAM')return '<svg class="'+esc(cls)+' instagram" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.4" cy="6.7" r="1.1" class="fill-dot"/></svg>';
-  if(p==='FACEBOOK')return '<svg class="'+esc(cls)+' facebook" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.7 21v-8h3l.5-3h-3.5V8.1c0-.9.3-1.5 1.7-1.5h1.9V4c-.5-.1-1.5-.2-2.7-.2-2.7 0-4.5 1.6-4.5 4.6V10H7v3h3.1v8h3.6Z"/></svg>';
-  return '<svg class="'+esc(cls)+' tiktok" viewBox="0 0 24 24" aria-hidden="true"><path class="tk-shadow-a" d="M14.2 4.2v10a4.7 4.7 0 1 1-3.1-4.4v2.8a2.1 2.1 0 1 0 1 1.8V4.2h2.1Z"/><path class="tk-shadow-b" d="M15.1 4.2c.4 2.1 1.8 3.5 4.1 3.9v2.4c-1.8-.2-3.2-.8-4.1-1.7v5.6"/></svg>';
+  if(p==='INSTAGRAM')return '<svg class="'+esc(cls)+' instagram" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.4" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>';
+  if(p==='FACEBOOK')return '<svg class="'+esc(cls)+' facebook" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.7 21v-8h3l.5-3h-3.5V8.1c0-.9.3-1.5 1.7-1.5h1.9V4c-.5-.1-1.5-.2-2.7-.2-2.7 0-4.5 1.6-4.5 4.6V10H7v3h3.1v8h3.6Z" fill="currentColor"/></svg>';
+  return '<svg class="'+esc(cls)+' tiktok" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4v10.3a4.5 4.5 0 1 1-3-4.2v2.8a2 2 0 1 0 1 1.8V4h2Z"/><path d="M14 5c.6 2.2 2.1 3.6 4.5 4v2.4c-1.9-.2-3.4-.9-4.5-1.9"/></svg>';
 }
 
 let LEARNING_BASE=null;
-const LF={range:'all',from:'',to:'',contentId:'',platform:'',hour:'',age:''};
+const LF={range:'all',from:'',to:'',contentId:'',publicationId:'',platform:'',hour:'',age:''};
 function localDateKey(v){
   if(!v)return null;
-  const d=new Date(v);
-  if(Number.isNaN(d.getTime()))return null;
+  const d=new Date(v);if(Number.isNaN(d.getTime()))return null;
   return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
 }
 function pubDateKey(pub){
   if(pub?.published_at)return localDateKey(pub.published_at);
-  const raw=pub?.snap?.metrics?.published_date;
-  if(raw)return String(raw).slice(0,10);
-  return localDateKey(pub?.snap?.corte_at);
+  if(pub?.snap?.metrics?.published_date)return String(pub.snap.metrics.published_date).slice(0,10);
+  return localDateKey(pub?.snap?.snapshot_at);
 }
 function pubHour(pub){
   if(!pub?.published_at)return null;
-  const h=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',hourCycle:'h23'}).format(new Date(pub.published_at));
-  return Number(h);
+  return Number(new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',hourCycle:'h23'}).format(new Date(pub.published_at)));
 }
 function rangeBounds(base){
-  const dates=base.pubs.map(pubDateKey).filter(Boolean).sort();
-  const max=dates.at(-1)||new Date().toISOString().slice(0,10);
+  const dates=base.pubs.map(pubDateKey).filter(Boolean).sort(),max=dates.at(-1)||new Date().toISOString().slice(0,10);
   if(LF.range==='custom')return {from:LF.from||dates[0]||max,to:LF.to||max};
-  const days=LF.range==='7d'?7:LF.range==='30d'?30:null;
-  if(!days)return {from:null,to:null};
-  const d=new Date(max+'T12:00:00Z');d.setUTCDate(d.getUTCDate()-(days-1));
-  return {from:d.toISOString().slice(0,10),to:max};
+  const days=LF.range==='7d'?7:LF.range==='30d'?30:null;if(!days)return {from:null,to:null};
+  const d=new Date(max+'T12:00:00Z');d.setUTCDate(d.getUTCDate()-(days-1));return {from:d.toISOString().slice(0,10),to:max};
 }
 function hourMatches(h,band){
   if(!band)return true;if(h===null)return false;
-  if(band==='morning')return h>=6&&h<12;
-  if(band==='afternoon')return h>=12&&h<18;
-  if(band==='evening')return h>=18&&h<24;
-  if(band==='night')return h>=0&&h<6;
-  return true;
+  return band==='morning'?h>=6&&h<12:band==='afternoon'?h>=12&&h<18:band==='evening'?h>=18&&h<24:h>=0&&h<6;
 }
-function scopeMatches(row,baseFiltered){
+function scopeMatches(row){
   const scope=row?.scope||{};
   if(LF.contentId){
-    const piece=LEARNING_BASE?.pm?.get(LF.contentId);
-    const code=piece?.content_code;
+    const code=LEARNING_BASE?.pm?.get(LF.contentId)?.content_code;
     if(scope.content_code&&scope.content_code!==code)return false;
   }
   if(LF.platform&&Array.isArray(scope.platforms)&&scope.platforms.length&&!scope.platforms.includes(LF.platform))return false;
@@ -301,32 +290,26 @@ function scopeMatches(row,baseFiltered){
 function filteredModel(base){
   const {from,to}=rangeBounds(base);
   const pubs=base.pubs.filter(pub=>{
+    if(LF.publicationId&&pub.id!==LF.publicationId)return false;
     if(LF.contentId&&pub.content_id!==LF.contentId)return false;
     if(LF.platform&&pub.plataforma!==LF.platform)return false;
-    const d=pubDateKey(pub);
-    if(from&&(!d||d<from))return false;
-    if(to&&(!d||d>to))return false;
-    if(!hourMatches(pubHour(pub),LF.hour))return false;
-    return true;
+    const d=pubDateKey(pub);if(from&&(!d||d<from))return false;if(to&&(!d||d>to))return false;
+    if(!hourMatches(pubHour(pub),LF.hour))return false;return true;
   });
   const pubIds=new Set(pubs.map(x=>x.id)),contentIds=new Set(pubs.map(x=>x.content_id));
-  const latest=base.latest.filter(x=>pubIds.has(x.publication_id));
-  const snaps=base.snaps.filter(x=>pubIds.has(x.publication_id));
+  const latest=base.latest.filter(x=>pubIds.has(x.publication_id)),snaps=base.snaps.filter(x=>pubIds.has(x.publication_id));
   const signals=base.signals.filter(x=>(!x.publication_id||pubIds.has(x.publication_id))&&(!x.content_id||contentIds.has(x.content_id)));
-  const hyps=base.hyps.filter(x=>scopeMatches(x,{pubIds,contentIds}));
-  const recs=base.recs.filter(x=>scopeMatches(x,{pubIds,contentIds}));
+  const hyps=base.hyps.filter(scopeMatches),recs=base.recs.filter(scopeMatches);
   const perf=base.perf.filter(x=>(!x.publication_id||pubIds.has(x.publication_id))&&(!x.content_id||contentIds.has(x.content_id)));
-  const comments=base.comments.filter(x=>!x.publication_id||pubIds.has(x.publication_id));
-  const commentIds=new Set(comments.map(x=>x.id));
+  const comments=base.comments.filter(x=>!x.publication_id||pubIds.has(x.publication_id)),commentIds=new Set(comments.map(x=>x.id));
   const commentAnalysis=base.commentAnalysis.filter(x=>commentIds.has(x.comment_id));
   return {...base,pubs,latest,snaps,signals,hyps,recs,perf,comments,commentAnalysis};
 }
 function filterLabel(){
   const parts=[];
-  if(LF.range==='7d')parts.push('Últimos 7 días');
-  if(LF.range==='30d')parts.push('Últimos 30 días');
-  if(LF.range==='custom')parts.push((LF.from||'…')+' → '+(LF.to||'…'));
+  if(LF.range==='7d')parts.push('Últimos 7 días');else if(LF.range==='30d')parts.push('Últimos 30 días');else if(LF.range==='custom')parts.push((LF.from||'…')+' → '+(LF.to||'…'));
   if(LF.contentId)parts.push(LEARNING_BASE?.pm?.get(LF.contentId)?.titulo||'Video');
+  if(LF.publicationId){const pub=LEARNING_BASE?.pubs?.find(x=>x.id===LF.publicationId);if(pub)parts.push((P[pub.plataforma]||pub.plataforma)+' · '+(pubDateKey(pub)||''))}
   if(LF.platform)parts.push(P[LF.platform]||LF.platform);
   if(LF.hour)parts.push({morning:'Mañana',afternoon:'Tarde',evening:'Noche',night:'Madrugada'}[LF.hour]);
   if(LF.age)parts.push('Edad '+labelKey(LF.age));
@@ -336,31 +319,27 @@ function filterBar(base,filtered){
   const projects=[...new Set(base.pubs.map(x=>x.content_id))].map(id=>base.pm.get(id)).filter(Boolean).sort((a,b)=>(a.content_num||0)-(b.content_num||0));
   const ages=[...new Set(base.latest.flatMap(x=>Object.keys(x.audience?.age_pct||{})))];
   const {from,to}=rangeBounds(base);
-  return '<section class="filter-panel"><div class="filter-panel-head"><div><span class="premium-kicker">FILTROS</span><h2>Busca exactamente lo que quieres analizar</h2><p>'+esc(filterLabel())+'</p></div><div class="filter-count"><b>'+esc(filtered.pubs.length)+'</b><span>publicaciones</span></div></div>'+
+  return '<section class="filter-panel"><div class="filter-panel-head"><div><span class="premium-kicker">FILTRAR RESULTADOS</span><h2>Busca por fecha, video, red, hora o edad</h2><p>'+esc(filterLabel())+'</p></div><div class="filter-count"><b>'+esc(filtered.pubs.length)+'</b><span>publicaciones visibles</span></div></div>'+
   '<div class="filter-grid">'+
     '<label><span>Periodo</span><select data-lf="range"><option value="all" '+(LF.range==='all'?'selected':'')+'>Todo</option><option value="7d" '+(LF.range==='7d'?'selected':'')+'>Últimos 7 días</option><option value="30d" '+(LF.range==='30d'?'selected':'')+'>Últimos 30 días</option><option value="custom" '+(LF.range==='custom'?'selected':'')+'>Elegir fechas</option></select></label>'+
     '<label class="filter-date '+(LF.range==='custom'?'show':'')+'"><span>Desde</span><input type="date" data-lf="from" value="'+esc(LF.from||from||'')+'"></label>'+
     '<label class="filter-date '+(LF.range==='custom'?'show':'')+'"><span>Hasta</span><input type="date" data-lf="to" value="'+esc(LF.to||to||'')+'"></label>'+
-    '<label><span>Video / publicación</span><select data-lf="contentId"><option value="">Todos los videos</option>'+projects.map(p=>'<option value="'+esc(p.id)+'" '+(LF.contentId===p.id?'selected':'')+'>'+esc(projectLabel(projectNum(p,base.lm))+' · '+(p.titulo||p.content_code))+'</option>').join('')+'</select></label>'+
+    '<label><span>Video</span><select data-lf="contentId"><option value="">Todos los videos</option>'+projects.map(p=>'<option value="'+esc(p.id)+'" '+(LF.contentId===p.id?'selected':'')+'>'+esc(projectLabel(projectNum(p,base.lm))+' · '+(p.titulo||p.content_code))+'</option>').join('')+'</select></label>'+
+    '<label><span>Publicación concreta</span><select data-lf="publicationId"><option value="">Todas las publicaciones</option>'+base.pubs.map(pub=>'<option value="'+esc(pub.id)+'" '+(LF.publicationId===pub.id?'selected':'')+'>'+esc(pub.project+' · '+(P[pub.plataforma]||pub.plataforma)+' · '+(pubDateKey(pub)||'sin fecha'))+'</option>').join('')+'</select></label>'+
     '<label><span>Hora de publicación</span><select data-lf="hour"><option value="">Todas las horas</option><option value="morning" '+(LF.hour==='morning'?'selected':'')+'>Mañana · 06–12</option><option value="afternoon" '+(LF.hour==='afternoon'?'selected':'')+'>Tarde · 12–18</option><option value="evening" '+(LF.hour==='evening'?'selected':'')+'>Noche · 18–24</option><option value="night" '+(LF.hour==='night'?'selected':'')+'>Madrugada · 00–06</option></select></label>'+
     '<label><span>Edad en audiencia</span><select data-lf="age"><option value="">Todas las edades</option>'+ages.map(a=>'<option value="'+esc(a)+'" '+(LF.age===a?'selected':'')+'>'+esc(labelKey(a))+'</option>').join('')+'</select></label>'+
   '</div>'+
   '<div class="platform-filter"><span>Red social</span><div><button type="button" data-platform-filter="" class="'+(!LF.platform?'active':'')+'">'+uiIcon('chart','filter-all-icon')+'Todas</button>'+['TIKTOK','INSTAGRAM','FACEBOOK'].map(p=>'<button type="button" data-platform-filter="'+p+'" class="'+(LF.platform===p?'active':'')+'">'+brandIcon(p,'filter-brand-icon')+esc(P[p])+'</button>').join('')+'</div><button type="button" class="filter-reset" data-filter-reset>Limpiar filtros</button></div>'+
-  (LF.age?'<div class="filter-note">'+uiIcon('users')+'<span>La edad ajusta solo la lectura de audiencia. Las plataformas no entregan las visualizaciones totales separadas por edad en este corte.</span></div>':'')+
+  (LF.age?'<div class="filter-note">'+uiIcon('users')+'<span>La edad cambia solo el bloque de audiencia; las redes no entregan las visualizaciones totales separadas por edad en este corte.</span></div>':'')+
   '</section>';
 }
 function bindFilters(){
-  document.querySelectorAll('[data-lf]').forEach(el=>el.addEventListener('change',()=>{
-    LF[el.dataset.lf]=el.value;
-    if(el.dataset.lf==='range'&&el.value!=='custom'){LF.from='';LF.to=''}
-    renderLearning();
-  }));
+  document.querySelectorAll('[data-lf]').forEach(el=>el.addEventListener('change',()=>{LF[el.dataset.lf]=el.value;if(el.dataset.lf==='range'&&el.value!=='custom'){LF.from='';LF.to=''}renderLearning()}));
   document.querySelectorAll('[data-platform-filter]').forEach(btn=>btn.addEventListener('click',()=>{LF.platform=btn.dataset.platformFilter||'';renderLearning()}));
-  document.querySelector('[data-filter-reset]')?.addEventListener('click',()=>{Object.assign(LF,{range:'all',from:'',to:'',contentId:'',platform:'',hour:'',age:''});renderLearning()});
+  document.querySelector('[data-filter-reset]')?.addEventListener('click',()=>{Object.assign(LF,{range:'all',from:'',to:'',contentId:'',publicationId:'',platform:'',hour:'',age:''});renderLearning()});
 }
 function renderLearning(){
-  if(!LEARNING_BASE)return;
-  const m=filteredModel(LEARNING_BASE);
+  if(!LEARNING_BASE)return;const m=filteredModel(LEARNING_BASE);
   root().innerHTML=filterBar(LEARNING_BASE,m)+executiveOverview(m)+actionDeck(m)+projectSpotlight(m)+platformComparisonPremium(m)+audienceExplorer(m)+creativePremium(m)+voicePremium(m)+evidencePremium(m)+deepDivePremium(m);
   bindFilters();bindPremiumInteractions();
 }
@@ -379,7 +358,7 @@ function premiumKpi(iconName,label,value,note,tone=''){
   return '<article class="premium-kpi '+esc(tone)+'"><div class="kpi-icon">'+uiIcon(iconName)+'</div><div><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong><small>'+esc(note||'')+'</small></div></article>';
 }
 function latestSnapshotAt(m){
-  const dates=m.latest.map(x=>x.corte_at).filter(Boolean).sort();
+  const dates=m.latest.map(x=>x.snapshot_at).filter(Boolean).sort();
   return dates.length?dates.at(-1):null;
 }
 function executiveOverview(m){
@@ -391,13 +370,13 @@ function executiveOverview(m){
   const comments=m.comments.filter(x=>!x.is_creator_reply).length;
   const stamp=latestSnapshotAt(m);
   return '<section id="overview" class="premium-section executive-overview">'+
-    '<div class="overview-hero"><div class="overview-mark">'+uiIcon('pulse')+'</div><div><span class="premium-kicker">RESUMEN</span><h2>Resumen del rendimiento</h2><p>'+esc(projects?projects+' proyecto'+(projects===1?'':'s')+' con medición propia. Los detalles técnicos quedan debajo, bajo demanda.':'Todavía no hay proyectos medidos para este negocio.')+'</p></div><div class="overview-meta"><b>'+esc(m.snaps.length)+' cortes</b><span>'+(stamp?'Actualizado '+esc(dt(stamp)):'Sin corte registrado')+'</span></div></div>'+
+    '<div class="overview-hero"><div class="overview-mark">'+uiIcon('pulse')+'</div><div><span class="premium-kicker">RESUMEN</span><h2>Resumen del rendimiento</h2><p>'+esc(projects?projects+' proyecto'+(projects===1?'':'s')+' con medición propia. Los detalles técnicos quedan debajo, bajo demanda.':'Todavía no hay proyectos medidos para este negocio.')+'</p></div><div class="overview-meta"><b>'+esc(m.snaps.length)+' cortes de métricas</b><span>'+(stamp?'Actualizado '+esc(dt(stamp)):'Sin corte registrado')+'</span></div></div>'+
     '<div class="premium-kpi-grid">'+
-      premiumKpi('eye','Visualizaciones',fmt(views),'último corte por plataforma','blue')+
+      premiumKpi('eye','Visualizaciones',fmt(views),'última lectura por red','blue')+
       premiumKpi('spark','Interacciones',fmt(ints),'según definición de cada plataforma','violet')+
       premiumKpi('click','Clics',fmt(clicks),'cuando la plataforma los expone','cyan')+
       premiumKpi('play','Publicaciones',publishedCount,'registros reales por plataforma','green')+
-      premiumKpi('folder','Videos medidos',projects,'con al menos un corte','amber')+
+      premiumKpi('folder','Videos medidos',projects,'con al menos un snapshot','amber')+
       premiumKpi('chat','Comentarios con texto',comments,'voz de audiencia realmente ingerida','rose')+
     '</div></section>';
 }
@@ -409,7 +388,7 @@ function actionDeck(m){
   const all=m.recs;
   return '<section id="actions" class="premium-section">'+
     '<div class="premium-head"><div><span class="premium-kicker">SIGUIENTE MOVIMIENTO</span><h2>Qué hacer ahora</h2><p>Acciones priorizadas; la justificación completa aparece solo al abrir cada tarjeta.</p></div>'+pill(rows.length+' prioridades','info')+'</div>'+
-    '<div class="action-grid">'+(rows.length?rows.map((r,i)=>'<article class="action-card priority-'+(i+1)+'"><div class="action-top"><span class="action-rank">'+(i+1)+'</span><div><small>'+esc(key(r.dimension))+'</small><h3>'+esc(r.recommendation)+'</h3></div></div><div class="action-foot">'+pill(EVID[r.evidence_level]||r.evidence_level,recTone(r.evidence_level))+'<span>Muestra '+esc(r.sample_size)+'</span></div><details><summary>Por qué</summary><p>'+esc(r.reasoning_summary||'Sin razonamiento adicional registrado.')+'</p></details></article>').join(''):'<div class="premium-empty">'+uiIcon('wand')+'<div><b>Sin recomendación todavía</b><span>El sistema necesita más observaciones antes de proponer una acción.</span></div></div>')+'</div>'+
+    '<div class="action-grid">'+(rows.length?rows.map((r,i)=>'<article class="action-card priority-'+(i+1)+'"><div class="action-top"><span class="action-rank">'+(i+1)+'</span><div><small>'+esc(key(r.dimension))+'</small><h3>'+esc(r.recommendation)+'</h3></div></div><div class="action-foot">'+pill(EVID[r.evidence_level]||r.evidence_level,recTone(r.evidence_level))+'<span>Datos usados: '+esc(r.sample_size)+'</span></div><details><summary>Por qué</summary><p>'+esc(r.reasoning_summary||'Sin razonamiento adicional registrado.')+'</p></details></article>').join(''):'<div class="premium-empty">'+uiIcon('wand')+'<div><b>Sin recomendación todavía</b><span>El sistema necesita más observaciones antes de proponer una acción.</span></div></div>')+'</div>'+
     (all.length>rows.length?'<details class="more-drawer"><summary>Ver todas las recomendaciones</summary><div class="drawer-list">'+all.map(r=>'<article><div><b>'+esc(PERIOD[r.period_type]||r.period_type)+' · '+esc(key(r.dimension))+'</b>'+pill(EVID[r.evidence_level]||r.evidence_level,recTone(r.evidence_level))+'</div><p>'+esc(r.recommendation)+'</p><small>'+esc(r.reasoning_summary||'')+' · muestra '+esc(r.sample_size)+'</small></article>').join('')+'</div></details>':'')+
   '</section>';
 }
@@ -422,7 +401,7 @@ function projectSpotlight(m){
       const pn=projectLabel(projectNum(piece,m.lm)),pubs=m.pubs.filter(x=>x.content_id===id);
       const totalViews=pubs.reduce((a,p)=>a+(metric(p.snap?.metrics,'views')||0),0);
       return '<article class="project-focus"><div class="project-focus-main"><div class="project-symbol">'+uiIcon('folder')+'</div><div><span>'+esc(pn)+'</span><h3>'+esc(piece.titulo||piece.content_code)+'</h3><p>'+esc(piece.servicio)+' · '+esc(piece.formato||'Formato no registrado')+'</p></div><div class="project-total"><b>'+esc(fmt(totalViews))+'</b><small>views observadas</small></div></div><div class="platform-strip">'+pubs.map(pub=>{const mm=pub.snap?.metrics||{};return '<div class="platform-chip platform-'+String(pub.plataforma||'').toLowerCase()+'"><b>'+esc(P[pub.plataforma])+'</b><span>'+esc(fmt(metric(mm,'views')))+' views</span><span>'+esc(fmt(interactions(mm)))+' int.</span></div>'}).join('')+'</div><details class="project-details"><summary>Ver variables creativas</summary><div class="detail-facts"><p><b>Hook</b><span>'+esc(piece.hook_verbal||'No registrado')+'</span></p><p><b>CTA</b><span>'+esc(piece.cta_master||'No registrado')+'</span></p><p><b>Versión</b><span>'+esc(scriptVersion(piece))+'</span></p></div></details></article>';
-    }).join(''):'<div class="premium-empty">'+uiIcon('folder')+'<div><b>Sin proyectos medidos</b><span>Cuando exista al menos un corte aparecerá aquí.</span></div></div>')+'</div></section>';
+    }).join(''):'<div class="premium-empty">'+uiIcon('folder')+'<div><b>Sin proyectos medidos</b><span>Cuando exista al menos un snapshot aparecerá aquí.</span></div></div>')+'</div></section>';
 }
 function platformComparisonPremium(m){
   const platforms=['TIKTOK','INSTAGRAM','FACEBOOK'];
@@ -474,13 +453,13 @@ function voicePremium(m){
   '</section>';
 }
 function evidencePremium(m){
-  return '<section id="hypotheses" class="premium-section"><div class="premium-head"><div><span class="premium-kicker">APRENDIZAJE</span><h2>Qué vimos y qué vamos a comprobar</h2><p>Señales e hipótesis separadas de las conclusiones definitivas.</p></div></div><div class="evidence-columns"><div><h3 class="evidence-title">'+uiIcon('pulse')+' Lo que vimos</h3><div class="evidence-list">'+(m.signals.length?m.signals.slice(0,6).map(s=>'<article><div>'+pill(s.signal_type,'info')+pill(s.review_status)+'</div><p>'+esc(s.signal_text)+'</p><small>'+esc(s.source||'')+'</small></article>').join(''):'<div class="premium-empty mini">Sin señales todavía.</div>')+'</div></div><div><h3 class="evidence-title">'+uiIcon('flask')+' Lo que vamos a comprobar</h3><div class="evidence-list">'+(m.hyps.length?m.hyps.map(h=>'<article class="hypothesis-premium"><div><b>'+esc(key(h.dimension))+'</b>'+pill(HYP[h.status]||h.status,h.status==='INSUFFICIENT'?'warn':h.status==='CONTRADICTING'?'bad':'ok')+'</div><p>'+esc(h.statement)+'</p><div class="hyp-meta"><span>Muestra '+esc(h.sample_size)+'</span></div>'+(h.recommended_test?'<details><summary>Siguiente prueba</summary><p>'+esc(h.recommended_test)+'</p></details>':'')+'</article>').join(''):'<div class="premium-empty mini">Sin hipótesis todavía.</div>')+'</div></div></div></section>';
+  return '<section id="hypotheses" class="premium-section"><div class="premium-head"><div><span class="premium-kicker">APRENDIZAJE</span><h2>Qué vimos y qué vamos a comprobar</h2><p>Señales e hipótesis separadas de las conclusiones definitivas.</p></div></div><div class="evidence-columns"><div><h3 class="evidence-title">'+uiIcon('pulse')+' Lo que vimos</h3><div class="evidence-list">'+(m.signals.length?m.signals.slice(0,6).map(s=>'<article><div>'+pill(s.signal_type,'info')+pill(s.review_status)+'</div><p>'+esc(s.signal_text)+'</p><small>'+esc(s.source||'')+'</small></article>').join(''):'<div class="premium-empty mini">Sin señales todavía.</div>')+'</div></div><div><h3 class="evidence-title">'+uiIcon('flask')+' Lo que vamos a comprobar</h3><div class="evidence-list">'+(m.hyps.length?m.hyps.map(h=>'<article class="hypothesis-premium"><div><b>'+esc(key(h.dimension))+'</b>'+pill(HYP[h.status]||h.status,h.status==='INSUFFICIENT'?'warn':h.status==='CONTRADICTING'?'bad':'ok')+'</div><p>'+esc(h.statement)+'</p><div class="hyp-meta"><span>Datos usados: '+esc(h.sample_size)+'</span></div>'+(h.recommended_test?'<details><summary>Siguiente prueba</summary><p>'+esc(h.recommended_test)+'</p></details>':'')+'</article>').join(''):'<div class="premium-empty mini">Sin hipótesis todavía.</div>')+'</div></div></div></section>';
 }
 function deepDivePremium(m){
   const by=new Map();m.snaps.forEach(s=>{if(!by.has(s.publication_id))by.set(s.publication_id,[]);by.get(s.publication_id).push(s)});
   const evolutionRows=m.pubs.filter(x=>by.has(x.id));
-  return '<section id="details" class="premium-section detail-zone"><div class="premium-head"><div><span class="premium-kicker">DETALLE</span><h2>Datos completos</h2><p>Disponible cuando necesitas rastrear publicación, cortes, copy o guion.</p></div></div>'+
-    '<details class="audit-drawer"><summary>'+uiIcon('clock')+' Evolución de cortes <span>T+12h · T+24h · T+72h · T+7d</span></summary><div class="timeline-list">'+(evolutionRows.length?evolutionRows.map(pub=>{const snaps=by.get(pub.id).sort((a,b)=>new Date(a.corte_at)-new Date(b.corte_at));return '<article><b>'+esc(pub.project)+' · '+esc(P[pub.plataforma])+'</b>'+snaps.map(s=>'<div class="time-point"><i></i><span><b>'+esc(s.corte_stage)+'</b> '+esc(dt(s.corte_at))+' · '+esc(fmt(metric(s.metrics,'views')))+' views · '+esc(fmt(interactions(s.metrics)))+' int.</span></div>').join('')+'</article>'}).join(''):'<p class="muted">Sin evolución suficiente.</p>')+'</div></details>'+
+  return '<section id="details" class="premium-section detail-zone"><div class="premium-head"><div><span class="premium-kicker">DETALLE</span><h2>Datos completos</h2><p>Disponible cuando necesitas rastrear publicación, snapshots, copy o guion.</p></div></div>'+
+    '<details class="audit-drawer"><summary>'+uiIcon('clock')+' Cómo cambiaron las métricas <span>T+12h · T+24h · T+72h · T+7d</span></summary><div class="timeline-list">'+(evolutionRows.length?evolutionRows.map(pub=>{const snaps=by.get(pub.id).sort((a,b)=>new Date(a.snapshot_at)-new Date(b.snapshot_at));return '<article><b>'+esc(pub.project)+' · '+esc(P[pub.plataforma])+'</b>'+snaps.map(s=>'<div class="time-point"><i></i><span><b>'+esc(s.snapshot_stage)+'</b> '+esc(dt(s.snapshot_at))+' · '+esc(fmt(metric(s.metrics,'views')))+' views · '+esc(fmt(interactions(s.metrics)))+' int.</span></div>').join('')+'</article>'}).join(''):'<p class="muted">Sin evolución suficiente.</p>')+'</div></details>'+
     '<details class="audit-drawer"><summary>'+uiIcon('folder')+' Texto preparado vs publicado <span>'+esc(m.pubs.length)+' registros</span></summary><div class="publish-list">'+(m.pubs.length?m.pubs.map(pub=>{const p=pub.piece||{},pack=pub.pack;return '<details class="publish-row"><summary><b>'+esc(pub.project)+' · '+esc(P[pub.plataforma])+'</b><span>'+esc(dt(pub.published_at))+'</span>'+pill(pub.package_match_status||'Sin paquete previo')+'</summary><div class="trace"><div><span>Guion</span><b>'+esc(scriptVersion(p))+'</b></div><div><span>URL</span><b>'+(pub.url?'<a href="'+esc(pub.url)+'" target="_blank" rel="noopener">Abrir ↗</a>':'No registrada')+'</b></div><div><span>Descripción real</span><pre>'+esc(pub.caption||'No registrada históricamente.')+'</pre></div><div><span>Hashtags reales</span><pre>'+esc(hashtags(pub.hashtags))+'</pre></div><div><span>Paquete CHAT 02</span><pre>'+esc(pack?.caption||'No hay paquete preparado registrado.')+'</pre></div><div><span>Hashtags del paquete</span><pre>'+esc(pack?hashtags(pack.hashtags):'No registrados')+'</pre></div></div></details>'}).join(''):'<p class="muted">Sin publicaciones registradas.</p>')+'</div></details></section>';
 }
 function bindPremiumInteractions(){
