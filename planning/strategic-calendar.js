@@ -204,7 +204,7 @@ async function load(){
    sb.from('content_calendario_publicacion_slots').select('id,calendario_id,negocio_id,publish_date,strategic_role,service_key,source_bank,editorial_key,transversal_id,content_id,match_status,rationale,expected_signal,execution_note,status,actual_publication_id,brief_status').in('calendario_id',ids).order('publish_date'),
    sb.from('content_planes_editoriales').select('plan_key,document').eq('negocio_id',BUSINESS).in('plan_key',planKeys),
    sb.from('content_banco_transversal').select('id,negocio_id,editorial_key,title,question,strategic_role,objective,audience,motivation,format,status').eq('negocio_id',BUSINESS),
-   sb.from('content_public_project_labels_v').select('content_id,project_display_number,project_created_at').eq('negocio_id',BUSINESS)
+   sb.from('content_public_project_labels').select('content_id,project_display_number,project_created_at').eq('negocio_id',BUSINESS)
   ]);
   if(se||pe||te||pre)throw se||pe||te||pre;
   slots=ss||[];
