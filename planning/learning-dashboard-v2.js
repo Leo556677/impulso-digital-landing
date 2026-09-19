@@ -60,11 +60,13 @@ async function loadData(){
     sb.from('content_hypotheses').select('*').eq('negocio_id',ctx.negocioId).order('updated_at',{ascending:false}),
     sb.from('content_learning_recommendations').select('*').eq('negocio_id',ctx.negocioId).eq('status','ACTIVE').order('generated_at',{ascending:false}),
     sb.from('content_execution_performance').select('*').eq('negocio_id',ctx.negocioId).order('observed_at',{ascending:false}),
-    sb.from('content_execution_library_items').select('id,library_type,source_id,family').eq('negocio_id',ctx.negocioId)
+    sb.from('content_execution_library_items').select('id,library_type,source_id,family').eq('negocio_id',ctx.negocioId),
+    sb.from('content_comments').select('*').eq('negocio_id',ctx.negocioId).order('commented_at',{ascending:false}),
+    sb.from('content_comment_analysis').select('*').eq('negocio_id',ctx.negocioId).order('analyzed_at',{ascending:false})
   ]);
   const bad=q.find(x=>x.error);if(bad)throw bad.error;
-  const [pieces,pubs,snaps,packs,labels,signals,hyps,recs,perf,lib]=q.map(x=>x.data||[]);
-  return {ctx,pieces,pubs,snaps,packs,labels,signals,hyps,recs,perf,lib};
+  const [pieces,pubs,snaps,packs,labels,signals,hyps,recs,perf,lib,comments,commentAnalysis]=q.map(x=>x.data||[]);
+  return {ctx,pieces,pubs,snaps,packs,labels,signals,hyps,recs,perf,lib,comments,commentAnalysis};
 }
 function model(d){
   const pm=new Map(d.pieces.map(x=>[x.id,x])),lm=new Map(d.labels.map(x=>[x.content_id,x])),pk=new Map(d.packs.map(x=>[x.id,x])),li=new Map(d.lib.map(x=>[x.id,x]));
@@ -82,6 +84,7 @@ function summary(m){
     stat('Interacciones',fmt(ints),'según cada plataforma')+
     stat('Clics',fmt(clicks),'cuando están disponibles')+
     stat('Proyectos medidos',new Set(m.latest.map(x=>x.content_id)).size,'con al menos un snapshot')+
+    stat('Comentarios con texto',m.comments.filter(x=>!x.is_creator_reply).length,'voz de audiencia ingerida')+
     stat('Hipótesis abiertas',m.hyps.filter(x=>x.status!=='RETIRED').length,'con siguiente prueba')+
   '</div></section>';
 }
@@ -144,12 +147,48 @@ function variables(m){
   m.perf.forEach(r=>{const t=lib.get(r.library_item_id)?.library_type;if(counts[t]!==undefined)counts[t]++});
   return '<section class="learn-section"><div class="section-head"><div><span>VARIABLES CREATIVAS</span><h2>Qué ya puede aprender el sistema</h2></div></div><div class="var-grid">'+Object.entries(counts).map(([k,v])=>stat(k,v,'observaciones vinculadas')).join('')+stat('COPY / HASHTAGS',m.packs.length,m.packs.length?'paquetes versionados':'empezará con las próximas publicaciones de CHAT 02')+'</div></section>';
 }
+function topList(values,limit=8){
+  const map={};values.filter(Boolean).forEach(v=>{map[v]=(map[v]||0)+1});
+  return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,limit);
+}
+function commentInsights(m){
+  const audience=m.comments.filter(x=>!x.is_creator_reply),am=new Map(m.commentAnalysis.map(x=>[x.comment_id,x]));
+  const analyzed=audience.map(x=>({comment:x,analysis:am.get(x.id)})).filter(x=>x.analysis);
+  const reported=m.latest.reduce((a,x)=>a+(metric(x.metrics,'comments')||0),0);
+  const pending=Math.max(0,reported-audience.length);
+  const sentiments=topList(analyzed.map(x=>x.analysis.sentiment),6);
+  const themes=topList(analyzed.flatMap(x=>x.analysis.themes||[]));
+  const liked=topList(analyzed.flatMap(x=>x.analysis.liked_aspects||[]));
+  const disliked=topList(analyzed.flatMap(x=>x.analysis.disliked_aspects||[]));
+  const language=topList(analyzed.flatMap(x=>x.analysis.language_terms||[]));
+  const signalTypes=topList(analyzed.flatMap(x=>x.analysis.signal_types||[]));
+  const commentSignals=m.signals.filter(x=>String(x.source||'').toUpperCase().includes('COMMENT'));
+  const chips=rows=>rows.length?'<div class="comment-chips">'+rows.map(([k,v])=>'<span><b>'+esc(k)+'</b> × '+esc(v)+'</span>').join('')+'</div>':'<p class="muted">Aún sin muestra suficiente.</p>';
+  return '<section class="learn-section"><div class="section-head"><div><span>COMENTARIOS</span><h2>Qué piensa y cómo habla la audiencia</h2><p>El conteo y el texto son datos distintos. El análisis cualitativo usa solo comentarios cuyo texto fue realmente ingerido.</p></div>'+pill(audience.length+' textos','info')+'</div>'+
+  '<div class="comment-coverage">'+
+    stat('Comentarios reportados',reported||0,'según último snapshot por publicación')+
+    stat('Textos ingeridos',audience.length,'sin respuestas de la marca')+
+    stat('Analizados',analyzed.length,'clasificación multi-etiqueta')+
+    stat('Pendientes de texto',pending,'conteo sin contenido semántico disponible')+
+  '</div>'+
+  '<div class="comment-grid">'+
+    '<article><h3>Sentimiento</h3>'+chips(sentiments)+'</article>'+
+    '<article><h3>Temas repetidos</h3>'+chips(themes)+'</article>'+
+    '<article><h3>Qué gusta</h3>'+chips(liked)+'</article>'+
+    '<article><h3>Qué no gusta</h3>'+chips(disliked)+'</article>'+
+    '<article><h3>Señales</h3>'+chips(signalTypes)+'</article>'+
+    '<article><h3>Lenguaje de audiencia</h3>'+chips(language)+'</article>'+
+  '</div>'+
+  '<div class="comment-patterns"><h3>Patrones elevados a señales estratégicas</h3>'+(commentSignals.length?commentSignals.map(s=>'<div><div>'+pill(s.signal_type,'info')+pill('frecuencia '+s.frequency)+'</div><p>'+esc(s.signal_text)+'</p></div>').join(''):'<p class="muted">Todavía no hay patrones de comentarios elevados a content_strategy_signals.</p>')+'</div>'+
+  '<div class="comment-list"><h3>Comentarios recientes anonimizados</h3>'+(analyzed.length?analyzed.slice(0,8).map(x=>'<article><div>'+pill(P[x.comment.platform]||x.comment.platform,'platform')+pill(x.analysis.sentiment,x.analysis.sentiment==='NEGATIVE'?'bad':x.analysis.sentiment==='POSITIVE'?'ok':'')+'</div><p>'+esc(x.comment.comment_text)+'</p><small>'+esc(dt(x.comment.commented_at))+(x.analysis.response_priority==='CLINICAL_ATTENTION'?' · PRIORIDAD CLÍNICA':'')+'</small></article>').join(''):'<p class="muted">No hay texto de comentarios disponible todavía. Metricool Analytics aporta conteos, pero el conector actual no expone el contenido del Inbox.</p>')+'</div>'+
+  '</section>';
+}
 function signals(m){
   return '<section class="learn-section"><div class="section-head"><div><span>SEÑALES</span><h2>Preguntas, objeciones y lenguaje</h2></div></div><div class="signal-grid">'+(m.signals.length?m.signals.map(s=>'<article><div>'+pill(s.signal_type,'info')+pill(s.review_status)+'</div><p>'+esc(s.signal_text)+'</p><small>'+esc(s.source||'')+'</small></article>').join(''):'<p class="muted">Sin señales todavía.</p>')+'</div></section>';
 }
 function hypotheses(m){
   return '<section class="learn-section"><div class="section-head"><div><span>HIPÓTESIS</span><h2>Qué creemos y qué falta demostrar</h2></div></div><div class="hyp-grid">'+(m.hyps.length?m.hyps.map(h=>'<article><div><b>'+esc(key(h.dimension))+'</b>'+pill(HYP[h.status]||h.status,h.status==='INSUFFICIENT'?'warn':h.status==='CONTRADICTING'?'bad':'ok')+'</div><p>'+esc(h.statement)+'</p><small>Muestra: '+esc(h.sample_size)+'</small>'+(h.recommended_test?'<div class="next-test"><b>Siguiente prueba</b><span>'+esc(h.recommended_test)+'</span></div>':'')+'</article>').join(''):'<p class="muted">Sin hipótesis todavía.</p>')+'</div></section>';
 }
-function render(m){root().innerHTML=summary(m)+recommendations(m)+projects(m)+published(m)+platforms(m)+evolution(m)+audience(m)+variables(m)+signals(m)+hypotheses(m)}
+function render(m){root().innerHTML=summary(m)+recommendations(m)+projects(m)+published(m)+platforms(m)+evolution(m)+audience(m)+variables(m)+commentInsights(m)+signals(m)+hypotheses(m)}
 async function boot(){try{root().innerHTML='<div class="loading">Recuperando publicaciones, snapshots, audiencia e hipótesis…</div>';render(model(await loadData()))}catch(e){console.error(e);root().innerHTML='<div class="error"><b>No se pudo cargar Aprendizaje V2.</b><br>'+esc(e?.message||e)+'</div>'}}
 boot();
