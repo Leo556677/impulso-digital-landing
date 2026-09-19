@@ -13,6 +13,29 @@ const dt=v=>v?new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'short',hour:
 const key=v=>String(v||'').replaceAll('_',' ').toLowerCase().replace(/^./,x=>x.toUpperCase());
 const pill=(v,k='')=>'<span class="learn-pill '+esc(k)+'">'+esc(v)+'</span>';
 const root=()=>document.querySelector('#learningApp');
+
+async function mountBusinessSwitcher(ctx){
+ const tenant=document.querySelector('.tenant');
+ if(!tenant||document.querySelector('#businessSwitcher'))return;
+ const ids=[...new Set((ctx.memberships||[]).map(x=>x.negocio_id).filter(Boolean))];
+ if(ids.length<2)return;
+ const {data,error}=await sb.from('negocios').select('id,nombre,slug').in('id',ids).order('nombre');
+ if(error)throw error;
+ const businesses=data||[];
+ const wrap=document.createElement('label');
+ wrap.className='business-switcher';
+ wrap.innerHTML='<span>Negocio activo</span><select id="businessSwitcher" aria-label="Elegir negocio">'+businesses.map(b=>'<option value="'+esc(b.id)+'">'+esc(b.nombre)+'</option>').join('')+'</select>';
+ tenant.insertAdjacentElement('afterend',wrap);
+ const select=wrap.querySelector('select');
+ select.value=String(ctx.negocioId);
+ select.addEventListener('change',()=>{
+   const id=select.value;
+   localStorage.setItem('impulso_negocio_activo',id);
+   const u=new URL(location.href);
+   u.searchParams.set('negocio',id);
+   location.assign(u.toString());
+ });
+}
 const metric=(o,k)=>n(o?.[k]);
 const interactions=m=>metric(m,'interactions')??['likes','reactions','comments','shares','saves','clicks','reposts'].reduce((a,k)=>a+(metric(m,k)||0),0);
 const hashtags=v=>Array.isArray(v)&&v.length?v.map(x=>String(x).startsWith('#')?x:'#'+x).join(' '):'No registrados';
@@ -50,6 +73,7 @@ function scriptVersion(piece){
 async function loadData(){
   const ctx=await resolveContentContext();
   document.querySelectorAll('[data-business]').forEach(el=>el.textContent=ctx.negocio?.nombre||'Negocio');
+  await mountBusinessSwitcher(ctx);
   const q=await Promise.all([
     sb.from('content_piezas').select('id,content_num,content_code,titulo,servicio,objetivo,categoria,formato,hook_family,hook_id,hook_verbal,rehooks,cta_family,cta_master,master_script,metadata,estado').eq('negocio_id',ctx.negocioId),
     sb.from('content_publicaciones').select('id,content_id,plataforma,estado,url,caption,hashtags,published_at,metricas,resultado,metadata,publication_package_id,package_match_status').eq('negocio_id',ctx.negocioId),
