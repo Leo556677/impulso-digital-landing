@@ -111,10 +111,10 @@
 
           <article class="panel card">
             <div class="card-head">
-              <div><span class="step">2</span><h3>Quién o qué atiende</h3></div>
+              <div><span class="step">2</span><h3>Recursos de agenda</h3></div>
               <button id="newResourceBtn" class="button mini write-control" type="button">+ Agregar</button>
             </div>
-            <p class="muted">Un recurso puede ser un profesional, consultorio o equipo con horario propio. No atribuyas servicios a una persona si no corresponde.</p>
+            <p class="muted">Un recurso organiza los cupos y horarios de reserva. Puede representar una persona, consultorio o equipo, pero esta asignación de agenda no define por sí sola quién ejecuta clínicamente un procedimiento.</p>
             <form id="resourceForm" class="form-grid compact" hidden>
               <input id="resourceId" type="hidden">
               <label class="full"><span>Nombre</span><input id="resourceName" maxlength="120" required placeholder="Ej. Dr. Olano / Consultorio 1"></label>
@@ -212,7 +212,7 @@
               <label class="toggle-line price-toggle"><input id="servicePriceFrom" type="checkbox"><span>Mostrar “desde”</span></label>
               <label><span>Duración</span><div class="input-suffix"><input id="serviceDuration" type="number" min="5" max="1440" step="5" placeholder="Opcional"><em>min</em></div></label>
               <label><span>Orden en web</span><input id="serviceOrder" type="number" min="-9999" max="9999" value="0"></label>
-              <label class="full"><span>Quién/recurso lo atiende</span><select id="serviceResource" required></select><small class="help">La reserva pública usará el horario del recurso seleccionado.</small></label>
+              <label class="full"><span>Recurso de agenda</span><select id="serviceResource" required></select><small class="help">La reserva pública usará el horario del recurso seleccionado. Esta relación organiza disponibilidad; no define atribución clínica ni profesional ejecutor.</small></label>
               <fieldset class="full">
                 <legend>Días disponibles para este servicio</legend>
                 <div id="serviceWeekdays" class="weekday-checks"></div>
