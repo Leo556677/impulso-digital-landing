@@ -422,7 +422,7 @@ function lineChart(m,kind='views'){
   const data=seriesByDate(m,kind),W=1100,H=300,L=58,R=22,T=24,B=48;
   if(!data.dates.length)return '<div class="analytics-empty">'+uiIcon('chart')+'<span>No hay datos para graficar con estos filtros.</span></div>';
   const vals=Object.values(data.series).flat(),max=Math.max(1,...vals),x=i=>data.dates.length===1?(L+(W-R-L)/2):L+i*(W-R-L)/(data.dates.length-1),y=v=>T+(H-B-T)*(1-v/max);
-  const colors={TIKTOK:'#17202b',INSTAGRAM:'#c05288',FACEBOOK:'#3478c6'};
+  const colors={TIKTOK:'#24e7ef',INSTAGRAM:'#ea48d7',FACEBOOK:'#5b82ff'};
   const grid=Array.from({length:5},(_,i)=>{const v=max*(4-i)/4,yy=T+i*(H-B-T)/4;return '<g><line x1="'+L+'" y1="'+yy+'" x2="'+(W-R)+'" y2="'+yy+'" class="chart-grid"/><text x="'+(L-10)+'" y="'+(yy+4)+'" text-anchor="end" class="chart-axis">'+esc(fmt(v))+'</text></g>'}).join('');
   const bars=data.posts.map((v,i)=>{const bw=Math.min(22,(W-R-L)/Math.max(2,data.dates.length)*.35);return v?'<rect x="'+(x(i)-bw/2)+'" y="'+(H-B-16-Math.min(55,v*12))+'" width="'+bw+'" height="'+Math.min(55,v*12)+'" rx="4" class="chart-post-bar"/>':''}).join('');
   const lines=Object.entries(data.series).map(([p,arr])=>{
@@ -450,7 +450,7 @@ function trafficLabel(v){
 function donutChart(title,map,kind='generic'){
   const items=Object.entries(map||{}).filter(([,v])=>Number(v)>0).slice(0,7);
   if(!items.length)return '<article class="donut-card"><div class="donut-head"><b>'+esc(title)+'</b></div><div class="analytics-empty small">Sin datos disponibles.</div></article>';
-  const palette=['#7d8df1','#8bcea0','#f39ad8','#e7a82f','#b287b7','#86acd6','#ef7652'];
+  const palette=['#5b78ff','#29e4df','#ed4bd4','#9a55ff','#ffb84d','#3da8ff','#ff6b8e'];
   let acc=0;const stops=items.map(([k,v],i)=>{const start=acc;acc+=Number(v);return palette[i]+' '+start+'% '+acc+'%'}).join(',');
   return '<article class="donut-card"><div class="donut-head"><b>'+esc(title)+'</b></div><div class="donut-layout"><div class="donut" style="background:conic-gradient('+stops+')"><i></i></div><div class="donut-legend">'+items.map(([k,v],i)=>'<div><span class="legend-dot" style="background:'+palette[i]+'"></span><span>'+esc(kind==='traffic'?trafficLabel(k):labelKey(k))+'</span><b>'+esc(pct(v))+'</b></div>').join('')+'</div></div></article>';
 }
