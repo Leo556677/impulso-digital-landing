@@ -453,8 +453,13 @@ async function saveService(e) {
     const {data,error}=await sb.from('servicios').insert({...payload,codigo_web:code,codigo_externo:code,requiere_consulta_previa:false}).select('id').single();
     if(error) throw error; serviceId=data.id;
   }
-  const {error:delErr}=await sb.from('servicios_recursos').delete().eq('negocio_id',state.business.id).eq('servicio_id',serviceId); if(delErr) throw delErr;
-  const {error:linkErr}=await sb.from('servicios_recursos').insert({negocio_id:state.business.id,servicio_id:serviceId,recurso_id}); if(linkErr) throw linkErr;
+  const {error:linkErr}=await sb.from('servicios_recursos').upsert(
+    {negocio_id:state.business.id,servicio_id:serviceId,recurso_id},
+    {onConflict:'negocio_id,servicio_id,recurso_id'}
+  ); if(linkErr) throw linkErr;
+  const {error:delErr}=await sb.from('servicios_recursos').delete()
+    .eq('negocio_id',state.business.id).eq('servicio_id',serviceId).neq('recurso_id',recurso_id);
+  if(delErr) throw delErr;
   resetServiceForm(); await afterWrite('Servicio y asignación guardados.');
 }
 async function savePromotion(e) {
