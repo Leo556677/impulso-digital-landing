@@ -187,3 +187,36 @@ Activos en Supabase:
 - EXECUTION_LIBRARIES_V2
 - EDIT_PUBLISH_V2
 - METRICS_LEARNING_V2
+
+
+## 13. Aprendizaje desde comentarios
+
+Nuevas tablas:
+- content_comments;
+- content_comment_analysis.
+
+content_comments guarda texto minimizado/anónimo, publicación, plataforma, fecha y señales de saliencia como likes/replies.
+
+content_comment_analysis permite:
+- sentimiento;
+- temas;
+- qué gusta / qué no gusta;
+- QUESTION;
+- OBJECTION;
+- DESIRE;
+- FEAR;
+- CONFUSION;
+- LANGUAGE;
+- prioridad de respuesta.
+
+Los patrones no viven en una tabla paralela: se elevan a content_strategy_signals con frecuencia y evidencia trazable.
+
+El dashboard muestra:
+- cobertura de texto (comentarios reportados vs textos disponibles);
+- sentimiento;
+- temas repetidos;
+- gustos/disgustos;
+- lenguaje real;
+- patrones estratégicos.
+
+Metricool Analytics disponible actualmente entrega conteos, no texto del Inbox. La ingesta de texto debe venir de una fuente que realmente lo exponga, exportación o captura/entrada manual verificable.
