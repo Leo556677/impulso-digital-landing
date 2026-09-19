@@ -62,7 +62,7 @@
   const isRecorded=x=>x?.estado==='GRABADO'||x?.pieza?.estado==='RECORDED';
   const keyOf=v=>String(v||'Sin servicio').trim().replace(/\s+/g,' ').toLocaleUpperCase('es-PE');
   const nameOf=k=>serviceNames[k]||String(k||'Servicio').toLocaleLowerCase('es-PE').replace(/(^|\s|\/\s*)\p{L}/gu,m=>m.toLocaleUpperCase('es-PE'));
-  const projectNo=p=>{const n=Number(p?.metadata?.project_ref_v1?.project_number);return Number.isFinite(n)&&n>0?n:null;};
+  const projectNo=p=>{const visible=Number(p?.metadata?.web_display_number);if(Number.isFinite(visible)&&visible>0)return visible;const identity=Number(p?.metadata?.project_ref_v1?.project_number);return Number.isFinite(identity)&&identity>0?identity:null;};
   const projectSort=(a,b)=>{const an=projectNo(a?.pieza),bn=projectNo(b?.pieza);if(an&&bn&&an!==bn)return an-bn;if(an&&!bn)return-1;if(!an&&bn)return 1;return pt(a?.pieza).localeCompare(pt(b?.pieza),'es');};
   const sig=()=>active().map(s=>`${s.id}:${s.recorded||0}:${s.total||0}`).sort().join('|')+'|'+(P?.calendar_items||[]).map(x=>`${x.content_id}:${x.publish_date}:${x.slot_status}`).sort().join('|');
   const invalidate=()=>{cache.signature='';cache.all=[];cache.groups=new Map();cache.loading=null;};
@@ -84,6 +84,7 @@
   }
   function ordered(groups){return[...groups.values()].sort((a,b)=>{const ai=serviceOrder.indexOf(a.key),bi=serviceOrder.indexOf(b.key);if(ai>=0||bi>=0){if(ai<0)return 1;if(bi<0)return-1;if(ai!==bi)return ai-bi;}return a.name.localeCompare(b.name,'es');});}
   const captureGuide={
+    projectNumber:6,
     key:'MARCA-01',
     date:'26 SEP',
     title:'Detrás de cámaras',
@@ -100,14 +101,14 @@
     ]
   };
   function captureCard(){
-    return `<article class="card service-category capture-special jsCapture" tabindex="0" role="button" aria-label="Abrir guía de humanización"><div class="service-card-top"><div><div class="service-eyebrow">HUMANIZACIÓN · ${captureGuide.key}</div><h3>${captureGuide.title}</h3><p>1 grabación especial pendiente</p></div><span class="service-arrow">${ic('right')}</span></div><div class="capture-special-status"><b>${captureGuide.date}</b><span>GRABAR 6–10 CLIPS</span></div><div class="service-card-foot"><span>Sin texto para memorizar</span><span>Guía paso a paso</span></div></article>`;
+    return `<article class="card service-category capture-special jsCapture" tabindex="0" role="button" aria-label="Abrir guía de humanización"><div class="service-card-top"><div><div class="service-eyebrow">PROYECTO ${String(captureGuide.projectNumber).padStart(3,'0')} · HUMANIZACIÓN · ${captureGuide.key}</div><h3>${captureGuide.title}</h3><p>1 grabación especial pendiente</p></div><span class="service-arrow">${ic('right')}</span></div><div class="capture-special-status"><b>${captureGuide.date}</b><span>GRABAR 6–10 CLIPS</span></div><div class="service-card-foot"><span>Sin texto para memorizar</span><span>Guía paso a paso</span></div></article>`;
   }
   function openCaptureGuide(){
     backTab='record';
     S={_captureGuide:true,session:{id:null,nombre:'Humanización',fecha:'2026-09-26',lugar:null,notas:null},items:[]};
     tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';
     $('sbacktxt').textContent='Volver a servicios';
-    $('shero').innerHTML=`<div class="card detail capture-hero"><div class="date">26 SEP · HUMANIZACIÓN</div><h2>${captureGuide.subtitle}</h2><p class="capture-lead">Hoy no tienen que aprender un guion. Solo graben estas acciones reales, una por una.</p><div class="capture-badge">6–10 clips · vertical 9:16 · 2–4 s cada uno</div></div>`;
+    $('shero').innerHTML=`<div class="card detail capture-hero"><div class="date">PROYECTO ${String(captureGuide.projectNumber).padStart(3,'0')} · ${captureGuide.date} · HUMANIZACIÓN</div><h2>${captureGuide.subtitle}</h2><p class="capture-lead">Hoy no tienen que aprender un guion. Solo graben estas acciones reales, una por una.</p><div class="capture-badge">6–10 clips · vertical 9:16 · 2–4 s cada uno</div></div>`;
     $('setup').innerHTML=`<div class="card setup capture-start"><div class="capture-start-icon">${ic('cam')}</div><div><b>Antes de empezar</b><p><strong>NO HAY TEXTO PARA MEMORIZAR.</strong> Repitan cada toma 2 veces. Cámara quieta, sin zoom. Dejen 1–2 s antes y 2 s después de cada acción.</p></div></div>`;
     $('videos').className='capture-guide';
     $('videos').innerHTML=`<div class="capture-guide-title"><div><span>PASO A PASO</span><h3>Graben estas 8 escenas</h3></div><small>Si una acción no ocurre de verdad, sáltenla.</small></div>`+
