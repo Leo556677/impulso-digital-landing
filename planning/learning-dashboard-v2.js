@@ -502,6 +502,18 @@ function darkFooter(){
   return '<div class="dark-learning-footer"><span class="footer-target">'+uiIcon('spark')+'</span><div><b>Pequeñas pruebas, grandes aprendizajes.</b><span>Cada dato nos acerca a un contenido más útil y claro.</span></div><strong>Dr. Olano</strong></div>';
 }
 
+function brand24VerticalBars(map){
+  const items=Object.entries(map||{}).slice(0,7);
+  if(!items.length)return '<div class="b24-empty">Sin datos disponibles.</div>';
+  const max=Math.max(...items.map(([,v])=>Number(v)||0),1);
+  return '<div class="b24-vbars">'+items.map(([k,v])=>
+    '<div class="b24-vbar">'+
+      '<div class="b24-vbar-track"><i style="height:'+Math.max(4,(Number(v)||0)/max*100)+'%"></i></div>'+
+      '<b>'+esc(pct(v))+'</b>'+
+      '<span>'+esc(labelKey(k))+'</span>'+
+    '</div>'
+  ).join('')+'</div>';
+}
 function b24SectionHead(title,subtitle,action=''){
   return '<div class="b24-section-title"><div><h2>'+esc(title)+'</h2>'+(subtitle?'<p>'+esc(subtitle)+'</p>':'')+'</div>'+(action||'')+'</div>';
 }
