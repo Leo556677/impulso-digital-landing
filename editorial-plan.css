@@ -759,3 +759,8 @@ td button{border:0;background:none;color:var(--blue);text-align:left;padding:0}
   .slot[data-svc],.sidebar nav a,.sidebar nav button{transition:none}
   .slot[data-svc]:hover{transform:none}
 }
+
+.business-switcher{display:grid;gap:6px;margin:0 14px 16px;padding:10px 11px;border:1px solid #dfe6ee;border-radius:12px;background:#f8fbfe}
+.business-switcher span{font-size:9px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#6b7b8e}
+.business-switcher select{width:100%;border:1px solid #d6e1ec;border-radius:9px;background:#fff;padding:8px 9px;font:inherit;font-size:11px;font-weight:700;color:#234f84;outline:none}
+.business-switcher select:focus{border-color:#84a8ce;box-shadow:0 0 0 3px rgba(49,95,156,.10)}

@@ -1,8 +1,7 @@
-import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
-const URL='https://xnlzsgulskqyecfgzhwa.supabase.co';
-const KEY='sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
-const BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb';
-const sb=createClient(URL,KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+import {sb,resolveContentContext} from '../content-vault-client.js?v=20260919-business-switcher-v1';
+const PUBLIC_BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb';
+let BUSINESS=PUBLIC_BUSINESS;
+let BUSINESS_CTX=null;
 
 const names={S1:'Toxina botulínica',S2:'PRP facial',S3:'Limpieza facial',S4:'Liposucción de papada',S5:'Bichectomía',S6:'Rinoplastia'};
 const serviceShort={S1:'TB',S2:'PRP',S3:'LF',S4:'PAP',S5:'BIC',S6:'RIN',MARCA:'EQ'};
@@ -35,6 +34,43 @@ const svgSummary=kind=>kind==='services'
  :'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 17h.01"/></svg>';
 
 let calendars=[],slots=[],planMaps=new Map(),trMap=new Map(),projectMap=new Map(),current=0,openId=null;
+
+async function mountCalendarBusinessSwitcher(ctx){
+ const host=document.querySelector('.brandline');
+ if(!host||document.querySelector('#calendarBusinessSwitcher'))return;
+ const ids=[...new Set((ctx.memberships||[]).map(x=>x.negocio_id).filter(Boolean))];
+ if(ids.length<2)return;
+ const {data,error}=await sb.from('negocios').select('id,nombre,slug').in('id',ids).order('nombre');
+ if(error)throw error;
+ const wrap=document.createElement('label');
+ wrap.className='calendar-business-switcher';
+ wrap.innerHTML='<span>Negocio</span><select id="calendarBusinessSwitcher" aria-label="Elegir negocio">'+(data||[]).map(b=>'<option value="'+esc(b.id)+'">'+esc(b.nombre)+'</option>').join('')+'</select>';
+ host.appendChild(wrap);
+ const select=wrap.querySelector('select');
+ select.value=String(ctx.negocioId);
+ select.addEventListener('change',()=>{
+   const id=select.value;
+   localStorage.setItem('impulso_negocio_activo',id);
+   const u=new URL(location.href);
+   u.searchParams.set('negocio',id);
+   u.searchParams.delete('week');
+   location.assign(u.toString());
+ });
+}
+
+async function resolveBusinessContext(){
+ try{
+   const {data:{session}}=await sb.auth.getSession();
+   if(!session?.user){BUSINESS=PUBLIC_BUSINESS;return}
+   const ctx=await resolveContentContext({redirect:false});
+   BUSINESS_CTX=ctx;
+   BUSINESS=ctx.negocioId;
+   await mountCalendarBusinessSwitcher(ctx);
+ }catch(_){
+   BUSINESS=PUBLIC_BUSINESS;
+   BUSINESS_CTX=null;
+ }
+}
 
 function weekNo(cal,i){const m=String(cal.calendar_key||'').match(/w(\d+)/i);return m?Number(m[1]):i+1}
 function weekLabel(cal,i){return `Semana ${String(weekNo(cal,i)).padStart(2,'0')} · ${fmt(cal.week_start)}–${fmt(cal.week_end)} ${dval(cal.week_end).getFullYear()}${cal.status==='CLOSED'?' · histórica':''}`}
@@ -79,7 +115,7 @@ function renderWeekNav(){
  document.querySelector('#weekSubtitle').textContent=`Semana ${String(weekNo(cal,current)).padStart(2,'0')} · ${fmt(cal.week_start)}–${fmt(cal.week_end)} ${dval(cal.week_end).getFullYear()}`;
  document.querySelector('#strategyName').textContent=cal.strategy_name||'Estrategia semanal';
  document.querySelector('#strategyText').textContent=cal.hypothesis?.principle||'';
- history.replaceState(null,'',location.pathname+'?week='+encodeURIComponent(cal.calendar_key));
+ const u=new URL(location.href);u.searchParams.set('week',cal.calendar_key);if(BUSINESS_CTX)u.searchParams.set('negocio',BUSINESS);history.replaceState(null,'',u.pathname+u.search);
 }
 function renderFilters(){
  const svc=document.querySelector('#strategyService'),st=document.querySelector('#strategyStatus'),keepSvc=svc.value,keepSt=st.value;
@@ -197,6 +233,7 @@ function onFilter(){jumpIfNeeded();render()}
 async function load(){
  const root=document.querySelector('#calendarApp');
  try{
+  await resolveBusinessContext();
   const {data:cals,error:ce}=await sb.from('content_calendarios_publicacion').select('id,negocio_id,calendar_key,week_start,week_end,strategy_name,strategy_version,bank_plan_key,status,hypothesis').eq('negocio_id',BUSINESS).in('status',['ACTIVE','CLOSED']).order('week_start',{ascending:true});
   if(ce)throw ce;if(!cals?.length)throw new Error('No hay semanas publicadas');
   calendars=cals;

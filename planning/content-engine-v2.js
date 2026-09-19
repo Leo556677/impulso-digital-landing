@@ -6,11 +6,35 @@ const briefNames={USE_EXISTING_APPROVED:'Usar guion aprobado',READY_TO_SCRIPT:'B
 const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const fmtDate=v=>v?new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'short',year:'numeric'}).format(new Date(`${v}T12:00:00`)):'—';
 const root=()=>document.querySelector('#engineApp');
+
+async function mountBusinessSwitcher(ctx){
+ const tenant=document.querySelector('.tenant');
+ if(!tenant||document.querySelector('#businessSwitcher'))return;
+ const ids=[...new Set((ctx.memberships||[]).map(x=>x.negocio_id).filter(Boolean))];
+ if(ids.length<2)return;
+ const {data,error}=await sb.from('negocios').select('id,nombre,slug').in('id',ids).order('nombre');
+ if(error)throw error;
+ const businesses=data||[];
+ const wrap=document.createElement('label');
+ wrap.className='business-switcher';
+ wrap.innerHTML='<span>Negocio activo</span><select id="businessSwitcher" aria-label="Elegir negocio">'+businesses.map(b=>'<option value="'+esc(b.id)+'">'+esc(b.nombre)+'</option>').join('')+'</select>';
+ tenant.insertAdjacentElement('afterend',wrap);
+ const select=wrap.querySelector('select');
+ select.value=String(ctx.negocioId);
+ select.addEventListener('change',()=>{
+   const id=select.value;
+   localStorage.setItem('impulso_negocio_activo',id);
+   const u=new URL(location.href);
+   u.searchParams.set('negocio',id);
+   location.assign(u.toString());
+ });
+}
 const familySort=(a,b)=>String(a.family||'').localeCompare(String(b.family||''),undefined,{numeric:true})||String(a.source_id).localeCompare(String(b.source_id),undefined,{numeric:true});
 
 async function core(){
  const ctx=await resolveContentContext();
  document.querySelectorAll('[data-business]').forEach(el=>el.textContent=ctx.negocio?.nombre||'Negocio');
+ await mountBusinessSwitcher(ctx);
  const {data:cal,error:ce}=await sb.from('content_calendarios_publicacion').select('*').eq('negocio_id',ctx.negocioId).eq('status','ACTIVE').order('week_start',{ascending:false}).limit(1).maybeSingle();
  if(ce)throw ce;
  let slots=[],plan=null,trans=[];
