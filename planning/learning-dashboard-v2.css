@@ -809,3 +809,147 @@
   .learning-brand24 .b24-kpi-side .metric-ribbon{grid-template-columns:1fr 1fr}
   .learning-brand24 .b24-summary-section .b24-demography-grid{grid-template-columns:1fr}
 }
+
+
+/* INTERACTION + CHART FIX V12 */
+.learning-brand24 .b24-kpi-side .metric-tile{
+  grid-template-columns:48px minmax(0,1fr)!important;
+  align-items:center!important;
+  min-height:112px!important;
+  padding:15px 16px!important;
+  overflow:hidden
+}
+.learning-brand24 .b24-kpi-side .metric-icon{
+  width:48px!important;height:48px!important;border-radius:12px!important;
+  align-self:center;justify-self:start
+}
+.learning-brand24 .b24-kpi-side .metric-icon svg{width:22px;height:22px}
+.learning-brand24 .b24-kpi-side .metric-copy{
+  min-width:0;display:grid;grid-template-rows:auto auto auto;align-content:center;gap:3px
+}
+.learning-brand24 .b24-kpi-side .metric-label{
+  font-size:11px!important;line-height:1.25!important;font-weight:700!important;color:#536174!important;
+  white-space:normal!important;margin:0!important
+}
+.learning-brand24 .b24-kpi-side .metric-tile strong{
+  font-size:32px!important;line-height:1!important;margin:2px 0 1px!important;color:#172033
+}
+.learning-brand24 .b24-kpi-side .metric-tile small{
+  font-size:9px!important;line-height:1.25!important;margin:0!important;color:#64748b
+}
+
+/* meaningful charts */
+.learning-brand24 .chart-card{overflow:visible}
+.learning-brand24 .chart-card-single .analytics-line-chart{min-height:340px}
+.learning-brand24 .chart-value{font-size:18px;font-weight:900;fill:#172033}
+.learning-brand24 .chart-category{font-size:13px;font-weight:800;fill:#344054}
+.learning-brand24 .chart-reading{
+  margin:4px 2px 0;padding:10px 12px;border-radius:9px;background:#f7f9fc;
+  color:#667085;font-size:11.5px;line-height:1.4
+}
+.learning-brand24 .chart-reading b{color:#344054}
+.learning-brand24 .chart-bar-group{cursor:pointer}
+.learning-brand24 .chart-bar{
+  transform-box:fill-box;transform-origin:center bottom;
+  transition:transform .18s ease,filter .18s ease,opacity .18s ease
+}
+.learning-brand24 .chart-bar-group:hover .chart-bar{
+  transform:scaleY(1.035);filter:drop-shadow(0 7px 8px rgba(31,65,110,.18));opacity:.9
+}
+.learning-brand24 .chart-line{transition:opacity .18s ease,stroke-width .18s ease}
+.learning-brand24 .chart-point{
+  cursor:pointer;transform-box:fill-box;transform-origin:center;
+  transition:transform .16s ease,filter .16s ease
+}
+.learning-brand24 .chart-point:hover{transform:scale(1.65);filter:drop-shadow(0 3px 4px rgba(31,65,110,.24))}
+.dashboard-hover-tip{
+  position:fixed;z-index:9999;pointer-events:none;opacity:0;transform:translateY(4px);
+  transition:opacity .12s ease,transform .12s ease;
+  max-width:220px;padding:9px 11px;border-radius:8px;background:#172033;color:#fff;
+  box-shadow:0 8px 22px rgba(17,24,39,.22);font:600 11px/1.35 Inter,ui-sans-serif,system-ui
+}
+.dashboard-hover-tip.show{opacity:1;transform:translateY(0)}
+
+/* page-wide hover language */
+.learning-brand24 .metric-tile,
+.learning-brand24 .platform-premium,
+.learning-brand24 .action-card,
+.learning-brand24 .donut-card,
+.learning-brand24 .b24-panel,
+.learning-brand24 .b24-learning-list,
+.learning-brand24 .data-table-card,
+.learning-brand24 .creative-card,
+.learning-brand24 .evidence-list article,
+.learning-brand24 .posts-summary article{
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background-color .18s ease
+}
+.learning-brand24 .metric-tile:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 26px rgba(31,65,110,.14)!important
+}
+.learning-brand24 .metric-tile:hover .metric-icon{transform:scale(1.06)}
+.learning-brand24 .metric-icon{transition:transform .18s ease}
+.learning-brand24 .platform-premium:hover{
+  transform:translateY(-5px);box-shadow:0 14px 30px rgba(31,65,110,.13);border-color:#b7cbe4
+}
+.learning-brand24 .platform-premium:hover .platform-brand-wrap{transform:scale(1.08)}
+.learning-brand24 .platform-brand-wrap{transition:transform .18s ease}
+.learning-brand24 .platform-premium:hover .platform-meter i{filter:saturate(1.25)}
+.learning-brand24 .action-card:hover{
+  transform:translateY(-4px);box-shadow:0 12px 25px rgba(31,65,110,.11);border-color:#b9cde5
+}
+.learning-brand24 .action-card:hover .action-rank{transform:scale(1.08)}
+.learning-brand24 .action-rank{transition:transform .18s ease}
+.learning-brand24 .donut-card:hover,.learning-brand24 .b24-panel:hover{
+  transform:translateY(-3px);box-shadow:0 12px 26px rgba(31,65,110,.10)
+}
+.learning-brand24 .donut-card:hover .donut{transform:scale(1.025)}
+.learning-brand24 .donut{transition:transform .18s ease}
+.learning-brand24 .b24-learning-list:hover{box-shadow:0 12px 25px rgba(31,65,110,.09)}
+.learning-brand24 .b24-learning-list article{
+  transition:background-color .16s ease,padding-left .16s ease
+}
+.learning-brand24 .b24-learning-list article:hover{background:#f7fbff;padding-left:6px}
+.learning-brand24 .analytics-table tbody tr{
+  transition:background-color .14s ease,box-shadow .14s ease
+}
+.learning-brand24 .analytics-table tbody tr:hover{
+  background:#eef6ff!important;box-shadow:inset 3px 0 0 #2878d4
+}
+.learning-brand24 .analytics-view-tabs button,
+.learning-brand24 .network-tabs button,
+.learning-brand24 .toolbar-reset,
+.learning-brand24 .b24-link-button,
+.learning-brand24 select{
+  transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease,transform .15s ease
+}
+.learning-brand24 .analytics-view-tabs button:hover,
+.learning-brand24 .network-tabs button:hover,
+.learning-brand24 .toolbar-reset:hover,
+.learning-brand24 .b24-link-button:hover{transform:translateY(-1px)}
+.learning-brand24 select:hover{border-color:#9fc1e7}
+.learning-brand24 select:focus{outline:none;border-color:#2878d4;box-shadow:0 0 0 3px rgba(40,120,212,.12)}
+.learning-brand24 .premium-bar>i em{transition:filter .16s ease,transform .16s ease}
+.learning-brand24 .premium-bar:hover>i em{filter:saturate(1.4);transform:scaleY(1.2)}
+.learning-brand24 .b24-vbar-track i{
+  transition:transform .18s ease,filter .18s ease,background-color .18s ease;
+  transform-origin:center bottom
+}
+.learning-brand24 .b24-vbar:hover .b24-vbar-track i{
+  transform:scaleX(1.08);filter:saturate(1.2) drop-shadow(0 7px 7px rgba(18,183,106,.18))
+}
+.learning-brand24 .b24-vbar:hover b{color:#0f9f5d}
+.learning-brand24 .b24-vbar b{transition:color .16s ease}
+
+/* remove misleading decorative bars from platform cards */
+.learning-brand24 .platform-mini-bars{display:none!important}
+
+@media(max-width:1250px){
+  .learning-brand24 .b24-kpi-side .metric-ribbon{grid-template-columns:repeat(3,1fr)!important}
+  .learning-brand24 .b24-kpi-side .metric-tile{min-height:106px!important}
+}
+@media(max-width:760px){
+  .learning-brand24 .b24-kpi-side .metric-ribbon{grid-template-columns:1fr 1fr!important}
+  .learning-brand24 .b24-kpi-side .metric-tile{grid-template-columns:42px 1fr!important;padding:12px!important}
+  .learning-brand24 .b24-kpi-side .metric-icon{width:42px!important;height:42px!important}
+}
