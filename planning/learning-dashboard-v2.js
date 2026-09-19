@@ -461,7 +461,7 @@ function workspaceToolbar(base,m){
       '<label><span>Video</span><select data-lf="contentId"><option value="">Todos</option>'+projects.map(p=>'<option value="'+esc(p.id)+'" '+(LF.contentId===p.id?'selected':'')+'>'+esc(projectLabel(projectNum(p,base.lm))+' · '+(p.titulo||p.content_code))+'</option>').join('')+'</select></label>'+
       '<label><span>Publicación</span><select data-lf="publicationId"><option value="">Todas</option>'+base.pubs.map(pub=>'<option value="'+esc(pub.id)+'" '+(LF.publicationId===pub.id?'selected':'')+'>'+esc((P[pub.plataforma]||pub.plataforma)+' · '+(pubDateKey(pub)||'sin fecha')+' · '+pub.project)+'</option>').join('')+'</select></label>'+
       '<label><span>Hora</span><select data-lf="hour"><option value="">Todas</option><option value="morning" '+(LF.hour==='morning'?'selected':'')+'>Mañana</option><option value="afternoon" '+(LF.hour==='afternoon'?'selected':'')+'>Tarde</option><option value="evening" '+(LF.hour==='evening'?'selected':'')+'>Noche</option><option value="night" '+(LF.hour==='night'?'selected':'')+'>Madrugada</option></select></label>'+
-      '<label><span>Edad</span><select data-lf="age"><option value="">Todas</option>'+ages.map(a=>'<option value="'+esc(a)+'" '+(LF.age===a?'selected':'')+'>'+esc(labelKey(a))+'</option>').join('')+'</select></label>'+
+      (WORKSPACE.view==='audience'?'<label><span>Edad</span><select data-lf="age"><option value="">Todas</option>'+ages.map(a=>'<option value="'+esc(a)+'" '+(LF.age===a?'selected':'')+'>'+esc(labelKey(a))+'</option>').join('')+'</select></label>':'')+
       '<button type="button" class="toolbar-reset" data-filter-reset>Limpiar</button>'+
     '</div>'+
     (LF.range==='custom'?'<div class="custom-date-row"><label>Desde <input type="date" data-lf="from" value="'+esc(LF.from||from||'')+'"></label><label>Hasta <input type="date" data-lf="to" value="'+esc(LF.to||to||'')+'"></label></div>':'')+
@@ -527,7 +527,7 @@ function learningWorkspace(m){
 function bindWorkspace(){
   document.querySelectorAll('[data-work-view]').forEach(btn=>btn.addEventListener('click',()=>{WORKSPACE.view=btn.dataset.workView||'summary';renderLearning()}));
   document.querySelector('[data-work-compare]')?.addEventListener('change',e=>{WORKSPACE.compare=e.target.value;renderLearning()});
-  document.querySelector('[data-post-search]')?.addEventListener('input',e=>{WORKSPACE.postSearch=e.target.value;renderLearning()});
+  document.querySelector('[data-post-search]')?.addEventListener('input',e=>{const value=e.target.value;WORKSPACE.postSearch=value;renderLearning();requestAnimationFrame(()=>{const el=document.querySelector('[data-post-search]');if(el){el.focus();try{el.setSelectionRange(value.length,value.length)}catch{}}})});
   document.querySelector('[data-post-sort]')?.addEventListener('change',e=>{WORKSPACE.postSort=e.target.value;renderLearning()});
 }
 function workspaceContent(base,m){
