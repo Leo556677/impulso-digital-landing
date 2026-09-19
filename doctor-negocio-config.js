@@ -85,6 +85,7 @@ function safeSvg(svg) {
   if (!/^<svg[\s>]/i.test(raw) || !/<\/svg>$/i.test(raw)) return { ok:false, error:'El icono debe ser un SVG completo.' };
   if (/<\s*(script|foreignObject|iframe|object|embed|link|style)\b/i.test(raw)) return { ok:false, error:'El SVG contiene elementos no permitidos.' };
   if (/\son[a-z]+\s*=/i.test(raw) || /javascript\s*:/i.test(raw)) return { ok:false, error:'El SVG contiene código no permitido.' };
+  if (/\sstyle\s*=/i.test(raw) || /url\s*\(/i.test(raw)) return { ok:false, error:'El SVG no puede usar estilos embebidos ni recursos URL.' };
   if (/\s(?:href|xlink:href)\s*=\s*["']\s*(?:https?:|\/\/|data:)/i.test(raw)) return { ok:false, error:'El SVG no puede cargar recursos externos.' };
   return { ok:true, value:raw };
 }
