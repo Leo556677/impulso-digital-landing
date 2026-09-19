@@ -29,14 +29,18 @@ Cuando exista:
 - ubicación;
 - followers vs non-followers;
 - fuente de tráfico;
-- fuente de visualización.
+- fuente de visualización;
+- actividad de audiencia por hora;
+- actividad de audiencia por día.
+
+Si se usa Metricool u otro conector, verificar primero que la marca y las cuentas sociales corresponden a Dr. Olano. No mezclar datos de otra marca.
 
 No trasladar una segmentación de una red a otra como si fuera equivalente.
 
 ## Analizar timing
 Registrar día, hora local y timezone reales.
 No recomendar una hora por una sola publicación.
-Comparar dentro de la misma plataforma y con horas alternativas.
+Comparar dentro de la misma plataforma y con horas alternativas. Cuando exista, triangular actividad de audiencia + rendimiento propio por día/hora; una sola fuente no demuestra causalidad.
 
 ## Analizar cualitativo
 QUESTION · OBJECTION · DESIRE · FEAR · CONFUSION · LANGUAGE · RESULT.
