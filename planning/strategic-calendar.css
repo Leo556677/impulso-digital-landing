@@ -71,3 +71,12 @@ h1{font-family:Georgia,"Times New Roman",serif;font-size:42px;line-height:1;marg
 .calendar-business-switcher span{font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:9px}
 .calendar-business-switcher select{border:1px solid #d8e1ea;border-radius:9px;background:#fff;padding:7px 9px;font:inherit;font-size:11px;font-weight:700;color:#244f84;max-width:220px}
 @media(max-width:760px){.calendar-business-switcher{width:100%;margin-left:0;margin-top:8px}.calendar-business-switcher select{flex:1;max-width:none}}
+
+
+/* Calendar inside shared V2 shell */
+.calendar-layout{min-height:100vh}.calendar-main{padding:22px clamp(18px,3vw,42px) 48px}.calendar-main .wrap{max-width:1500px;margin:0 auto;padding:0}.calendar-main .page-toolbar{margin-bottom:12px}
+.calendar-main .brandline .back{display:none}.calendar-main .brandline{justify-content:flex-end;margin-bottom:12px}.calendar-main .brandline>span{margin-left:auto}
+.calendar-main .executive-head{background:linear-gradient(135deg,#fff,#f7faff);border:1px solid #e0e7ef;border-radius:20px;padding:22px;margin-bottom:14px;box-shadow:0 14px 34px rgba(25,48,77,.055)}
+.calendar-main .hypothesis,.calendar-main .week-nav,.calendar-main .strategy-filters{border-radius:14px;box-shadow:0 8px 20px rgba(25,48,77,.035)}
+.calendar-main .day{border-radius:14px}.calendar-main .day-toggle{min-height:350px}.calendar-main .day[data-open="true"]{box-shadow:0 0 0 1px #3484e8,0 18px 32px rgba(31,87,153,.12)}
+@media(max-width:1050px){.calendar-main{padding:18px 14px 42px}.calendar-main .wrap{max-width:none}.calendar-main .brandline{justify-content:flex-start}}
