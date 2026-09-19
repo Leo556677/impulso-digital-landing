@@ -12,3 +12,10 @@
 10. El Orquestador consume recomendaciones para futuros tests sin reescribir historia.
 11. No fabricar copy/hashtags históricos faltantes.
 12. Normas oficiales de plataforma, elegibilidad de recomendación y heurísticas de optimización se mantienen separadas.
+
+
+13. COMENTARIOS. El conteo no sustituye al texto. El aprendizaje cualitativo solo usa comentarios realmente ingeridos.
+14. Un comentario puede contener varias señales simultáneas.
+15. Los patrones derivados de comentarios se consolidan en content_strategy_signals; no crear otro banco paralelo.
+16. Minimizar identidad del comentarista. Datos clínicos sensibles/complicaciones se priorizan para atención humana, no explotación comercial.
+17. Repetición entre publicaciones pesa más que repetición dentro de un solo hilo; likes/replies indican saliencia, no representatividad.
