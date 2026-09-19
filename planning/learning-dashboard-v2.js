@@ -434,7 +434,7 @@ function lineChart(m,kind='views'){
       const h=(row.value/max)*(baseY-T-8),x=L+gap+(barW+gap)*i,y=baseY-h;
       return '<g class="chart-bar-group" data-chart-tip="'+esc(P[row.p]+' · '+fmt(row.value)+' '+unit)+'">'+
         '<rect class="chart-bar chart-bar-'+row.p.toLowerCase()+'" x="'+x+'" y="'+y+'" width="'+barW+'" height="'+Math.max(3,h)+'" rx="10" fill="'+colors[row.p]+'"/>'+
-        '<text x="'+(x+barW/2)+'" y="'+Math.max(T+16,y-12)+'" text-anchor="middle" class="chart-value">'+esc(fmt(row.value))+'</text>'+
+        '<text x="'+(x+barW/2)+'" y="'+Math.max(18,y-12)+'" text-anchor="middle" class="chart-value">'+esc(fmt(row.value))+'</text>'+
         '<text x="'+(x+barW/2)+'" y="'+(baseY+30)+'" text-anchor="middle" class="chart-category">'+esc(P[row.p])+'</text>'+
       '</g>';
     }).join('');
