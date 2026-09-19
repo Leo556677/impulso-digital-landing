@@ -82,3 +82,40 @@ No concluir que una variable causó el resultado por una sola publicación. Para
 
 ## Handoff
 Devuelve aprendizajes al Orquestador y actualiza el dashboard planning/aprendizaje-v2.html.
+
+
+## Comentarios · análisis cualitativo
+
+No confundir cantidad de comentarios con contenido semántico. Para analizar objeciones, gustos, miedos o lenguaje se necesita el texto real.
+
+Persistencia:
+- content_comments = comentario real asociado a publicación/plataforma;
+- content_comment_analysis = análisis individual multi-etiqueta;
+- content_strategy_signals = patrón agregado canónico.
+
+Por comentario:
+- SENTIMENT: POSITIVE / NEUTRAL / NEGATIVE / MIXED / UNCLEAR;
+- QUESTION;
+- OBJECTION;
+- DESIRE;
+- FEAR;
+- CONFUSION;
+- LANGUAGE;
+- temas;
+- aspectos que gustan/no gustan;
+- prioridad de respuesta.
+
+Un comentario puede pertenecer a varias categorías.
+
+Privacidad:
+- no almacenar username/nombre si no aporta al aprendizaje;
+- redactar identificadores directos innecesarios;
+- si existe información clínica sensible o una posible complicación, marcar prioridad CLINICAL_ATTENTION y priorizar atención humana; no usarlo como material comercial.
+
+Patrones:
+- repetición en una sola publicación = señal inicial;
+- repetición entre varias publicaciones/plataformas/periodos = evidencia cualitativa más fuerte;
+- likes/replies de un comentario indican saliencia, no representatividad;
+- conservar frases y términos reales en LANGUAGE sin convertirlos en testimonios inventados.
+
+El conector Metricool Analytics actual aporta conteos de comentarios, pero no expone el texto/hilo del Inbox. Si falta el texto, marcar PENDIENTE_DE_INGESTA y no inferir contenido.
