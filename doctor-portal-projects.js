@@ -83,10 +83,44 @@
     return cache.loading;
   }
   function ordered(groups){return[...groups.values()].sort((a,b)=>{const ai=serviceOrder.indexOf(a.key),bi=serviceOrder.indexOf(b.key);if(ai>=0||bi>=0){if(ai<0)return 1;if(bi<0)return-1;if(ai!==bi)return ai-bi;}return a.name.localeCompare(b.name,'es');});}
+  const captureGuide={
+    key:'MARCA-01',
+    date:'26 SEP',
+    title:'Detrás de cámaras',
+    subtitle:'Lo que no se ve antes de recibir a una persona',
+    steps:[
+      ['1','Llegada / inicio','3–4 s','Entrar, abrir el consultorio o empezar la jornada de forma natural.'],
+      ['2','Preparar el ambiente','3–4 s','Ordenar, encender luz o acomodar el espacio SOLO si realmente lo hacen.'],
+      ['3','Organizar material','2–4 s','Grabar manos/equipo preparando algo que sí usan antes de atender.'],
+      ['4','Revisar agenda','3 s','Desde atrás o de lado. Ningún nombre, teléfono, chat o dato visible.'],
+      ['5','Detalle de manos','2–3 s','Una acción real y simple para dar ritmo: acomodar, tomar, ordenar.'],
+      ['6','Dr. Olano + equipo','4 s','Coordinar algo real. No actuar una conversación para la cámara.'],
+      ['7','Consultorio listo','3 s','Plano limpio del ambiente preparado, sin pacientes identificables.'],
+      ['8','Cierre humano','3–4 s','Caminar, sonreír o iniciar la jornada de forma natural.']
+    ]
+  };
+  function captureCard(){
+    return `<article class="card service-category capture-special jsCapture" tabindex="0" role="button" aria-label="Abrir guía de humanización"><div class="service-card-top"><div><div class="service-eyebrow">HUMANIZACIÓN · ${captureGuide.key}</div><h3>${captureGuide.title}</h3><p>1 grabación especial pendiente</p></div><span class="service-arrow">${ic('right')}</span></div><div class="capture-special-status"><b>${captureGuide.date}</b><span>GRABAR 6–10 CLIPS</span></div><div class="service-card-foot"><span>Sin texto para memorizar</span><span>Guía paso a paso</span></div></article>`;
+  }
+  function openCaptureGuide(){
+    backTab='record';
+    S={_captureGuide:true,session:{id:null,nombre:'Humanización',fecha:'2026-09-26',lugar:null,notas:null},items:[]};
+    tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';
+    $('sbacktxt').textContent='Volver a servicios';
+    $('shero').innerHTML=`<div class="card detail capture-hero"><div class="date">26 SEP · HUMANIZACIÓN</div><h2>${captureGuide.subtitle}</h2><p class="capture-lead">Hoy no tienen que aprender un guion. Solo graben estas acciones reales, una por una.</p><div class="capture-badge">6–10 clips · vertical 9:16 · 2–4 s cada uno</div></div>`;
+    $('setup').innerHTML=`<div class="card setup capture-start"><div class="capture-start-icon">${ic('cam')}</div><div><b>Antes de empezar</b><p><strong>NO HAY TEXTO PARA MEMORIZAR.</strong> Repitan cada toma 2 veces. Cámara quieta, sin zoom. Dejen 1–2 s antes y 2 s después de cada acción.</p></div></div>`;
+    $('videos').className='capture-guide';
+    $('videos').innerHTML=`<div class="capture-guide-title"><div><span>PASO A PASO</span><h3>Graben estas 8 escenas</h3></div><small>Si una acción no ocurre de verdad, sáltenla.</small></div>`+
+      captureGuide.steps.map(s=>`<article class="card capture-step"><div class="capture-num">${s[0]}</div><div class="capture-step-copy"><div class="capture-step-top"><h3>${s[1]}</h3><span>${s[2]}</span></div><p>${s[3]}</p></div></article>`).join('')+
+      `<div class="card capture-stop"><b>⛔ NO GRABAR</b><p>Pacientes identificables · nombres · teléfonos · historias clínicas · chats · agenda legible · escenas médicas fingidas.</p></div><div class="card capture-done"><b>✅ TERMINAN CUANDO</b><p>Tengan mínimo 6 clips útiles + una aparición real de Dr. Olano o del equipo + cero datos sensibles.</p><small>Después se revisa el material real y recién se cierra el guion narrativo.</small></div>`;
+    scrollTo(0,0);
+  }
   function renderServices(groups){
     const host=$('sessions'),list=ordered(groups);host.className='service-grid';
     host.innerHTML=list.length?list.map(g=>{const total=g.items.length,recorded=g.items.filter(isRecorded).length,pending=total-recorded,pc=total?Math.round(recorded/total*100):0;return`<article class="card service-category jsService" data-service="${esc(g.key)}" tabindex="0" role="button" aria-label="Abrir ${esc(g.name)}"><div class="service-card-top"><div><div class="service-eyebrow">SERVICIO</div><h3>${esc(g.name)}</h3><p>${pending} ${pending===1?'proyecto pendiente':'proyectos pendientes'}</p></div><span class="service-arrow">${ic('right')}</span></div><div class="service-card-foot"><span>${recorded}/${total} grabados</span><span>${total} ${total===1?'proyecto':'proyectos'}</span></div><div class="prog"><span style="width:${pc}%"></span></div></article>`;}).join(''):'<div class="card empty"><b>No tienes proyectos pendientes de grabación.</b><br>Cuando exista contenido de producción, aparecerá dentro de su servicio con una etiqueta de estado.</div>';
+    host.insertAdjacentHTML('beforeend',captureCard());
     host.querySelectorAll('.jsService').forEach(el=>{const open=()=>openService(el.dataset.service);el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}};});
+    host.querySelectorAll('.jsCapture').forEach(el=>{const open=()=>openCaptureGuide();el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}};});
   }
 
   const oldRenderRecord=renderRecord;
@@ -101,10 +135,10 @@
   };
 
   async function openService(key){
-    try{const data=await loadItems(),g=data.groups.get(key);if(!g||!g.items.length){resetViews();tab('record');return;}backTab='record';S={_serviceKey:key,session:{id:null,nombre:g.name,fecha:null,lugar:null,notas:null},items:g.items};tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';$('sbacktxt').textContent='Volver a servicios';$('vback').innerHTML=`${ic('left')}Volver al servicio`;const total=g.items.length,recorded=g.items.filter(isRecorded).length,pc=total?Math.round(recorded/total*100):0;$('shero').innerHTML=`<div class="card detail service-detail"><div class="date">SERVICIO</div><h2>${esc(g.name)}</h2><div class="service-detail-copy">Elige el proyecto que vas a grabar.</div><div class="prog"><span style="width:${pc}%"></span></div><small>${recorded} de ${total} videos grabados</small></div>`;$('setup').innerHTML=`<div class="card setup service-setup"><b>Proyectos de ${esc(g.name)}</b><br>Cada tarjeta conserva el proyecto. La etiqueta indica si está en calendario, si sigue en preparación o si ya puede grabarse.</div>`;renderVideos(g.items);scrollTo(0,0);}catch(e){err(e.message)}
+    try{const data=await loadItems(),g=data.groups.get(key);if(!g||!g.items.length){resetViews();tab('record');return;}backTab='record';S={_serviceKey:key,session:{id:null,nombre:g.name,fecha:null,lugar:null,notas:null},items:g.items};tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';$('sbacktxt').textContent='Volver a servicios';$('vback').innerHTML=`${ic('left')}Volver al servicio`;const total=g.items.length,recorded=g.items.filter(isRecorded).length,pc=total?Math.round(recorded/total*100):0;$('shero').innerHTML=`<div class="card detail service-detail"><div class="date">SERVICIO</div><h2>${esc(g.name)}</h2><div class="service-detail-copy">Elige el proyecto que vas a grabar.</div><div class="prog"><span style="width:${pc}%"></span></div><small>${recorded} de ${total} videos grabados</small></div>`;$('setup').innerHTML=`<div class="card setup service-setup"><b>Proyectos de ${esc(g.name)}</b><br>Cada tarjeta conserva el proyecto. La etiqueta indica si está en calendario, si sigue en preparación o si ya puede grabarse.</div>`;$('videos').className='vgrid';renderVideos(g.items);scrollTo(0,0);}catch(e){err(e.message)}
   }
 
-  const oldSBack=$('sback').onclick;$('sback').onclick=()=>{if(S?._serviceKey){S=null;resetViews();tab('record');return;}if(typeof oldSBack==='function')oldSBack();};
+  const oldSBack=$('sback').onclick;$('sback').onclick=()=>{if(S?._captureGuide||S?._serviceKey){S=null;$('videos').className='vgrid';resetViews();tab('record');return;}if(typeof oldSBack==='function')oldSBack();};
   const oldOpenSession=openSession;openSession=async function(id,from='record'){$('vback').innerHTML=`${ic('left')}Volver a la sesión`;return oldOpenSession(id,from);};
   const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,legacyRecorded=item?.pieza?.estado==='RECORDED',ready=item?.pieza?.production_status?.PRODUCTION_READY===true||legacyRecorded||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}else if(btn&&legacyRecorded&&item?.estado!=='GRABADO'){btn.innerHTML='Confirmar grabado';btn.title='La pieza ya consta como grabada; este botón sincroniza el estado de la sesión.';}};
   const oldToggleRec=toggleRec;toggleRec=async function(x){if(!S?._serviceKey)return oldToggleRec(x);const key=S._serviceKey;try{await api('mark_piece',{session_piece_id:x.session_piece_id,estado:x.estado==='GRABADO'?'PENDIENTE':'GRABADO'});P=await api('portal_get');invalidate();renderCal();renderHist();await renderRecord();const data=await loadItems();if(data.groups.has(key))await openService(key);else{S=null;resetViews();tab('record');}}catch(e){alert(e.message)}};
