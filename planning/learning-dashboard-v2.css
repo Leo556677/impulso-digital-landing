@@ -678,3 +678,134 @@
   .learning-brand24 .metric-ribbon,.learning-brand24 .posts-summary{grid-template-columns:1fr 1fr}
   .learning-brand24 .b24-vbars{gap:10px;padding-left:0;padding-right:0}
 }
+
+
+/* BRAND24 V11 · layout fidelity and density */
+.learning-brand24 .main{padding-left:20px;padding-right:20px}
+.learning-brand24 .header{padding-left:24px;padding-right:24px}
+.learning-brand24 .header h1{font-size:31px!important}
+.learning-brand24 .header p{font-size:13.5px}
+.learning-brand24 .analytics-toolbar{margin-bottom:18px}
+.learning-brand24 .analytics-view-tabs button{font-size:13px;height:42px;padding:0 15px}
+.learning-brand24 .analytics-toolbar-filters label{min-width:150px}
+.learning-brand24 .analytics-toolbar-filters label:nth-of-type(1){min-width:300px}
+.learning-brand24 .period-controls label{min-width:170px}
+.learning-brand24 .period-controls select,.learning-brand24 .analytics-toolbar-filters select{font-size:12.5px}
+
+/* major section rhythm */
+.learning-brand24 .b24-summary-workspace{display:grid;gap:20px}
+.learning-brand24 .b24-summary-section{display:grid;gap:12px}
+.learning-brand24 .b24-section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:0 4px}
+.learning-brand24 .b24-section-title h2{font-size:25px;line-height:1.1;margin:0;color:#172033;letter-spacing:-.02em}
+.learning-brand24 .b24-section-title p{font-size:13px;color:#667085;margin:5px 0 0}
+.learning-brand24 .b24-link-button{height:38px;padding:0 13px;border:1px solid #d7dee7;border-radius:7px;background:#fff;color:#2878d4;font:inherit;font-size:11.5px;font-weight:800;cursor:pointer}
+.learning-brand24 .b24-link-button:hover{background:#eef5fd;border-color:#a9c9ee}
+
+/* performance: chart + KPI stack */
+.learning-brand24 .b24-performance-layout{display:grid;grid-template-columns:minmax(0,2.25fr) minmax(360px,.85fr);gap:16px;align-items:stretch}
+.learning-brand24 .b24-main-chart>.chart-card{height:100%;min-height:430px;padding:22px 24px}
+.learning-brand24 .b24-main-chart .chart-head b{font-size:19px}
+.learning-brand24 .b24-main-chart .chart-head>div:first-child span{font-size:12px}
+.learning-brand24 .b24-main-chart .analytics-line-chart{margin-top:14px}
+.learning-brand24 .b24-kpi-side{display:flex}
+.learning-brand24 .b24-kpi-side .metric-ribbon{width:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:10px;border:0}
+.learning-brand24 .b24-kpi-side .metric-tile{
+  min-height:0;border:0;border-radius:12px!important;padding:14px!important;
+  display:grid;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:11px;
+  box-shadow:var(--b24-shadow)!important
+}
+.learning-brand24 .b24-kpi-side .metric-tile:nth-child(1){background:#dce5ff!important}
+.learning-brand24 .b24-kpi-side .metric-tile:nth-child(2){background:#dcefe3!important}
+.learning-brand24 .b24-kpi-side .metric-tile:nth-child(3){background:#fde0f3!important}
+.learning-brand24 .b24-kpi-side .metric-tile:nth-child(4){background:#f5e0f0!important}
+.learning-brand24 .b24-kpi-side .metric-tile:nth-child(5){background:#f8e1a8!important}
+.learning-brand24 .b24-kpi-side .metric-tile:nth-child(6){background:#e8e0f2!important}
+.learning-brand24 .b24-kpi-side .metric-icon{background:rgba(255,255,255,.65)!important;border:1px solid rgba(255,255,255,.7);width:44px;height:44px}
+.learning-brand24 .b24-kpi-side .metric-tile>div:last-child{min-width:0}
+.learning-brand24 .b24-kpi-side .metric-tile span{display:block;font-size:10.5px;color:#4d5b6e;line-height:1.2;white-space:normal}
+.learning-brand24 .b24-kpi-side .metric-tile strong{display:block;font-size:30px;line-height:1;margin:5px 0 4px;color:#172033}
+.learning-brand24 .b24-kpi-side .metric-tile small{display:block;font-size:9px;line-height:1.25;color:#637083}
+
+/* network + action split */
+.learning-brand24 .b24-summary-split{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(460px,.9fr);gap:16px;align-items:start}
+.learning-brand24 .b24-summary-split>div>.premium-section{height:100%}
+.learning-brand24 .b24-summary-split .premium-head{margin-bottom:15px}
+.learning-brand24 .b24-summary-split .premium-head h2{font-size:22px}
+.learning-brand24 .b24-summary-split .platform-premium-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.learning-brand24 .b24-summary-split .platform-premium{min-height:330px}
+.learning-brand24 .b24-summary-split .platform-title b{font-size:14px}
+.learning-brand24 .b24-summary-split .platform-primary strong{font-size:34px}
+.learning-brand24 .b24-summary-split .platform-mini-bars{height:52px;margin-top:14px}
+.learning-brand24 .b24-summary-split .action-grid{grid-template-columns:1fr;gap:10px}
+.learning-brand24 .b24-summary-split .action-card{min-height:0;display:grid;grid-template-columns:34px 1fr;column-gap:10px}
+.learning-brand24 .b24-summary-split .action-card .action-top{display:contents}
+.learning-brand24 .b24-summary-split .action-card .action-foot,
+.learning-brand24 .b24-summary-split .action-card details{grid-column:2}
+.learning-brand24 .b24-summary-split .action-card h3{font-size:13.5px;line-height:1.4;margin-top:3px}
+.learning-brand24 .b24-summary-split .more-drawer{margin-top:10px}
+
+/* demographics summary */
+.learning-brand24 .b24-summary-section .b24-demography-grid{grid-template-columns:minmax(0,2.15fr) minmax(360px,.85fr);gap:16px}
+.learning-brand24 .b24-summary-section .b24-panel,
+.learning-brand24 .b24-summary-section .donut-card{box-shadow:var(--b24-shadow)}
+.learning-brand24 .b24-summary-section .b24-age-panel{min-height:390px}
+.learning-brand24 .b24-summary-section .b24-demography-grid>.donut-card{min-height:390px}
+.learning-brand24 .b24-summary-section .b24-vbars{height:285px;gap:30px}
+.learning-brand24 .b24-summary-section .b24-vbar-track i{max-width:52px}
+.learning-brand24 .b24-summary-section .donut{width:230px;height:230px}
+.learning-brand24 .b24-summary-section .donut i{inset:55px}
+.learning-brand24 .b24-summary-section .donut-legend{font-size:12px}
+
+/* top posts */
+.learning-brand24 .b24-top-posts{padding:0;overflow:hidden}
+.learning-brand24 .b24-top-posts .analytics-table-wrap{border:0;border-radius:16px}
+.learning-brand24 .b24-top-posts .analytics-table{min-width:950px}
+.learning-brand24 .b24-top-posts .analytics-table th{font-size:10px;padding:13px 14px;background:#f7f9fb}
+.learning-brand24 .b24-top-posts .analytics-table td{font-size:12px;padding:13px 14px}
+.learning-brand24 .b24-top-posts .post-cell{min-width:320px}
+.learning-brand24 .b24-top-posts .post-thumb{width:42px;height:42px;flex-basis:42px}
+
+/* learning summary */
+.learning-brand24 .b24-learning-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.learning-brand24 .b24-learning-list{background:#fff;border-radius:16px;box-shadow:var(--b24-shadow);padding:18px 20px}
+.learning-brand24 .b24-learning-list>h3{display:flex;align-items:center;gap:8px;font-size:18px;color:#172033;margin:0 0 10px}
+.learning-brand24 .b24-learning-list>h3 svg{width:18px;height:18px;color:#2878d4}
+.learning-brand24 .b24-learning-list article{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:start;padding:13px 0;border-top:1px solid #e7ebef}
+.learning-brand24 .b24-learning-list article:first-of-type{border-top:0}
+.learning-brand24 .b24-learning-icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#eaf2fd;color:#2878d4}
+.learning-brand24 .b24-learning-icon svg{width:20px;height:20px}
+.learning-brand24 .b24-learning-icon.magenta,.learning-brand24 .b24-learning-icon.rose{background:#fde9f3;color:#d84d8c}
+.learning-brand24 .b24-learning-icon.blue,.learning-brand24 .b24-learning-icon.cyan{background:#eaf2fd;color:#2878d4}
+.learning-brand24 .b24-learning-icon.amber{background:#fff1d6;color:#c77a00}
+.learning-brand24 .b24-learning-icon.hypothesis{background:#e7f7ef;color:#0f9f5d}
+.learning-brand24 .b24-learning-list b{font-size:13px;color:#172033}
+.learning-brand24 .b24-learning-list p{font-size:11.5px;line-height:1.45;color:#667085;margin:3px 0 0}
+.learning-brand24 .b24-learning-list .learn-pill{align-self:start;margin-top:1px}
+
+/* audit remaining blank-looking sections */
+.learning-brand24 .premium-section{border-radius:16px;box-shadow:var(--b24-shadow)}
+.learning-brand24 .platform-premium{box-shadow:0 1px 4px rgba(21,32,49,.06)}
+.learning-brand24 .action-card{box-shadow:0 1px 4px rgba(21,32,49,.05)}
+.learning-brand24 .donut-card{box-shadow:var(--b24-shadow)}
+.learning-brand24 .analytics-line-chart{min-height:320px}
+
+/* responsive */
+@media(max-width:1600px){
+  .learning-brand24 .b24-performance-layout{grid-template-columns:minmax(0,1.8fr) minmax(340px,.9fr)}
+  .learning-brand24 .b24-summary-split{grid-template-columns:1fr}
+  .learning-brand24 .b24-summary-split .action-grid{grid-template-columns:repeat(3,1fr)}
+  .learning-brand24 .b24-summary-split .action-card{display:flex}
+  .learning-brand24 .b24-summary-split .action-card .action-top{display:grid}
+  .learning-brand24 .b24-summary-split .action-card .action-foot,
+  .learning-brand24 .b24-summary-split .action-card details{grid-column:auto}
+}
+@media(max-width:1250px){
+  .learning-brand24 .b24-performance-layout{grid-template-columns:1fr}
+  .learning-brand24 .b24-kpi-side .metric-ribbon{grid-template-columns:repeat(3,1fr);grid-template-rows:auto}
+  .learning-brand24 .b24-summary-section .b24-demography-grid{grid-template-columns:1.7fr 1fr}
+  .learning-brand24 .b24-learning-grid{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .learning-brand24 .b24-kpi-side .metric-ribbon{grid-template-columns:1fr 1fr}
+  .learning-brand24 .b24-summary-section .b24-demography-grid{grid-template-columns:1fr}
+}
