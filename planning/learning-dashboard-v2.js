@@ -338,10 +338,210 @@ function bindFilters(){
   document.querySelectorAll('[data-platform-filter]').forEach(btn=>btn.addEventListener('click',()=>{LF.platform=btn.dataset.platformFilter||'';renderLearning()}));
   document.querySelector('[data-filter-reset]')?.addEventListener('click',()=>{Object.assign(LF,{range:'all',from:'',to:'',contentId:'',publicationId:'',platform:'',hour:'',age:''});renderLearning()});
 }
+
+const WORKSPACE={view:'summary',compare:'none',postSearch:'',postSort:'date_desc'};
+
+function availableBounds(base){
+  const dates=base.pubs.map(pubDateKey).filter(Boolean).sort();
+  return {from:dates[0]||null,to:dates.at(-1)||null};
+}
+function currentPeriodBounds(base){
+  const b=rangeBounds(base);
+  if(b.from&&b.to)return b;
+  return availableBounds(base);
+}
+function previousPeriodBounds(base){
+  if(WORKSPACE.compare!=='previous')return null;
+  const b=currentPeriodBounds(base);if(!b.from||!b.to)return null;
+  const from=new Date(b.from+'T12:00:00Z'),to=new Date(b.to+'T12:00:00Z');
+  const days=Math.max(1,Math.round((to-from)/86400000)+1);
+  const pTo=new Date(from);pTo.setUTCDate(pTo.getUTCDate()-1);
+  const pFrom=new Date(pTo);pFrom.setUTCDate(pFrom.getUTCDate()-(days-1));
+  return {from:pFrom.toISOString().slice(0,10),to:pTo.toISOString().slice(0,10)};
+}
+function pubsForBounds(base,bounds){
+  if(!bounds?.from||!bounds?.to)return [];
+  return base.pubs.filter(pub=>{
+    if(LF.publicationId&&pub.id!==LF.publicationId)return false;
+    if(LF.contentId&&pub.content_id!==LF.contentId)return false;
+    if(LF.platform&&pub.plataforma!==LF.platform)return false;
+    if(!hourMatches(pubHour(pub),LF.hour))return false;
+    const d=pubDateKey(pub);return d&&d>=bounds.from&&d<=bounds.to;
+  });
+}
+function aggregatePubs(pubs){
+  const views=pubs.reduce((a,p)=>a+(metric(p.snap?.metrics,'views')||0),0);
+  const ints=pubs.reduce((a,p)=>a+interactions(p.snap?.metrics||{}),0);
+  const comments=pubs.reduce((a,p)=>a+(metric(p.snap?.metrics,'comments')||0),0);
+  const shares=pubs.reduce((a,p)=>a+(metric(p.snap?.metrics,'shares')||0),0);
+  const saves=pubs.reduce((a,p)=>a+(metric(p.snap?.metrics,'saves')||0),0);
+  return {views,ints,comments,shares,saves,posts:pubs.length};
+}
+function compareText(curr,prev){
+  if(prev===null||prev===undefined||prev===0)return {text:'Sin base anterior',cls:'neutral'};
+  const d=((curr-prev)/prev)*100;
+  return {text:(d>=0?'▲ ':'▼ ')+Math.abs(d).toFixed(Math.abs(d)>=10?0:1)+'%',cls:d>=0?'up':'down'};
+}
+function metricRibbon(base,m){
+  const curr=aggregatePubs(m.pubs),pb=previousPeriodBounds(base),prev=pb?aggregatePubs(pubsForBounds(base,pb)):null;
+  const cards=[
+    ['Visualizaciones',curr.views,prev?.views,'blue'],
+    ['Interacciones',curr.ints,prev?.ints,'green'],
+    ['Comentarios',curr.comments,prev?.comments,'pink'],
+    ['Compartidos',curr.shares,prev?.shares,'purple'],
+    ['Publicaciones',curr.posts,prev?.posts,'amber']
+  ];
+  return '<div class="metric-ribbon">'+cards.map(([label,val,pv,tone])=>{const c=WORKSPACE.compare==='previous'?compareText(val,pv):null;return '<article class="metric-tile '+tone+'"><strong>'+esc(fmt(val))+'</strong><span>'+esc(label)+'</span>'+(c?'<small class="'+c.cls+'">'+esc(c.text)+'</small>':'')+'</article>'}).join('')+'</div>';
+}
+function seriesByDate(m,kind='views'){
+  const dates=[...new Set(m.pubs.map(pubDateKey).filter(Boolean))].sort();
+  const platforms=['TIKTOK','INSTAGRAM','FACEBOOK'].filter(p=>!LF.platform||LF.platform===p);
+  const series={};platforms.forEach(p=>series[p]=dates.map(()=>0));
+  const posts=dates.map(()=>0);
+  m.pubs.forEach(pub=>{
+    const d=pubDateKey(pub),i=dates.indexOf(d);if(i<0)return;
+    posts[i]+=1;
+    const mm=pub.snap?.metrics||{};
+    const value=kind==='interactions'?interactions(mm):metric(mm,'views')||0;
+    if(series[pub.plataforma])series[pub.plataforma][i]+=value;
+  });
+  return {dates,series,posts};
+}
+function shortDate(iso){
+  if(!iso)return '';
+  return new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'short',timeZone:'UTC'}).format(new Date(iso+'T12:00:00Z')).replace('.','');
+}
+function lineChart(m,kind='views'){
+  const data=seriesByDate(m,kind),W=1100,H=300,L=58,R=22,T=24,B=48;
+  if(!data.dates.length)return '<div class="analytics-empty">'+uiIcon('chart')+'<span>No hay datos para graficar con estos filtros.</span></div>';
+  const vals=Object.values(data.series).flat(),max=Math.max(1,...vals),x=i=>data.dates.length===1?(L+(W-R-L)/2):L+i*(W-R-L)/(data.dates.length-1),y=v=>T+(H-B-T)*(1-v/max);
+  const colors={TIKTOK:'#17202b',INSTAGRAM:'#c05288',FACEBOOK:'#3478c6'};
+  const grid=Array.from({length:5},(_,i)=>{const v=max*(4-i)/4,yy=T+i*(H-B-T)/4;return '<g><line x1="'+L+'" y1="'+yy+'" x2="'+(W-R)+'" y2="'+yy+'" class="chart-grid"/><text x="'+(L-10)+'" y="'+(yy+4)+'" text-anchor="end" class="chart-axis">'+esc(fmt(v))+'</text></g>'}).join('');
+  const bars=data.posts.map((v,i)=>{const bw=Math.min(22,(W-R-L)/Math.max(2,data.dates.length)*.35);return v?'<rect x="'+(x(i)-bw/2)+'" y="'+(H-B-16-Math.min(55,v*12))+'" width="'+bw+'" height="'+Math.min(55,v*12)+'" rx="4" class="chart-post-bar"/>':''}).join('');
+  const lines=Object.entries(data.series).map(([p,arr])=>{
+    const pts=arr.map((v,i)=>x(i)+','+y(v)).join(' ');
+    const circles=arr.map((v,i)=>'<circle cx="'+x(i)+'" cy="'+y(v)+'" r="4.5" fill="'+colors[p]+'" class="chart-point"><title>'+esc(P[p])+' · '+esc(shortDate(data.dates[i]))+' · '+esc(fmt(v))+'</title></circle>').join('');
+    return (arr.length>1?'<polyline points="'+pts+'" fill="none" stroke="'+colors[p]+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>':'')+circles;
+  }).join('');
+  const labels=data.dates.map((d,i)=>'<text x="'+x(i)+'" y="'+(H-15)+'" text-anchor="middle" class="chart-axis">'+esc(shortDate(d))+'</text>').join('');
+  const legend=Object.keys(data.series).map(p=>'<span>'+brandIcon(p,'chart-brand')+' '+esc(P[p])+'</span>').join('');
+  return '<div class="chart-card"><div class="chart-head"><div><b>'+(kind==='views'?'Visualizaciones por fecha':'Interacciones por fecha')+'</b><span>Las barras muestran cuántas publicaciones hubo ese día.</span></div><div class="chart-legend">'+legend+'</div></div><svg class="analytics-line-chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(kind==='views'?'Evolución de visualizaciones':'Evolución de interacciones')+'">'+grid+bars+lines+labels+'</svg></div>';
+}
+function trafficMap(rows){
+  const totals={},weights={};
+  rows.forEach(r=>{
+    const map=r.traffic?.traffic_sources_pct||r.traffic?.view_sources_pct||r.metrics?.traffic_sources_pct||r.metrics?.view_sources_pct||{};
+    const w=metric(r.metrics,'views')||1;
+    Object.entries(map).forEach(([k,v])=>{if(n(v)!==null){totals[k]=(totals[k]||0)+Number(v)*w;weights[k]=(weights[k]||0)+w}});
+  });
+  return Object.fromEntries(Object.entries(totals).map(([k,v])=>[k,v/weights[k]]).sort((a,b)=>b[1]-a[1]));
+}
+function trafficLabel(v){
+  const map={for_you:'Para ti',profile:'Perfil',other:'Otras',following:'Siguiendo',direct_messages:'Mensajes directos',sound:'Sonido',search:'Búsqueda',feed:'Feed',explore:'Explorar',stories:'Historias',reels_tab:'Reels'};
+  return map[v]||labelKey(v);
+}
+function donutChart(title,map,kind='generic'){
+  const items=Object.entries(map||{}).filter(([,v])=>Number(v)>0).slice(0,7);
+  if(!items.length)return '<article class="donut-card"><div class="donut-head"><b>'+esc(title)+'</b></div><div class="analytics-empty small">Sin datos disponibles.</div></article>';
+  const palette=['#7d8df1','#8bcea0','#f39ad8','#e7a82f','#b287b7','#86acd6','#ef7652'];
+  let acc=0;const stops=items.map(([k,v],i)=>{const start=acc;acc+=Number(v);return palette[i]+' '+start+'% '+acc+'%'}).join(',');
+  return '<article class="donut-card"><div class="donut-head"><b>'+esc(title)+'</b></div><div class="donut-layout"><div class="donut" style="background:conic-gradient('+stops+')"><i></i></div><div class="donut-legend">'+items.map(([k,v],i)=>'<div><span class="legend-dot" style="background:'+palette[i]+'"></span><span>'+esc(kind==='traffic'?trafficLabel(k):labelKey(k))+'</span><b>'+esc(pct(v))+'</b></div>').join('')+'</div></div></article>';
+}
+function workspaceToolbar(base,m){
+  const projects=[...new Set(base.pubs.map(x=>x.content_id))].map(id=>base.pm.get(id)).filter(Boolean).sort((a,b)=>(a.content_num||0)-(b.content_num||0));
+  const ages=[...new Set(base.latest.flatMap(x=>Object.keys(x.audience?.age_pct||{})))];
+  const {from,to}=rangeBounds(base);
+  const views=[['summary','Resumen','chart'],['audience','Audiencia','users'],['posts','Publicaciones','play'],['hashtags','Hashtags','spark'],['learning','Aprendizaje','flask']];
+  return '<section class="analytics-toolbar">'+
+    '<div class="analytics-toolbar-top"><nav class="analytics-view-tabs">'+views.map(([id,label,ico])=>'<button type="button" data-work-view="'+id+'" class="'+(WORKSPACE.view===id?'active':'')+'">'+uiIcon(ico,'workspace-tab-icon')+'<span>'+esc(label)+'</span></button>').join('')+'</nav>'+
+    '<div class="period-controls"><label><span>Periodo</span><select data-lf="range"><option value="all" '+(LF.range==='all'?'selected':'')+'>Todo</option><option value="7d" '+(LF.range==='7d'?'selected':'')+'>Últimos 7 días</option><option value="30d" '+(LF.range==='30d'?'selected':'')+'>Últimos 30 días</option><option value="custom" '+(LF.range==='custom'?'selected':'')+'>Elegir fechas</option></select></label>'+
+    '<label><span>Comparar con</span><select data-work-compare><option value="none" '+(WORKSPACE.compare==='none'?'selected':'')+'>Sin comparación</option><option value="previous" '+(WORKSPACE.compare==='previous'?'selected':'')+'>Periodo anterior</option></select></label></div></div>'+
+    '<div class="analytics-toolbar-filters">'+
+      '<div class="network-tabs"><button type="button" data-platform-filter="" class="'+(!LF.platform?'active':'')+'">'+uiIcon('chart','filter-all-icon')+'Todas</button>'+['TIKTOK','INSTAGRAM','FACEBOOK'].map(p=>'<button type="button" data-platform-filter="'+p+'" class="'+(LF.platform===p?'active':'')+'">'+brandIcon(p,'filter-brand-icon')+esc(P[p])+'</button>').join('')+'</div>'+
+      '<label><span>Video</span><select data-lf="contentId"><option value="">Todos</option>'+projects.map(p=>'<option value="'+esc(p.id)+'" '+(LF.contentId===p.id?'selected':'')+'>'+esc(projectLabel(projectNum(p,base.lm))+' · '+(p.titulo||p.content_code))+'</option>').join('')+'</select></label>'+
+      '<label><span>Publicación</span><select data-lf="publicationId"><option value="">Todas</option>'+base.pubs.map(pub=>'<option value="'+esc(pub.id)+'" '+(LF.publicationId===pub.id?'selected':'')+'>'+esc((P[pub.plataforma]||pub.plataforma)+' · '+(pubDateKey(pub)||'sin fecha')+' · '+pub.project)+'</option>').join('')+'</select></label>'+
+      '<label><span>Hora</span><select data-lf="hour"><option value="">Todas</option><option value="morning" '+(LF.hour==='morning'?'selected':'')+'>Mañana</option><option value="afternoon" '+(LF.hour==='afternoon'?'selected':'')+'>Tarde</option><option value="evening" '+(LF.hour==='evening'?'selected':'')+'>Noche</option><option value="night" '+(LF.hour==='night'?'selected':'')+'>Madrugada</option></select></label>'+
+      '<label><span>Edad</span><select data-lf="age"><option value="">Todas</option>'+ages.map(a=>'<option value="'+esc(a)+'" '+(LF.age===a?'selected':'')+'>'+esc(labelKey(a))+'</option>').join('')+'</select></label>'+
+      '<button type="button" class="toolbar-reset" data-filter-reset>Limpiar</button>'+
+    '</div>'+
+    (LF.range==='custom'?'<div class="custom-date-row"><label>Desde <input type="date" data-lf="from" value="'+esc(LF.from||from||'')+'"></label><label>Hasta <input type="date" data-lf="to" value="'+esc(LF.to||to||'')+'"></label></div>':'')+
+  '</section>';
+}
+function summaryWorkspace(base,m){
+  return '<div class="workspace-view">'+metricRibbon(base,m)+'<div class="chart-stack">'+lineChart(m,'views')+lineChart(m,'interactions')+'</div>'+platformComparisonPremium(m)+actionDeck(m)+'</div>';
+}
+function audienceWorkspace(m){
+  const platforms=['TIKTOK','INSTAGRAM','FACEBOOK'].filter(p=>!LF.platform||p===LF.platform);
+  const rows=platforms.flatMap(p=>m.latest.filter(x=>x.platform===p));
+  let age=weightedMap(rows,'age_pct');if(LF.age)age=age[LF.age]!==undefined?{[LF.age]:age[LF.age]}:{};
+  const gender=weightedMap(rows,'gender_pct'),locations=weightedMap(rows,'locations_pct'),follow=weightedMap(rows,'audience_follow_status_pct'),traffic=trafficMap(rows);
+  return '<div class="workspace-view"><div class="audience-visual-grid">'+donutChart('Género',gender)+donutChart('Seguidores / no seguidores',follow)+donutChart('Origen del tráfico',traffic,'traffic')+'</div><div class="audience-bars-grid"><article><div class="table-section-head"><h3>Edad</h3><span>Distribución observada</span></div>'+premiumBars(age)+'</article><article><div class="table-section-head"><h3>Ubicación</h3><span>Principales países</span></div>'+premiumBars(locations)+'</article></div>'+audienceExplorer(m)+'</div>';
+}
+function postValue(pub,key){
+  const mm=pub.snap?.metrics||{};
+  if(key==='views')return metric(mm,'views')||0;
+  if(key==='interactions')return interactions(mm);
+  if(key==='comments')return metric(mm,'comments')||0;
+  if(key==='shares')return metric(mm,'shares')||0;
+  if(key==='watch')return metric(mm,'avg_watch_time_seconds');
+  if(key==='completion')return metric(mm,'completion_pct');
+  return 0;
+}
+function postsWorkspace(m){
+  let rows=m.pubs.filter(pub=>!WORKSPACE.postSearch||((pub.piece?.titulo||'')+' '+pub.project+' '+(P[pub.plataforma]||'')).toLowerCase().includes(WORKSPACE.postSearch.toLowerCase()));
+  rows=[...rows].sort((a,b)=>{
+    if(WORKSPACE.postSort==='views_desc')return postValue(b,'views')-postValue(a,'views');
+    if(WORKSPACE.postSort==='interactions_desc')return postValue(b,'interactions')-postValue(a,'interactions');
+    const da=pubDateKey(a)||'',db=pubDateKey(b)||'';return WORKSPACE.postSort==='date_asc'?da.localeCompare(db):db.localeCompare(da);
+  });
+  const totals=aggregatePubs(rows);
+  return '<div class="workspace-view"><div class="posts-summary">'+
+    '<article><b>'+esc(fmt(totals.views))+'</b><span>Visualizaciones</span></article><article><b>'+esc(fmt(totals.ints))+'</b><span>Interacciones</span></article><article><b>'+esc(fmt(totals.comments))+'</b><span>Comentarios</span></article><article><b>'+esc(fmt(totals.shares))+'</b><span>Compartidos</span></article><article><b>'+esc(rows.length)+'</b><span>Publicaciones</span></article></div>'+
+    '<section class="data-table-card"><div class="data-table-tools"><label class="table-search">'+uiIcon('spark','table-tool-icon')+'<input data-post-search value="'+esc(WORKSPACE.postSearch)+'" placeholder="Buscar video o publicación"></label><label>Ordenar <select data-post-sort><option value="date_desc" '+(WORKSPACE.postSort==='date_desc'?'selected':'')+'>Más recientes</option><option value="date_asc" '+(WORKSPACE.postSort==='date_asc'?'selected':'')+'>Más antiguas</option><option value="views_desc" '+(WORKSPACE.postSort==='views_desc'?'selected':'')+'>Más vistas</option><option value="interactions_desc" '+(WORKSPACE.postSort==='interactions_desc'?'selected':'')+'>Más interacciones</option></select></label></div>'+
+    '<div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Video / publicación</th><th>Red</th><th>Fecha</th><th>Visualizaciones</th><th>Interacciones</th><th>Comentarios</th><th>Compartidos</th><th>Tiempo visto</th><th>Vio completo</th></tr></thead><tbody>'+
+    (rows.length?rows.map(pub=>'<tr><td><div class="post-cell"><span class="post-thumb">'+brandIcon(pub.plataforma,'table-brand')+'</span><div><b>'+esc(pub.piece?.titulo||pub.project)+'</b><small>'+esc(pub.project)+'</small></div></div></td><td><span class="network-cell">'+brandIcon(pub.plataforma,'table-network-icon')+esc(P[pub.plataforma]||pub.plataforma)+'</span></td><td>'+esc(pubDateKey(pub)||'—')+'</td><td><b>'+esc(fmt(postValue(pub,'views')))+'</b></td><td>'+esc(fmt(postValue(pub,'interactions')))+'</td><td>'+esc(fmt(postValue(pub,'comments')))+'</td><td>'+esc(fmt(postValue(pub,'shares')))+'</td><td>'+esc(postValue(pub,'watch')===null?'—':postValue(pub,'watch')+' s')+'</td><td>'+esc(postValue(pub,'completion')===null?'—':pct(postValue(pub,'completion')))+'</td></tr>').join(''):'<tr><td colspan="9"><div class="analytics-empty small">No hay publicaciones con estos filtros.</div></td></tr>')+
+    '</tbody></table></div><div class="table-footer">Mostrando '+esc(rows.length)+' de '+esc(m.pubs.length)+' publicaciones</div></section></div>';
+}
+function hashtagStats(m){
+  const map=new Map();
+  m.pubs.forEach(pub=>{
+    const tags=Array.isArray(pub.hashtags)?pub.hashtags:Array.isArray(pub.pack?.hashtags)?pub.pack.hashtags:[];
+    tags.forEach(raw=>{
+      const tag=String(raw||'').trim();if(!tag)return;
+      const key=tag.startsWith('#')?tag:'#'+tag;
+      const row=map.get(key)||{tag:key,posts:0,views:0,ints:0,platforms:new Set()};
+      row.posts++;row.views+=postValue(pub,'views');row.ints+=postValue(pub,'interactions');row.platforms.add(pub.plataforma);map.set(key,row);
+    });
+  });
+  return [...map.values()].sort((a,b)=>b.views-a.views||b.posts-a.posts);
+}
+function hashtagsWorkspace(m){
+  const rows=hashtagStats(m);
+  return '<div class="workspace-view"><section class="data-table-card"><div class="table-section-head main"><div><h2>Hashtags usados</h2><p>Rendimiento agregado solo de hashtags realmente registrados.</p></div><span>'+esc(rows.length)+' hashtags</span></div><div class="analytics-table-wrap"><table class="analytics-table hashtags-table"><thead><tr><th>Hashtag</th><th>Redes</th><th>Publicaciones</th><th>Visualizaciones</th><th>Interacciones</th></tr></thead><tbody>'+
+    (rows.length?rows.map(r=>'<tr><td><b>'+esc(r.tag)+'</b></td><td><div class="hashtag-networks">'+[...r.platforms].map(p=>brandIcon(p,'table-network-icon')).join('')+'</div></td><td>'+esc(r.posts)+'</td><td><b>'+esc(fmt(r.views))+'</b></td><td>'+esc(fmt(r.ints))+'</td></tr>').join(''):'<tr><td colspan="5"><div class="analytics-empty">'+uiIcon('spark')+'<span>Aún no hay hashtags registrados en publicaciones reales. Cuando existan, aquí podrás compararlos.</span></div></td></tr>')+
+    '</tbody></table></div></section></div>';
+}
+function learningWorkspace(m){
+  return '<div class="workspace-view">'+actionDeck(m)+creativePremium(m)+voicePremium(m)+evidencePremium(m)+deepDivePremium(m)+'</div>';
+}
+function bindWorkspace(){
+  document.querySelectorAll('[data-work-view]').forEach(btn=>btn.addEventListener('click',()=>{WORKSPACE.view=btn.dataset.workView||'summary';renderLearning()}));
+  document.querySelector('[data-work-compare]')?.addEventListener('change',e=>{WORKSPACE.compare=e.target.value;renderLearning()});
+  document.querySelector('[data-post-search]')?.addEventListener('input',e=>{WORKSPACE.postSearch=e.target.value;renderLearning()});
+  document.querySelector('[data-post-sort]')?.addEventListener('change',e=>{WORKSPACE.postSort=e.target.value;renderLearning()});
+}
+function workspaceContent(base,m){
+  if(WORKSPACE.view==='audience')return audienceWorkspace(m);
+  if(WORKSPACE.view==='posts')return postsWorkspace(m);
+  if(WORKSPACE.view==='hashtags')return hashtagsWorkspace(m);
+  if(WORKSPACE.view==='learning')return learningWorkspace(m);
+  return summaryWorkspace(base,m);
+}
+
 function renderLearning(){
   if(!LEARNING_BASE)return;const m=filteredModel(LEARNING_BASE);
-  root().innerHTML=filterBar(LEARNING_BASE,m)+executiveOverview(m)+actionDeck(m)+projectSpotlight(m)+platformComparisonPremium(m)+audienceExplorer(m)+creativePremium(m)+voicePremium(m)+evidencePremium(m)+deepDivePremium(m);
-  bindFilters();bindPremiumInteractions();
+  root().innerHTML=workspaceToolbar(LEARNING_BASE,m)+workspaceContent(LEARNING_BASE,m);
+  bindFilters();bindPremiumInteractions();bindWorkspace();
 }
 
 function dimensionLabel(v){
