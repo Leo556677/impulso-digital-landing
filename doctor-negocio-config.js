@@ -437,7 +437,7 @@ async function saveService(e) {
   const id=$('serviceId').value, nombre=$('serviceName').value.trim(), categoria_id=$('serviceCategory').value, recurso_id=$('serviceResource').value;
   const weekdays=[...$('serviceWeekdays').querySelectorAll('input:checked')].map((x)=>Number(x.value));
   if(!nombre||!categoria_id) throw new Error('Nombre y categoría son obligatorios.');
-  if(!recurso_id) throw new Error('Asigna explícitamente quién o qué atiende este servicio.');
+  if(!recurso_id) throw new Error('Asigna un recurso de agenda para este servicio.');
   if($('serviceVisible').checked && weekdays.length===0) throw new Error('Elige al menos un día disponible para un servicio visible.');
   const resource=resourceById(recurso_id); if(!resource?.activo) throw new Error('El recurso seleccionado debe estar activo.');
   const payload={
