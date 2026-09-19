@@ -17,25 +17,36 @@ const badge=e=>{const s=state(e);return `<span class="badge ${s.key}">${esc(s.la
 
 async function mountBusinessSwitcher(ctx){
  const tenant=document.querySelector('.tenant');
- if(!tenant||document.querySelector('#businessSwitcher'))return;
+ let wrap=document.querySelector('[data-business-switcher]');
+ if(!wrap){
+   wrap=document.createElement('label');
+   wrap.className='business-switcher';
+   wrap.dataset.businessSwitcher='';
+   wrap.innerHTML='<span>Negocio activo</span><select id="businessSwitcher" aria-label="Elegir negocio"><option value="">Cargando negocios…</option></select>';
+   tenant?.insertAdjacentElement('afterend',wrap);
+ }
+ const select=wrap.querySelector('#businessSwitcher')||wrap.querySelector('select');
+ if(!select)return;
  const ids=[...new Set((ctx.memberships||[]).map(x=>x.negocio_id).filter(Boolean))];
- if(ids.length<2)return;
- const {data,error}=await sb.from('negocios').select('id,nombre,slug').in('id',ids).order('nombre');
+ const {data,error}=ids.length
+   ? await sb.from('negocios').select('id,nombre,slug').in('id',ids).order('nombre')
+   : {data:[],error:null};
  if(error)throw error;
- const wrap=document.createElement('label');
- wrap.className='business-switcher';
- wrap.innerHTML='<span>Negocio activo</span><select id="businessSwitcher" aria-label="Elegir negocio">'+(data||[]).map(b=>'<option value="'+esc(b.id)+'">'+esc(b.nombre)+'</option>').join('')+'</select>';
- tenant.insertAdjacentElement('afterend',wrap);
- const select=wrap.querySelector('select');
+ const businesses=data||[];
+ select.innerHTML=businesses.length
+   ? businesses.map(b=>'<option value="'+esc(b.id)+'">'+esc(b.nombre)+'</option>').join('')
+   : '<option value="'+esc(ctx.negocioId)+'">'+esc(ctx.negocio?.nombre||'Negocio actual')+'</option>';
  select.value=String(ctx.negocioId);
- select.addEventListener('change',()=>{
+ wrap.hidden=false;
+ select.onchange=()=>{
    const id=select.value;
+   if(!id||id===String(ctx.negocioId))return;
    localStorage.setItem('impulso_negocio_activo',id);
    const u=new URL(location.href);
    u.searchParams.set('negocio',id);
    u.searchParams.delete('tema');
    location.assign(u.toString());
- });
+ };
 }
 function linkedSummary(ep){
  const p=ctx.preview?null:pieces.find(p=>p.id===ep.content_id&&p.negocio_id===ctx.negocioId);if(!p)return '';
