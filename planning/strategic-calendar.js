@@ -34,7 +34,7 @@ const svgSummary=kind=>kind==='services'
  ?'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>'
  :'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 17h.01"/></svg>';
 
-let calendars=[],slots=[],planMaps=new Map(),trMap=new Map(),current=0,openId=null;
+let calendars=[],slots=[],planMaps=new Map(),trMap=new Map(),projectMap=new Map(),current=0,openId=null;
 
 function weekNo(cal,i){const m=String(cal.calendar_key||'').match(/w(\d+)/i);return m?Number(m[1]):i+1}
 function weekLabel(cal,i){return `Semana ${String(weekNo(cal,i)).padStart(2,'0')} · ${fmt(cal.week_start)}–${fmt(cal.week_end)} ${dval(cal.week_end).getFullYear()}${cal.status==='CLOSED'?' · histórica':''}`}
@@ -43,7 +43,16 @@ function planFor(s){const cal=calOfSlot(s);return planMaps.get(cal?.bank_plan_ke
 function itemFor(s){if(s.source_bank==='TRANSVERSAL_BANK')return trMap.get(s.transversal_id);const plan=planFor(s);return (plan?.episodes||[]).find(x=>x.key===s.editorial_key)}
 function serviceName(s){return s.service_key?names[s.service_key]:'Marca / equipo'}
 function visualFor(s){return visuals[s.service_key||'MARCA']||visuals.MARCA}
-function searchable(s){const item=itemFor(s);return norm([s.editorial_key,item?.editorial_key,item?.title,item?.question,item?.signal,item?.payoff,serviceName(s),roleNames[s.strategic_role]||s.strategic_role,s.rationale,s.expected_signal,s.execution_note,statusNames[s.status]||s.status,briefNames[s.brief_status]||s.brief_status].join(' '))}
+function projectInfo(s){return s?.content_id?projectMap.get(s.content_id)||null:null}
+function projectLabel(s){
+ const n=Number(projectInfo(s)?.project_display_number);
+ return Number.isFinite(n)&&n>0?`PROYECTO ${String(n).padStart(3,'0')}`:'PROYECTO PENDIENTE'
+}
+function projectClass(s){
+ const n=Number(projectInfo(s)?.project_display_number);
+ return Number.isFinite(n)&&n>0?'has-project':'pending-project'
+}
+function searchable(s){const item=itemFor(s);return norm([projectLabel(s),s.editorial_key,item?.editorial_key,item?.title,item?.question,item?.signal,item?.payoff,serviceName(s),roleNames[s.strategic_role]||s.strategic_role,s.rationale,s.expected_signal,s.execution_note,statusNames[s.status]||s.status,briefNames[s.brief_status]||s.brief_status].join(' '))}
 function filters(){return{svc:document.querySelector('#strategyService')?.value||'',st:document.querySelector('#strategyStatus')?.value||'',q:norm(document.querySelector('#strategySearch')?.value||'')}}
 function matches(s,f=filters()){return(!f.svc||(s.service_key||'MARCA')===f.svc)&&(!f.st||s.status===f.st)&&(!f.q||searchable(s).includes(f.q))}
 function slotsFor(cal){return slots.filter(s=>s.calendario_id===cal?.id).sort((a,b)=>a.publish_date.localeCompare(b.publish_date))}
@@ -98,6 +107,7 @@ function compactCard(s){
   <button class="day-toggle" type="button" data-slot="${esc(s.id)}" aria-expanded="${expanded}">
     <div class="accent"></div>
     <div class="day-head"><span class="weekday">${weekday}</span><strong>${d.getDate()}</strong></div>
+    <div class="project-badge ${projectClass(s)}">${esc(projectLabel(s))}</div>
     <div class="service-mark">${esc(serviceShort[svc]||svc)}</div>
     <div class="service">${esc(serviceName(s).toUpperCase())}</div>
     <h2 class="title">${esc(item?.title||'Necesidad editorial')}</h2>
@@ -123,6 +133,7 @@ function renderDetail(){
  host.innerHTML=`
    <div class="detail-visual">
      <div class="detail-date">${esc(fmtLong(d))}</div>
+     <div class="detail-project-badge ${projectClass(s)}">${esc(projectLabel(s))}</div>
      <a class="visual-link" href="${esc(visual.href)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir fuente visual externa en Pexels">
        <img src="${esc(visual.src)}" alt="${esc(visual.alt)}" loading="lazy" referrerpolicy="no-referrer">
      </a>
@@ -135,6 +146,7 @@ function renderDetail(){
      <div class="detail-head">
        <div>
          <div class="detail-kicker">${esc(serviceName(s))}</div>
+         <div class="detail-project-inline ${projectClass(s)}">${esc(projectLabel(s))}</div>
          <h2>${esc(item?.title||'Necesidad editorial')}</h2>
        </div>
        <button id="closeDetail" class="detail-close" type="button" aria-label="Cerrar detalle">×</button>
@@ -188,15 +200,17 @@ async function load(){
   if(ce)throw ce;if(!cals?.length)throw new Error('No hay semanas publicadas');
   calendars=cals;
   const ids=calendars.map(c=>c.id),planKeys=[...new Set(calendars.map(c=>c.bank_plan_key))];
-  const [{data:ss,error:se},{data:plans,error:pe},{data:trans,error:te}]=await Promise.all([
+  const [{data:ss,error:se},{data:plans,error:pe},{data:trans,error:te},{data:projects,error:pre}]=await Promise.all([
    sb.from('content_calendario_publicacion_slots').select('id,calendario_id,negocio_id,publish_date,strategic_role,service_key,source_bank,editorial_key,transversal_id,content_id,match_status,rationale,expected_signal,execution_note,status,actual_publication_id,brief_status').in('calendario_id',ids).order('publish_date'),
    sb.from('content_planes_editoriales').select('plan_key,document').eq('negocio_id',BUSINESS).in('plan_key',planKeys),
-   sb.from('content_banco_transversal').select('id,negocio_id,editorial_key,title,question,strategic_role,objective,audience,motivation,format,status').eq('negocio_id',BUSINESS)
+   sb.from('content_banco_transversal').select('id,negocio_id,editorial_key,title,question,strategic_role,objective,audience,motivation,format,status').eq('negocio_id',BUSINESS),
+   sb.from('content_public_project_labels_v').select('content_id,project_display_number,project_created_at').eq('negocio_id',BUSINESS)
   ]);
-  if(se||pe||te)throw se||pe||te;
+  if(se||pe||te||pre)throw se||pe||te||pre;
   slots=ss||[];
   planMaps=new Map((plans||[]).map(p=>[p.plan_key,p.document]));
   trMap=new Map((trans||[]).map(x=>[x.id,x]));
+  projectMap=new Map((projects||[]).map(x=>[x.content_id,x]));
   current=chooseInitial();
   renderFilters();render();
   document.querySelector('#prevWeek').addEventListener('click',()=>{if(current>0){current--;openId=null;render()}});
