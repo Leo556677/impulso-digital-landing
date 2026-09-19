@@ -14,6 +14,29 @@ const safeUrl=s=>{try{const u=new URL(s);return ['http:','https:'].includes(u.pr
 const openDialog=id=>{if(!$(id).open)$(id).showModal()};
 const download=(name,content,type)=>{const url=URL.createObjectURL(new Blob([content],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 const badge=e=>{const s=state(e);return `<span class="badge ${s.key}">${esc(s.label)}</span>`};
+
+async function mountBusinessSwitcher(ctx){
+ const tenant=document.querySelector('.tenant');
+ if(!tenant||document.querySelector('#businessSwitcher'))return;
+ const ids=[...new Set((ctx.memberships||[]).map(x=>x.negocio_id).filter(Boolean))];
+ if(ids.length<2)return;
+ const {data,error}=await sb.from('negocios').select('id,nombre,slug').in('id',ids).order('nombre');
+ if(error)throw error;
+ const wrap=document.createElement('label');
+ wrap.className='business-switcher';
+ wrap.innerHTML='<span>Negocio activo</span><select id="businessSwitcher" aria-label="Elegir negocio">'+(data||[]).map(b=>'<option value="'+esc(b.id)+'">'+esc(b.nombre)+'</option>').join('')+'</select>';
+ tenant.insertAdjacentElement('afterend',wrap);
+ const select=wrap.querySelector('select');
+ select.value=String(ctx.negocioId);
+ select.addEventListener('change',()=>{
+   const id=select.value;
+   localStorage.setItem('impulso_negocio_activo',id);
+   const u=new URL(location.href);
+   u.searchParams.set('negocio',id);
+   u.searchParams.delete('tema');
+   location.assign(u.toString());
+ });
+}
 function linkedSummary(ep){
  const p=ctx.preview?null:pieces.find(p=>p.id===ep.content_id&&p.negocio_id===ctx.negocioId);if(!p)return '';
  const fields=[['Objetivo',ep.objective,p.objetivo],['Audiencia',ep.audience,p.temperatura],['Categoría',ep.category,p.categoria],['Formato',ep.format,p.formato]];
@@ -69,7 +92,7 @@ $('coverageBtn').onclick=showCoverage;$('historyBtn').onclick=()=>{if(plan)showC
 $('download').onclick=()=>{const rows=[['Orden','Servicio','Colección','Parte','Total','Fecha referencial','Tema','Pregunta','Audiencia','Relación','Objetivo','Motivación','Categoría','Formato','Estado de evidencia','Estado de pieza'],...filterEpisodes(plan).map((e,i)=>[i+1,plan.services.find(s=>s.id===e.service).name,seriesFor(e).title,e.part,e.total,e.reference_date||'',e.title,e.question,e.audience,e.relationship,e.objective,e.motivation,categoryLabels[e.category],e.format,e.evidence_status,ctx.preview?'Historial no consultado':state(e).label])];const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/^[=+@-]/,m=>"'"+m).replaceAll('"','""')+'"').join(',')).join('\r\n');download('dr-olano-plan-editorial.csv','\uFEFF'+csv,'text/csv;charset=utf-8')};
 $('copyBrief').onclick=async()=>{try{await navigator.clipboard.writeText($('briefText').value);notify('Pedido copiado. Pégalo en Chat 00.')}catch{$('briefText').focus();$('briefText').select();notify('Seleccioné el pedido para que puedas copiarlo.')}};
 $('saveBrief').onclick=()=>download('pedido-chat00-'+selected+'.txt',$('briefText').value,'text/plain');
-async function init(){try{ctx=await resolveContentContext();const requested=new URLSearchParams(location.search).get('negocio');if(!ctx.preview&&requested&&requested!==ctx.negocioId)throw Error('El negocio solicitado no está autorizado para esta sesión. Vuelve al panel y selecciona tu empresa.');$('business').textContent=ctx.negocio.nombre;if(!ctx.preview)for(const id of ['library','back'])$(id).href+='?negocio='+encodeURIComponent(ctx.negocioId);
+async function init(){try{ctx=await resolveContentContext();await mountBusinessSwitcher(ctx);const requested=new URLSearchParams(location.search).get('negocio');if(!ctx.preview&&requested&&requested!==ctx.negocioId)throw Error('El negocio solicitado no está autorizado para esta sesión. Vuelve al panel y selecciona tu empresa.');$('business').textContent=ctx.negocio.nombre;if(!ctx.preview)for(const id of ['library','back'])$(id).href+='?negocio='+encodeURIComponent(ctx.negocioId);
  const {data,error}=await sb.from('content_planes_editoriales').select('id,negocio_id,plan_key,document,revision,updated_at').eq('negocio_id',ctx.negocioId).eq('plan_key','olano-editorial-v3').maybeSingle();if(error)throw error;if(!data)throw Error('Este negocio aún no tiene un plan editorial instalado.');record=data;plan=data.document;
  [pieces,publications]=await Promise.all([readAll('content_piezas','id,negocio_id,content_code,titulo,servicio,tema,objetivo,temperatura,categoria,formato,hook_family,hook_id,estado,approved_at,metadata'),readAll('content_publicaciones','id,negocio_id,content_id,estado,published_at,plataforma')]);
  picklist('service',plan.services.map(s=>({value:s.id,label:s.name})),'Todos');picklist('audience',audiences,'Todas');picklist('objective',objectives,'Todos');picklist('motivation',motivations,'Todas');const q=new URLSearchParams(location.search);for(const k of ['service','audience','objective','motivation'])$(k).value=q.get(k)||'';selected=q.get('tema');anchor=plan.start_date;$('edition').textContent=plan.edition;$('loading').hidden=true;$('app').hidden=false;render();jumpNext();
