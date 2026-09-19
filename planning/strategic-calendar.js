@@ -107,13 +107,22 @@ function scriptInfo(s){
 function scriptParagraphs(text){
  return String(text||'').split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean).map((p,i)=>`<p data-script-paragraph="${i+1}">${esc(p)}</p>`).join('');
 }
-function projectLabel(s){
+function reservedProjectNumber(s){
+ const n=Number(s?.production_brief?.display_v1?.project_display_number);
+ return Number.isFinite(n)&&n>0?n:null
+}
+function projectDisplayNumber(s){
  const n=Number(projectInfo(s)?.project_display_number);
- return Number.isFinite(n)&&n>0?`PROYECTO ${String(n).padStart(3,'0')}`:'PROYECTO PENDIENTE'
+ return Number.isFinite(n)&&n>0?n:reservedProjectNumber(s)
+}
+function projectLabel(s){
+ const n=projectDisplayNumber(s);
+ return n?`PROYECTO ${String(n).padStart(3,'0')}`:'PROYECTO PENDIENTE'
 }
 function projectClass(s){
- const n=Number(projectInfo(s)?.project_display_number);
- return Number.isFinite(n)&&n>0?'has-project':'pending-project'
+ const n=projectDisplayNumber(s);
+ if(!n)return 'pending-project';
+ return s?.content_id?'has-project':'pending-project'
 }
 function searchable(s){const item=itemFor(s);return norm([projectLabel(s),s.editorial_key,item?.editorial_key,item?.title,item?.question,item?.signal,item?.payoff,serviceName(s),roleNames[s.strategic_role]||s.strategic_role,s.rationale,s.expected_signal,s.execution_note,statusNames[s.status]||s.status,briefNames[s.brief_status]||s.brief_status].join(' '))}
 function filters(){return{svc:document.querySelector('#strategyService')?.value||'',st:document.querySelector('#strategyStatus')?.value||'',q:norm(document.querySelector('#strategySearch')?.value||'')}}
@@ -316,7 +325,7 @@ async function load(){
   calendars=cals;
   const ids=calendars.map(c=>c.id),planKeys=[...new Set(calendars.map(c=>c.bank_plan_key))];
   const [{data:ss,error:se},{data:plans,error:pe},{data:trans,error:te},{data:projects,error:pre},{data:pieces,error:pce}]=await Promise.all([
-   sb.from('content_calendario_publicacion_slots').select('id,calendario_id,negocio_id,publish_date,strategic_role,service_key,source_bank,editorial_key,transversal_id,content_id,match_status,rationale,expected_signal,execution_note,status,actual_publication_id,brief_status').in('calendario_id',ids).order('publish_date'),
+   sb.from('content_calendario_publicacion_slots').select('id,calendario_id,negocio_id,publish_date,strategic_role,service_key,source_bank,editorial_key,transversal_id,content_id,match_status,rationale,expected_signal,execution_note,status,actual_publication_id,brief_status,production_brief').in('calendario_id',ids).order('publish_date'),
    sb.from('content_planes_editoriales').select('plan_key,document').eq('negocio_id',BUSINESS).in('plan_key',planKeys),
    sb.from('content_banco_transversal').select('id,negocio_id,editorial_key,title,question,strategic_role,objective,audience,motivation,format,status').eq('negocio_id',BUSINESS),
    sb.from('content_public_project_labels').select('content_id,project_display_number,project_created_at').eq('negocio_id',BUSINESS),
