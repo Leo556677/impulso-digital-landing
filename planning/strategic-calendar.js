@@ -1,4 +1,4 @@
-import {sb,resolveContentContext} from '../content-vault-client.js?v=20260919-business-switcher-v2';
+import {sb,resolveContentContext} from '../content-vault-client.js?v=20260919-premium-v3';
 const PUBLIC_BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb';
 let BUSINESS=PUBLIC_BUSINESS;
 let BUSINESS_CTX=null;
@@ -72,10 +72,11 @@ async function mountCalendarBusinessSwitcher(ctx){
 async function resolveBusinessContext(){
  try{
    const {data:{session}}=await sb.auth.getSession();
-   if(!session?.user){BUSINESS=PUBLIC_BUSINESS;return}
+   if(!session?.user){BUSINESS=PUBLIC_BUSINESS;document.querySelectorAll('[data-business]').forEach(el=>el.textContent='Dr. Olano');const sw=document.querySelector('[data-calendar-business-switcher]');if(sw)sw.hidden=true;return}
    const ctx=await resolveContentContext({redirect:false});
    BUSINESS_CTX=ctx;
    BUSINESS=ctx.negocioId;
+   document.querySelectorAll('[data-business]').forEach(el=>el.textContent=ctx.negocio?.nombre||'Negocio');
    await mountCalendarBusinessSwitcher(ctx);
  }catch(_){
    BUSINESS=PUBLIC_BUSINESS;
