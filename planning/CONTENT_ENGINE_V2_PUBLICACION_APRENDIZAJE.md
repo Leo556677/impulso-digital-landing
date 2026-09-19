@@ -66,7 +66,11 @@ Segmentación permitida cuando la plataforma la aporta:
 - ubicación;
 - seguidores/no seguidores;
 - fuentes de tráfico;
-- fuentes de visualización.
+- fuentes de visualización;
+- actividad de audiencia por hora;
+- actividad de audiencia por día.
+
+Todo conector externo debe pasar un gate de identidad: la marca/cuenta debe corresponder al negocio analizado. No se mezclan datos de otra cuenta.
 
 No se mezclan ciegamente métricas incompatibles entre plataformas.
 
@@ -119,7 +123,7 @@ La Segunda Capa admite:
 Estados:
 NOT_EVALUATED · EXPLORATORY · RECOMMENDED · MANUAL.
 
-Una publicación a una hora no convierte esa hora en ganadora. La comparación debe ocurrir dentro de la misma plataforma y, cuando se quiera aprender causalidad, con piezas razonablemente comparables.
+Una publicación a una hora no convierte esa hora en ganadora. Cuando exista, la recomendación debe triangular actividad de audiencia de la plataforma con rendimiento propio observado por día/hora. La comparación debe ocurrir dentro de la misma plataforma y, cuando se quiera aprender causalidad, con piezas razonablemente comparables.
 
 ## 8. Tablas activas
 
