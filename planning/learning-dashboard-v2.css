@@ -95,3 +95,6 @@
 .audit-drawer>summary,.more-drawer>summary{font-size:12px;padding:14px 15px}
 @media(min-width:1500px){.premium-section{padding:22px 24px}.premium-kpi-grid{grid-template-columns:repeat(6,1fr)}.action-grid{grid-template-columns:repeat(3,1fr)}.platform-premium-grid{grid-template-columns:repeat(3,1fr)}.audience-columns{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:900px){.filter-panel-head{align-items:flex-start}.platform-filter{align-items:flex-start;flex-direction:column}.platform-filter .filter-reset{margin-left:0}.project-focus-grid{grid-template-columns:1fr}}
+
+/* V5 FINAL DENSITY */
+.platform-chip-title{display:flex;align-items:center;gap:6px}.platform-mini-brand{width:16px;height:16px}.platform-mini-brand.instagram{color:#b14573}.platform-mini-brand.facebook{color:#2875c7}.platform-mini-brand.tiktok{color:#111827}
