@@ -502,19 +502,52 @@ function darkFooter(){
   return '<div class="dark-learning-footer"><span class="footer-target">'+uiIcon('spark')+'</span><div><b>Pequeñas pruebas, grandes aprendizajes.</b><span>Cada dato nos acerca a un contenido más útil y claro.</span></div><strong>Dr. Olano</strong></div>';
 }
 
-function summaryWorkspace(base,m){
-  return '<div class="workspace-view dark-dashboard-summary">'+
-    '<section class="dark-pulse"><div class="dark-pulse-head"><span class="pulse-orb">'+uiIcon('pulse')+'</span><div><span>RESUMEN</span><h2>Pulso ejecutivo</h2><p>Lo más importante de este corte.</p></div><div class="pulse-wave" aria-hidden="true"></div></div>'+metricRibbon(base,m)+'</section>'+
-    '<div class="dark-dual-row"><div>'+actionDeck(m)+'</div><div>'+platformComparisonPremium(m)+'</div></div>'+
-    '<div class="dark-dual-row lower"><div>'+quickAudience(m)+'</div><div>'+quickEvidence(m)+'</div></div>'+
-    darkFooter()+
-  '</div>';
+function b24SectionHead(title,subtitle,action=''){
+  return '<div class="b24-section-title"><div><h2>'+esc(title)+'</h2>'+(subtitle?'<p>'+esc(subtitle)+'</p>':'')+'</div>'+(action||'')+'</div>';
 }
-function brand24VerticalBars(map){
-  const items=Object.entries(map||{}).slice(0,7);
-  if(!items.length)return '<div class="b24-empty">Sin datos disponibles.</div>';
-  const max=Math.max(...items.map(([,v])=>Number(v)||0),1);
-  return '<div class="b24-vbars">'+items.map(([k,v])=>'<div class="b24-vbar"><div class="b24-vbar-track"><i style="height:'+Math.max(4,(Number(v)||0)/max*100)+'%"></i></div><b>'+esc(pct(v))+'</b><span>'+esc(labelKey(k))+'</span></div>').join('')+'</div>';
+function demographySummary(m){
+  const rows=m.latest;
+  let age=weightedMap(rows,'age_pct');if(LF.age)age=age[LF.age]!==undefined?{[LF.age]:age[LF.age]}:{};
+  const gender=weightedMap(rows,'gender_pct');
+  return '<section class="b24-summary-section">'+
+    b24SectionHead('Demografía','Quién está viendo el contenido.','<button type="button" data-work-view="audience" class="b24-link-button">Ver audiencia completa →</button>')+
+    '<div class="b24-demography-grid">'+
+      '<section class="b24-panel b24-age-panel"><div class="b24-panel-head"><div><h2>Edad</h2><p>Distribución observada por tramo</p></div></div>'+brand24VerticalBars(age)+'</section>'+
+      donutChart('Sexo',gender)+
+    '</div>'+
+  '</section>';
+}
+function topPostsSummary(m){
+  const rows=[...m.pubs].sort((a,b)=>postValue(b,'views')-postValue(a,'views')).slice(0,5);
+  return '<section class="b24-summary-section">'+
+    b24SectionHead('Publicaciones destacadas','Las piezas con más visualizaciones dentro del filtro actual.','<button type="button" data-work-view="posts" class="b24-link-button">Ver todas →</button>')+
+    '<div class="data-table-card b24-top-posts"><div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Publicación</th><th>Red</th><th>Fecha</th><th>Visualizaciones</th><th>Interacciones</th><th>Tiempo visto</th><th>Vio completo</th></tr></thead><tbody>'+
+    (rows.length?rows.map(pub=>'<tr><td><div class="post-cell"><span class="post-thumb">'+brandIcon(pub.plataforma,'table-brand')+'</span><div><b>'+esc(pub.piece?.titulo||pub.project)+'</b><small>'+esc(pub.project)+'</small></div></div></td><td><span class="network-cell">'+brandIcon(pub.plataforma,'table-network-icon')+esc(P[pub.plataforma]||pub.plataforma)+'</span></td><td>'+esc(pubDateKey(pub)||'—')+'</td><td><b>'+esc(fmt(postValue(pub,'views')))+'</b></td><td>'+esc(fmt(postValue(pub,'interactions')))+'</td><td>'+esc(postValue(pub,'watch')===null?'—':postValue(pub,'watch')+' s')+'</td><td>'+esc(postValue(pub,'completion')===null?'—':pct(postValue(pub,'completion')))+'</td></tr>').join(''):'<tr><td colspan="7"><div class="analytics-empty small">No hay publicaciones con estos filtros.</div></td></tr>')+
+    '</tbody></table></div></div>'+
+  '</section>';
+}
+function learningSummary(m){
+  const signals=m.signals.slice(0,4),hyps=m.hyps.slice(0,3);
+  return '<section class="b24-summary-section">'+
+    b24SectionHead('Aprendizajes y siguientes pruebas','Lo que ya observamos y lo que falta validar.','<button type="button" data-work-view="learning" class="b24-link-button">Abrir aprendizaje →</button>')+
+    '<div class="b24-learning-grid"><div class="b24-learning-list"><h3>'+uiIcon('eye')+' Lo que vimos</h3>'+
+      (signals.length?signals.map(x=>{const c=compactSignalText(x);return '<article><span class="b24-learning-icon '+c.tone+'">'+uiIcon(c.icon)+'</span><div><b>'+esc(c.title)+'</b><p>'+esc(c.text)+'</p></div></article>'}).join(''):'<p class="muted">Todavía no hay señales.</p>')+
+    '</div><div class="b24-learning-list hypotheses"><h3>'+uiIcon('flask')+' Lo que vamos a comprobar</h3>'+
+      (hyps.length?hyps.map(h=>{const ico=h.dimension==='AUDIENCE'?'users':h.dimension==='PUBLISH_TIME'?'clock':'play';return '<article><span class="b24-learning-icon hypothesis">'+uiIcon(ico)+'</span><div><b>'+esc(dimensionLabel(h.dimension))+'</b><p>'+esc(h.recommended_test||h.statement)+'</p></div>'+pill(HYP[h.status]||h.status,h.status==='INSUFFICIENT'?'warn':'ok')+'</article>'}).join(''):'<p class="muted">Todavía no hay hipótesis.</p>')+
+    '</div></div>'+
+  '</section>';
+}
+function summaryWorkspace(base,m){
+  return '<div class="workspace-view b24-summary-workspace">'+
+    '<section class="b24-summary-section b24-performance-section">'+
+      b24SectionHead('Rendimiento del periodo','Evolución de las métricas principales y resumen del filtro actual.')+
+      '<div class="b24-performance-layout"><div class="b24-main-chart">'+lineChart(m,'views')+'</div><aside class="b24-kpi-side">'+metricRibbon(base,m)+'</aside></div>'+
+    '</section>'+
+    '<div class="b24-summary-split"><div>'+platformComparisonPremium(m)+'</div><div>'+actionDeck(m)+'</div></div>'+
+    demographySummary(m)+
+    topPostsSummary(m)+
+    learningSummary(m)+
+  '</div>';
 }
 function audienceWorkspace(m){
   const platforms=['TIKTOK','INSTAGRAM','FACEBOOK'].filter(p=>!LF.platform||p===LF.platform);
