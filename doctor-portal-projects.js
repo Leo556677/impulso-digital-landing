@@ -59,7 +59,7 @@
     'TOXINA BOTULÍNICA':'Toxina botulínica','PRP FACIAL':'PRP facial','HYDRAFACIAL / LIMPIEZA CON APARATOLOGÍA':'Limpieza / aparatología','LIPOSUCCIÓN DE PAPADA':'Liposucción de papada','BICHECTOMÍA':'Bichectomía','RINOPLASTIA':'Rinoplastia'
   };
   const cache={signature:'',all:[],groups:new Map(),loading:null};
-  const isRecorded=x=>x?.estado==='GRABADO'||x?.pieza?.estado==='RECORDED';
+  const isRecorded=x=>x?.estado==='GRABADO'||x?.pieza?.estado==='RECORDED'||x?.pieza?.estado==='PUBLISHED'||x?.pieza?.production_status?.RECORDED===true;
   const keyOf=v=>String(v||'Sin servicio').trim().replace(/\s+/g,' ').toLocaleUpperCase('es-PE');
   const nameOf=k=>serviceNames[k]||String(k||'Servicio').toLocaleLowerCase('es-PE').replace(/(^|\s|\/\s*)\p{L}/gu,m=>m.toLocaleUpperCase('es-PE'));
   const projectNo=p=>{const visible=Number(p?.metadata?.web_display_number);if(Number.isFinite(visible)&&visible>0)return visible;const identity=Number(p?.metadata?.project_ref_v1?.project_number);return Number.isFinite(identity)&&identity>0?identity:null;};
@@ -79,7 +79,7 @@
     return displayIndex;
   }
   const displayCode=item=>{const id=item?.pieza?.id;return id?(displayIndex.scheduled.get(id)||displayIndex.legacy.get(id)||''):'';};
-  const labelFor=item=>{const id=item?.pieza?.id;if(!id)return'';const scheduled=displayIndex.scheduled.get(id);if(scheduled)return`PROYECTO ${scheduled}${displayIndex.dates.get(id)?' · '+compactDate(displayIndex.dates.get(id)):''}`;const legacy=displayIndex.legacy.get(id);if(legacy)return`PROYECTO ${legacy} · SEMANA PREVIA`;return M?.projectLabel?.(item?.pieza)||'';};
+  const labelFor=item=>{if(item?.__calendarLabel)return item.__calendarLabel;const id=item?.pieza?.id;if(!id)return'';const scheduled=displayIndex.scheduled.get(id);if(scheduled)return`PROYECTO ${scheduled}${displayIndex.dates.get(id)?' · '+compactDate(displayIndex.dates.get(id)):''}`;const legacy=displayIndex.legacy.get(id);if(legacy)return`PROYECTO ${legacy}`;return M?.projectLabel?.(item?.pieza)||'';};
   const projectSort=(a,b)=>{const ac=displayCode(a),bc=displayCode(b),rank=c=>/^A\d+$/.test(c)?-1000+Number(c.slice(1)):Number(c)||99999,ar=rank(ac),br=rank(bc);if(ar!==br)return ar-br;const an=projectNo(a?.pieza),bn=projectNo(b?.pieza);if(an&&bn&&an!==bn)return an-bn;return pt(a?.pieza).localeCompare(pt(b?.pieza),'es');};
   const sig=()=>active().map(s=>`${s.id}:${s.recorded||0}:${s.total||0}`).sort().join('|')+'|'+(P?.calendar_items||[]).map(x=>`${x.content_id}:${x.publish_date}:${x.slot_status}`).sort().join('|');
   const invalidate=()=>{cache.signature='';cache.all=[];cache.groups=new Map();cache.loading=null;};
@@ -167,20 +167,21 @@
     const extra=await api('piece_get',{content_id:contentId});
     return extra?.item||null;
   }
-  async function openCalendarItem(contentId){
+  async function openCalendarItem(contentId,label='',origin='calendar'){
     try{
       const item=await calendarItem(contentId);
       if(!item){err('No se pudo abrir este proyecto.');return false;}
+      item.__calendarLabel=label||item.__calendarLabel||'';
       backTab='calendar';
-      S={_calendarDirect:true,session:item._session||{id:null,nombre:'Calendario',fecha:null,lugar:null,notas:null},items:[item]};
+      S={_calendarDirect:true,_calendarOrigin:origin,session:item._session||{id:null,nombre:'Calendario',fecha:null,lugar:null,notas:null},items:[item]};
       tab('record');
       $('rhome').style.display='none';
       $('sdetail').style.display='none';
       $('vdetail').style.display='block';
-      $('vback').innerHTML=`${ic('left')}Volver al calendario`;
+      $('vback').innerHTML=`${ic('left')}${origin==='pending'?'Volver a pendientes':'Volver al calendario'}`;
       openVideo(0);
       const heading=document.querySelector('#vhero .project-heading'),dynamicLabel=labelFor(item);
-      if(heading&&dynamicLabel){heading.textContent=dynamicLabel;const note=heading.nextElementSibling;if(note?.classList?.contains('project-time-note'))note.textContent='Orden visual del calendario';}
+      if(heading&&dynamicLabel){heading.textContent=dynamicLabel;const note=heading.nextElementSibling;if(note?.classList?.contains('project-time-note'))note.textContent=origin==='pending'?'Pendiente de grabación':'Orden visual del calendario';}
       scrollTo(0,0);
       return true;
     }catch(e){err(e?.message||'No se pudo abrir este proyecto.');return false;}
@@ -204,11 +205,11 @@
 
   const oldSBack=$('sback').onclick;$('sback').onclick=()=>{if(S?._captureGuide||S?._serviceKey){const target=S?._calendarDirect?'calendar':'record';S=null;$('videos').className='vgrid';resetViews();tab(target);if(target==='calendar'&&typeof renderCal==='function')renderCal();return;}if(typeof oldSBack==='function')oldSBack();};
   const oldOpenSession=openSession;openSession=async function(id,from='record'){$('vback').innerHTML=`${ic('left')}Volver a la sesión`;return oldOpenSession(id,from);};
-  const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,legacyRecorded=item?.pieza?.estado==='RECORDED'||item?.pieza?.production_status?.RECORDED===true||item?.pieza?.estado==='PUBLISHED',ready=item?.pieza?.production_status?.PRODUCTION_READY===true||legacyRecorded||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}else if(btn&&legacyRecorded&&item?.estado!=='GRABADO'){btn.innerHTML='Confirmar grabado';btn.title='La pieza ya consta como grabada; este botón sincroniza el estado de la sesión.';}if(S?._calendarDirect){$('vback').innerHTML=`${ic('left')}Volver al calendario`;}};
+  const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,legacyRecorded=item?.pieza?.estado==='RECORDED'||item?.pieza?.production_status?.RECORDED===true||item?.pieza?.estado==='PUBLISHED',ready=item?.pieza?.production_status?.PRODUCTION_READY===true||legacyRecorded||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}else if(btn&&legacyRecorded&&item?.estado!=='GRABADO'){btn.innerHTML='Confirmar grabado';btn.title='La pieza ya consta como grabada; este botón sincroniza el estado de la sesión.';}if(S?._calendarDirect){$('vback').innerHTML=`${ic('left')}${S?._calendarOrigin==='pending'?'Volver a pendientes':'Volver al calendario'}`;}};
   const oldToggleRec=toggleRec;toggleRec=async function(x){if(S?._calendarDirect){const result=await markCalendarRecorded(x);if(!result.ok)alert(result.message||'No se pudo marcar como grabado.');else if(typeof renderCal==='function')renderCal();return;}if(!S?._serviceKey)return oldToggleRec(x);const key=S._serviceKey;try{await api('mark_piece',{session_piece_id:x.session_piece_id,estado:x.estado==='GRABADO'?'PENDIENTE':'GRABADO'});P=await api('portal_get');invalidate();renderCal();renderHist();await renderRecord();const data=await loadItems();if(data.groups.has(key))await openService(key);else{S=null;resetViews();tab('record');}}catch(e){alert(e.message)}};
 
   const oldVBack=$('vback').onclick;
-  $('vback').onclick=()=>{if(S?._calendarDirect){S=null;resetViews();tab('calendar');if(typeof renderCal==='function')renderCal();return;}if(typeof oldVBack==='function')oldVBack();};
+  $('vback').onclick=()=>{if(S?._calendarDirect){const origin=S?._calendarOrigin||'calendar';S=null;resetViews();tab('calendar');if(origin==='pending'&&typeof window.DoctorPortalCalendar?.showPending==='function')window.DoctorPortalCalendar.showPending();else if(typeof renderCal==='function')renderCal();return;}if(typeof oldVBack==='function')oldVBack();};
 
   window.DoctorPortalProjects={loadItems,index:()=>displayIndex,labelFor,displayCode,buildDisplayIndex,openCalendarItem,markCalendarRecorded,openCalendarSpecial,calendarItem};
   window.DoctorPortalSpecials=[captureGuide];
