@@ -100,8 +100,11 @@
 .pending-grid .cal-list-row{border:1px solid #DFE5EC;border-radius:16px;box-shadow:0 8px 20px rgba(23,34,53,.05)}
 .pending-empty{grid-column:1/-1;padding:30px;text-align:center;color:#617084}
 
-/* sticky return inside project/capture details */
-#vdetail>.back.calendar-floating-back,#sdetail>.back.calendar-floating-back{position:sticky;top:78px;z-index:42;width:max-content;max-width:calc(100% - 8px);margin:0 0 10px;padding:9px 12px!important;border:1px solid #DDE3EA!important;border-radius:12px!important;background:rgba(255,255,255,.97)!important;backdrop-filter:blur(12px);box-shadow:0 8px 20px rgba(23,34,53,.12);color:#1D2A3E!important}
+/* calendar back lives inside the existing sticky header so it never covers project controls */
+.top.calendar-detail-mode .topin{gap:10px}
+.top.calendar-detail-mode a[aria-label="Configurar negocio"]{margin-left:0!important}
+.calendar-header-back{margin-left:auto!important;min-height:38px;padding:0 12px!important;border:1px solid #DDE3EA!important;border-radius:11px!important;background:#fff!important;color:#1D2A3E!important;box-shadow:0 4px 12px rgba(23,34,53,.08);display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;font-size:11px!important;font-weight:900!important;white-space:nowrap!important}
+.calendar-header-back .ico{width:17px;height:17px}
 
 /* confirmation only when trying to leave teleprompter */
 .record-confirm-overlay{position:fixed;inset:0;z-index:250;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(7,10,16,.48);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
@@ -158,10 +161,18 @@
   .cal-project h3{font-size:14px}
   .cal-service-name{font-size:8px}
   .cal-project-status{font-size:8px}
-  .pending-return,#vdetail>.back.calendar-floating-back,#sdetail>.back.calendar-floating-back{top:72px}
+  .pending-return{top:72px}
   .record-confirm-card{padding:21px 16px}
   .record-confirm-actions{grid-template-columns:1fr}
 }
 
 .cal-project.placeholder,.cal-list-row.placeholder{cursor:default!important}
 .cal-project.placeholder:hover,.cal-project.placeholder:focus{transform:none!important;box-shadow:none!important}
+
+@media(max-width:640px){
+  .top.calendar-detail-mode .topin{flex-wrap:wrap;row-gap:8px}
+  .top.calendar-detail-mode .logo{order:1}
+  .top.calendar-detail-mode .brand{order:1;min-width:0;flex:1}
+  .top.calendar-detail-mode a[aria-label="Configurar negocio"]{order:2;margin-left:auto!important}
+  .top.calendar-detail-mode .calendar-header-back{order:3;width:100%;margin-left:0!important;min-height:40px}
+}
