@@ -3,6 +3,7 @@
   const STORE='do_portal_trace_v1';
   const MAX=120;
   let entries=[];
+  let debugVisible=new URLSearchParams(location.search).get('debug')==='1';
   try{entries=JSON.parse(localStorage.getItem(STORE)||'[]');if(!Array.isArray(entries))entries=[];}catch{entries=[];}
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const now=()=>new Intl.DateTimeFormat('es-PE',{timeZone:'America/Lima',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).format(new Date());
@@ -44,7 +45,7 @@
     return root;
   }
   function render(){
-    const root=ensure(),body=root.querySelector('#portalTraceBody'),summary=root.querySelector('#portalTraceSummary');
+    const root=document.getElementById('portalTrace')||ensure(),body=root.querySelector('#portalTraceBody'),summary=root.querySelector('#portalTraceSummary');
     if(!body||!summary)return;
     const latest=entries.slice(-36);
     body.innerHTML=latest.map(e=>'<span class="trace-line '+(e.level==='error'?'is-error':e.level==='warn'?'is-warn':'')+'"><i>'+esc(e.time)+'</i> <b>'+esc(e.stage)+'</b> '+esc(e.data||'')+'</span>').join('\n');
@@ -56,14 +57,17 @@
     const text=typeof data==='string'?data:serialize(data);
     entries.push({time:now(),stage:String(stage||'EVENT'),data:text,level});
     entries=entries.slice(-MAX);persist();
-    if(document.body)render();else document.addEventListener('DOMContentLoaded',render,{once:true});
+    if(level==='error')debugVisible=true;
+    if(debugVisible){
+      if(document.body)render();else document.addEventListener('DOMContentLoaded',render,{once:true});
+    }
   }
   function plain(){
     return entries.slice(-80).map(e=>`[${e.time}] ${e.level.toUpperCase()} ${e.stage} ${e.data}`).join('\n');
   }
-  window.PortalTrace={log:(s,d)=>push(s,d,'info'),warn:(s,d)=>push(s,d,'warn'),error:(s,d)=>push(s,d,'error'),plain,show:ensure};
+  window.PortalTrace={log:(s,d)=>push(s,d,'info'),warn:(s,d)=>push(s,d,'warn'),error:(s,d)=>push(s,d,'error'),plain,show:()=>{debugVisible=true;return ensure();}};
   window.addEventListener('error',e=>push('WINDOW_ERROR',{message:e.message,file:e.filename?.split('/').pop(),line:e.lineno,col:e.colno,stack:e.error?.stack||''},'error'));
   window.addEventListener('unhandledrejection',e=>push('UNHANDLED_REJECTION',{message:e.reason?.message||String(e.reason),stack:e.reason?.stack||''},'error'));
   push('LOAD_START',{href:location.pathname,ua:navigator.userAgent.slice(0,120)});
-  document.addEventListener('DOMContentLoaded',()=>{ensure();push('DOM_READY',{readyState:document.readyState});},{once:true});
+  document.addEventListener('DOMContentLoaded',()=>{if(debugVisible)ensure();push('DOM_READY',{readyState:document.readyState});},{once:true});
 })();
