@@ -187,7 +187,7 @@
       <label><span>Servicio</span><select id="calendarServiceFilter">${serviceOptions}</select></label>
       <label><span>Estado de grabación</span><select id="calendarStatusFilter">
         <option value="ALL" ${filterStatus==='ALL'?'selected':''}>Todos</option>
-        <option value="PENDING" ${filterStatus==='PENDING'?'selected':''}>Por grabar</option>
+        <option value="PENDING" ${filterStatus==='PENDING'?'selected':''}>No grabados</option>
         <option value="RECORDED" ${filterStatus==='RECORDED'?'selected':''}>Grabados</option>
       </select></label>
     </div>`;
