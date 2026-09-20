@@ -22,7 +22,7 @@
     RIN:{color:'#625ED1',soft:'#EFEEFF'},
     PAP:{color:'#7D4BC4',soft:'#F2ECFC'},
     BIC:{color:'#C6427B',soft:'#FBEAF2'},
-    EQ:{color:'#F06424',soft:'#FFF0E8'},
+    EQ:{color:'#F06424',soft:'#FFE8DE'},
     DEF:{color:'#52657A',soft:'#EDF2F7'}
   };
 
@@ -158,9 +158,12 @@
 
   function card(item,list=false){
     const st=statusMeta(item),theme=themeFor(item.service,item.kind);
+    const interactive=item.kind==='capture'||Boolean(item.content_id);
     const target=item.kind==='capture'?'data-special="capture"':(item.content_id?`data-content="${esc(item.content_id)}"`:'data-placeholder="true"');
+    const affordance=interactive?`tabindex="0" role="button"`:'aria-disabled="true"';
+    const arrow=interactive?`<span class="cal-card-arrow">${ic('right')}</span>`:'';
     if(list){
-      return`<article class="cal-list-row ${esc(item.kind)} ${item.recorded?'is-recorded':''}" style="${cssVars(item)}" ${target} data-code="${esc(item.code)}" tabindex="0" role="button">
+      return`<article class="cal-list-row ${esc(item.kind)} ${item.recorded?'is-recorded':''}" style="${cssVars(item)}" ${target} data-code="${esc(item.code)}" ${affordance}>
         ${item.recorded?'<div class="cal-recorded-check list-check">✓</div>':''}
         <div class="cal-list-date"><span>${item.date?weekday(item.date):'PEND.'}</span><b>${item.date?dayOfMonth(item.date):'!'}</b></div>
         <div class="cal-list-main">
@@ -172,9 +175,9 @@
         <span class="cal-card-arrow list-arrow">${ic('right')}</span>
       </article>`;
     }
-    return`<article class="cal-project ${esc(item.kind)} ${item.recorded?'is-recorded':''}" style="${cssVars(item)}" ${target} data-code="${esc(item.code)}" tabindex="0" role="button" aria-label="Abrir ${esc(item.title)}">
+    return`<article class="cal-project ${esc(item.kind)} ${item.recorded?'is-recorded':''}" style="${cssVars(item)}" ${target} data-code="${esc(item.code)}" ${affordance} ${interactive?`aria-label="Abrir ${esc(item.title)}"`:''}>
       ${item.recorded?'<div class="cal-recorded-check" aria-label="Grabado">✓</div>':''}
-      <div class="cal-project-top"><span class="cal-project-code">PROYECTO ${esc(item.code)}</span><span class="cal-card-arrow">${ic('right')}</span></div>
+      <div class="cal-project-top"><span class="cal-project-code">PROYECTO ${esc(item.code)}</span>${arrow}</div>
       <div class="cal-service-row"><span class="cal-service-code">${esc(theme.code)}</span><span class="cal-service-name">${esc(item.service||'Contenido')}</span></div>
       <h3>${esc(item.title)}</h3>
       ${item.role?`<p class="cal-role">${esc(item.role)}</p>`:''}
