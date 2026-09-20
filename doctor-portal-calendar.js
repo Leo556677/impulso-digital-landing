@@ -83,7 +83,7 @@
       const scheduled=(P?.calendar_items||[])
         .filter(x=>x?.content_id&&x?.publish_date)
         .map(x=>{
-          const sessionItem=byContent.get(x.content_id),piece=sessionItem?.pieza||{};
+          const sessionItem=byContent.get(x.content_id),piece=sessionItem?.pieza||x.pieza||{};
           return{
             kind:'scheduled',
             date:x.publish_date,
