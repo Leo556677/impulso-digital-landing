@@ -4,7 +4,7 @@
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
-  let planCache=null,planPromise=null,selectedWeek=0,weekInitialized=false,showingPending=false;
+  let planCache=null,planPromise=null,selectedWeek=0,weekInitialized=false,showingPending=false,selectedMobileDate='';
   const baseCloseTele=typeof closeTele==='function'?closeTele:null;
 
   const pad=n=>String(n).padStart(2,'0');
@@ -169,12 +169,12 @@
   }
 
   function statusMeta(item){
-    if(item.recorded)return{label:'GRABADO',cls:'recorded'};
-    if(item.kind==='capture')return{label:'REQUIERE CAPTURA REAL',cls:'capture'};
-    if(item.kind==='placeholder')return{label:'GUION PENDIENTE',cls:'pending'};
-    if(item.kind==='legacy')return{label:'FUERA DEL CALENDARIO',cls:'external'};
-    if(item.piece?.production_status?.PRODUCTION_READY===true)return{label:'LISTO PARA GRABAR',cls:'ready'};
-    return{label:'GUION APROBADO',cls:'approved'};
+    if(item.recorded)return{label:'YA GRABADO',cls:'recorded',icon:'check'};
+    if(item.kind==='capture')return{label:'CAPTURA PENDIENTE',cls:'capture',icon:'cam'};
+    if(item.kind==='placeholder')return{label:'GUION PENDIENTE',cls:'pending',icon:'msg'};
+    if(item.kind==='legacy')return{label:'FALTA GRABAR',cls:'needs-recording',icon:'cam'};
+    if(item.content_id)return{label:'FALTA GRABAR',cls:'needs-recording',icon:'cam'};
+    return{label:'PENDIENTE',cls:'pending',icon:'msg'};
   }
 
   function projectLabel(item){return`PROYECTO ${item.code}${item.date?' · '+compactDate(item.date):''}`;}
@@ -194,7 +194,7 @@
           <div class="cal-service-name">${esc(item.service||'Contenido')}</div>
           <h3>${esc(item.title)}</h3>${item.role?`<p class="cal-role">${esc(item.role)}</p>`:''}
         </div>
-        <div class="cal-project-status ${st.cls}">${st.cls==='recorded'||st.cls==='ready'?ic('check'):''}<span>${esc(st.label)}</span></div>
+        <div class="cal-project-status ${st.cls}">${st.icon?ic(st.icon):''}<span>${esc(st.label)}</span></div>
         <span class="cal-card-arrow list-arrow">${ic('right')}</span>
       </article>`;
     }
@@ -204,8 +204,34 @@
       <div class="cal-service-row"><span class="cal-service-code">${esc(theme.code)}</span><span class="cal-service-name">${esc(item.service||'Contenido')}</span></div>
       <h3>${esc(item.title)}</h3>
       ${item.role?`<p class="cal-role">${esc(item.role)}</p>`:''}
-      <div class="cal-project-status ${st.cls}">${st.cls==='recorded'||st.cls==='ready'?ic('check'):''}<span>${esc(st.label)}</span></div>
+      <div class="cal-project-status ${st.cls}">${st.icon?ic(st.icon):''}<span>${esc(st.label)}</span></div>
     </article>`;
+  }
+
+  function weekDates(week){
+    return Array.from({length:7},(_,i)=>{const d=new Date(dateObj(week.start));d.setDate(d.getDate()+i);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;});
+  }
+  function ensureMobileDate(week){
+    const dates=weekDates(week);
+    if(!dates.includes(selectedMobileDate)){
+      if(TODAY>=week.start&&TODAY<=week.end)selectedMobileDate=TODAY;
+      else selectedMobileDate=week.rows.find(x=>x.date)?.date||week.start;
+    }
+    return selectedMobileDate;
+  }
+  function mobileWeekStrip(week){
+    ensureMobileDate(week);
+    const days=weekDates(week).map(date=>{
+      const rows=week.rows.filter(x=>x.date===date);
+      const chips=rows.length?rows.map(x=>`<span class="mobile-project-chip ${x.recorded?'done':'todo'}">P${esc(x.code)}</span>`).join(''):'<span class="mobile-project-chip empty">—</span>';
+      return `<button type="button" class="mobile-day ${selectedMobileDate===date?'selected':''} ${date===TODAY?'today':''}" data-mobile-date="${date}"><span>${weekday(date)}</span><b>${dayOfMonth(date)}</b><div>${chips}</div></button>`;
+    }).join('');
+    return `<div class="cal-mobile-weekstrip" aria-label="Semana rápida">${days}</div>`;
+  }
+  function mobileSelected(week){
+    ensureMobileDate(week);
+    const rows=week.rows.filter(x=>x.date===selectedMobileDate);
+    return `<div class="cal-mobile-selected">${rows.length?rows.map(x=>card(x)).join(''):'<div class="cal-mobile-empty">No hay proyecto este día.</div>'}</div>`;
   }
 
   function weekGrid(week){
@@ -221,6 +247,7 @@
     return`<section class="cal-week-block">
       <header class="cal-week-head"><div><span>SEMANA ${String(week.number).padStart(2,'0')}</span><h2>${esc(weekRange(week.start,week.end))}</h2></div><small>${week.rows.length} ${week.rows.length===1?'proyecto':'proyectos'}</small></header>
       <div class="cal-week-grid">${days.join('')}</div>
+      ${mobileSelected(week)}
     </section>`;
   }
 
@@ -247,7 +274,6 @@
 
   function pendingPanel(plan){
     return`<div class="pending-recordings">
-      <button type="button" class="pending-return" data-return-calendar>${ic('left')} Regresar al calendario de grabación</button>
       <div class="card pending-hero"><div class="pending-alert-icon">!</div><div><span>PENDIENTES DE GRABACIÓN</span><h2>${plan.pending.length} ${plan.pending.length===1?'guion pendiente':'guiones pendientes'}</h2><p>Esta lista reúne únicamente piezas que todavía no han sido reportadas como grabadas. Los códigos A1, A2… se reservan para piezas fuera del calendario oficial.</p></div></div>
       <div class="pending-grid">${plan.pending.length?plan.pending.map(x=>card(x,true)).join(''):'<div class="card pending-empty"><b>Todo grabado.</b><br>No quedan guiones pendientes.</div>'}</div>
     </div>`;
@@ -267,10 +293,15 @@
   function bindCalendar(plan){
     document.querySelectorAll('[data-week-move]').forEach(btn=>btn.onclick=()=>{
       selectedWeek=Math.max(0,Math.min(plan.weeks.length-1,selectedWeek+(Number(btn.dataset.weekMove)||0)));
+      selectedMobileDate='';
       draw();
     });
     document.querySelectorAll('[data-cal-view]').forEach(btn=>btn.onclick=()=>{
       calendarView=btn.dataset.calView==='list'?'list':'week';localStorage.setItem(VIEW_KEY,calendarView);draw();
+    });
+    document.querySelectorAll('[data-mobile-date]').forEach(btn=>btn.onclick=()=>{
+      selectedMobileDate=btn.dataset.mobileDate||'';
+      draw();
     });
     document.querySelector('[data-show-pending]')?.addEventListener('click',()=>showPending());
     bindCards('calendar');
@@ -286,7 +317,9 @@
       window.PortalTrace?.log('CAL_DRAW_PLAN',{weeks:plan?.weeks?.length||0,selectedWeek});
       if(!plan.weeks.length){host.innerHTML='<div class="card empty">Todavía no hay semanas oficiales en el calendario.</div>';return;}
       const week=plan.weeks[selectedWeek];
-      host.innerHTML=toolbar(plan)+(calendarView==='list'?weekList(week):weekGrid(week));
+      window.DoctorPortalProjects?.clearBottomBack?.();
+      ensureMobileDate(week);
+      host.innerHTML=toolbar(plan)+mobileWeekStrip(week)+(calendarView==='list'?weekList(week):weekGrid(week));
       bindCalendar(plan);
       window.PortalTrace?.log('CAL_DRAW_OK',{week:selectedWeek+1,start:week?.start,end:week?.end,cards:host.querySelectorAll('[data-content],[data-special],[data-placeholder]').length,text:host.innerText.slice(0,180)});
     }catch(e){window.PortalTrace?.error('CAL_DRAW_FAIL',{name:e?.name||'',message:e?.message||String(e),stack:e?.stack||'',selectedWeek,hasP:Boolean(typeof P!=='undefined'&&P)});host.innerHTML=`<div class="card empty"><b>No pude cargar el calendario.</b><br>${esc(e?.message||'No se pudo cargar.')}</div>`;}
@@ -299,9 +332,7 @@
     try{
       const plan=await buildPlan(force);
       host.innerHTML=pendingPanel(plan);
-      document.querySelector('[data-return-calendar]')?.addEventListener('click',()=>{
-        selectedWeek=currentWeekIndex(plan.weeks);showingPending=false;draw();
-      });
+      window.DoctorPortalProjects?.showBottomBack?.(()=>{selectedWeek=currentWeekIndex(plan.weeks);selectedMobileDate='';showingPending=false;draw();});
       bindCards('pending');
     }catch(e){host.innerHTML=`<div class="card empty"><b>No pude cargar los pendientes.</b><br>${esc(e?.message||'No se pudo cargar.')}</div>`;}
   }
