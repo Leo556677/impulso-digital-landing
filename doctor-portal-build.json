@@ -1,7 +1,7 @@
 {
-  "build": "20260920-1035",
+  "build": "20260920-1040",
   "portal": "doctor-portal",
   "calendar": 20,
-  "core": 10,
+  "core": 11,
   "projects": 48
 }
