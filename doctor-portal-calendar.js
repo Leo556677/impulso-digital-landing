@@ -1,5 +1,6 @@
 (()=>{
   'use strict';
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'13'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
@@ -22,7 +23,7 @@
   };
   const waitForPortal=()=>new Promise((resolve,reject)=>{
     let tries=0;
-    const tick=()=>{if(portalSignature())return resolve(true);if(++tries>80)return reject(Error('El portal todavía no terminó de cargar sus datos.'));setTimeout(tick,75);};
+    const tick=()=>{const sig=portalSignature();if(sig){window.PortalTrace?.log('CAL_WAIT_PORTAL_OK',{tries,hasP:Boolean(P),sessions:P?.sessions?.length||0,production_items:P?.production_items?.length||0,calendar_items:P?.calendar_items?.length||0});return resolve(true)}if(++tries===1||tries===20||tries===60)window.PortalTrace?.warn('CAL_WAIT_PORTAL',{tries,hasP:Boolean(typeof P!=='undefined'&&P)});if(tries>80){const e=Error('El portal todavía no terminó de cargar sus datos.');window.PortalTrace?.error('CAL_WAIT_PORTAL_TIMEOUT',{tries,hasP:Boolean(typeof P!=='undefined'&&P)});return reject(e)}setTimeout(tick,75);};
     tick();
   });
 
@@ -97,18 +98,22 @@
   }
 
   async function buildPlan(force=false){
-    if(!force&&planCache)return planCache;
-    if(!force&&planPromise)return planPromise;
+    window.PortalTrace?.log('CAL_BUILD_START',{force,cache:Boolean(planCache),promise:Boolean(planPromise)});
+    if(!force&&planCache){window.PortalTrace?.log('CAL_BUILD_CACHE_HIT');return planCache;}
+    if(!force&&planPromise){window.PortalTrace?.log('CAL_BUILD_PROMISE_REUSE');return planPromise;}
     planPromise=(async()=>{
       await waitForPortal();
+      window.PortalTrace?.log('CAL_AFTER_WAIT',{production_items:P?.production_items?.length||0,calendar_items:P?.calendar_items?.length||0});
       const rawCalendar=Array.isArray(P?.calendar_items)?P.calendar_items.slice():[];
       const productionItems=Array.isArray(P?.production_items)?P.production_items.slice():[];
+      window.PortalTrace?.log('CAL_RAW_DATA',{rawCalendar:rawCalendar.length,productionItems:productionItems.length,sampleCalendar:rawCalendar.slice(0,2).map(x=>({date:x.publish_date,slot_status:x.slot_status,calendar:x.calendar_key,has_piece:Boolean(x.pieza)}))});
       const weekMap=new Map();
       for(const x of rawCalendar){
         const id=x?.calendario_id||x?.id;
         if(id&&!weekMap.has(id))weekMap.set(id,{id,calendar_key:x.calendar_key||'',status:x.status||'ACTIVE',week_start:x.week_start,week_end:x.week_end});
       }
       const calendarData={slots:rawCalendar,weeks:[...weekMap.values()]};
+      window.PortalTrace?.log('CAL_WEEK_MAP',{weeks:calendarData.weeks.length,weekKeys:calendarData.weeks.map(x=>({id:Boolean(x.id),start:x.week_start,end:x.week_end,key:x.calendar_key}))});
       const sessionMap=new Map();
       for(const item of productionItems){const id=item?.pieza?.id;if(id&&!sessionMap.has(id))sessionMap.set(id,item);}
 
@@ -156,9 +161,10 @@
       }else selectedWeek=Math.max(0,Math.min(weeks.length-1,selectedWeek));
 
       planCache={weeks,scheduled,external,pending,officialIds};
+      window.PortalTrace?.log('CAL_PLAN_READY',{weeks:weeks.length,scheduled:scheduled.length,external:external.length,pending:pending.length,selectedWeek});
       planPromise=null;
       return planCache;
-    })().catch(e=>{planPromise=null;throw e;});
+    })().catch(e=>{planPromise=null;window.PortalTrace?.error('CAL_BUILD_FAIL',{name:e?.name||'',message:e?.message||String(e),stack:e?.stack||'',p:{sessions:P?.sessions?.length||0,production_items:P?.production_items?.length||0,calendar_items:P?.calendar_items?.length||0}});throw e;});
     return planPromise;
   }
 
@@ -272,15 +278,17 @@
 
   async function draw(force=false){
     showingPending=false;
-    const host=$('calbox');if(!host)return;
+    const host=$('calbox');if(!host){window.PortalTrace?.error('CAL_NO_HOST','No existe #calbox');return;}
+    window.PortalTrace?.log('CAL_DRAW_START',{force});
     host.innerHTML='<div class="card cal-loading">Cargando calendario oficial…</div>';
     try{
       const plan=await buildPlan(force);
+      window.PortalTrace?.log('CAL_DRAW_PLAN',{weeks:plan?.weeks?.length||0,selectedWeek});
       if(!plan.weeks.length){host.innerHTML='<div class="card empty">Todavía no hay semanas oficiales en el calendario.</div>';return;}
       const week=plan.weeks[selectedWeek];
       host.innerHTML=toolbar(plan)+(calendarView==='list'?weekList(week):weekGrid(week));
       bindCalendar(plan);
-    }catch(e){host.innerHTML=`<div class="card empty"><b>No pude cargar el calendario.</b><br>${esc(e?.message||'No se pudo cargar.')}</div>`;}
+    }catch(e){window.PortalTrace?.error('CAL_DRAW_FAIL',{name:e?.name||'',message:e?.message||String(e),stack:e?.stack||'',selectedWeek,hasP:Boolean(typeof P!=='undefined'&&P)});host.innerHTML=`<div class="card empty"><b>No pude cargar el calendario.</b><br>${esc(e?.message||'No se pudo cargar.')}</div>`;}
   }
 
   async function showPending(force=false){
