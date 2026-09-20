@@ -1,6 +1,6 @@
 (()=>{
   'use strict';
-  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'13'});
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'18'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
