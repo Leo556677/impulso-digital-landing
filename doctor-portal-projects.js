@@ -128,7 +128,7 @@
     backTab=from;
     S={_captureGuide:true,_calendarDirect:from==='calendar',session:{id:null,nombre:'Humanización',fecha:'2026-09-26',lugar:null,notas:null},items:[]};
     tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';
-    $('sbacktxt').textContent=from==='calendar'?'Volver al calendario':'Volver a servicios';
+    $('sbacktxt').textContent=from==='calendar'?'Volver al calendario':'Volver a servicios';$('sback').classList.toggle('calendar-floating-back',from==='calendar');
     $('shero').innerHTML=`<div class="card detail capture-hero"><div class="date">PROYECTO ${String(captureGuide.projectNumber).padStart(3,'0')} · ${captureGuide.date} · HUMANIZACIÓN</div><h2>${captureGuide.subtitle}</h2><p class="capture-lead">Hoy no tienen que aprender un guion. Solo graben estas acciones reales, una por una.</p><div class="capture-badge">6–10 clips · vertical 9:16 · 2–4 s cada uno</div></div>`;
     $('setup').innerHTML=`<div class="card setup capture-start"><div class="capture-start-icon">${ic('cam')}</div><div><b>Antes de empezar</b><p><strong>NO HAY TEXTO PARA MEMORIZAR.</strong> Repitan cada toma 2 veces. Cámara quieta, sin zoom. Dejen 1–2 s antes y 2 s después de cada acción.</p></div></div>`;
     $('videos').className='capture-guide';
@@ -179,6 +179,7 @@
       $('sdetail').style.display='none';
       $('vdetail').style.display='block';
       $('vback').innerHTML=`${ic('left')}${origin==='pending'?'Volver a pendientes':'Volver al calendario'}`;
+      $('vback').classList.add('calendar-floating-back');
       openVideo(0);
       const heading=document.querySelector('#vhero .project-heading'),dynamicLabel=labelFor(item);
       if(heading&&dynamicLabel){heading.textContent=dynamicLabel;const note=heading.nextElementSibling;if(note?.classList?.contains('project-time-note'))note.textContent=origin==='pending'?'Pendiente de grabación':'Orden visual del calendario';}
@@ -203,13 +204,13 @@
     return false;
   }
 
-  const oldSBack=$('sback').onclick;$('sback').onclick=()=>{if(S?._captureGuide||S?._serviceKey){const target=S?._calendarDirect?'calendar':'record';S=null;$('videos').className='vgrid';resetViews();tab(target);if(target==='calendar'&&typeof renderCal==='function')renderCal();return;}if(typeof oldSBack==='function')oldSBack();};
+  const oldSBack=$('sback').onclick;$('sback').onclick=()=>{if(S?._captureGuide||S?._serviceKey){const target=S?._calendarDirect?'calendar':'record';S=null;$('sback').classList.remove('calendar-floating-back');$('videos').className='vgrid';resetViews();tab(target);if(target==='calendar'&&typeof renderCal==='function')renderCal();return;}if(typeof oldSBack==='function')oldSBack();};
   const oldOpenSession=openSession;openSession=async function(id,from='record'){$('vback').innerHTML=`${ic('left')}Volver a la sesión`;return oldOpenSession(id,from);};
-  const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,legacyRecorded=item?.pieza?.estado==='RECORDED'||item?.pieza?.production_status?.RECORDED===true||item?.pieza?.estado==='PUBLISHED',ready=item?.pieza?.production_status?.PRODUCTION_READY===true||legacyRecorded||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}else if(btn&&legacyRecorded&&item?.estado!=='GRABADO'){btn.innerHTML='Confirmar grabado';btn.title='La pieza ya consta como grabada; este botón sincroniza el estado de la sesión.';}if(S?._calendarDirect){$('vback').innerHTML=`${ic('left')}${S?._calendarOrigin==='pending'?'Volver a pendientes':'Volver al calendario'}`;}};
+  const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,legacyRecorded=item?.pieza?.estado==='RECORDED'||item?.pieza?.production_status?.RECORDED===true||item?.pieza?.estado==='PUBLISHED',ready=item?.pieza?.production_status?.PRODUCTION_READY===true||legacyRecorded||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}else if(btn&&legacyRecorded&&item?.estado!=='GRABADO'){btn.innerHTML='Confirmar grabado';btn.title='La pieza ya consta como grabada; este botón sincroniza el estado de la sesión.';}if(S?._calendarDirect){$('vback').classList.add('calendar-floating-back');$('vback').innerHTML=`${ic('left')}${S?._calendarOrigin==='pending'?'Volver a pendientes':'Volver al calendario'}`;}else $('vback').classList.remove('calendar-floating-back');};
   const oldToggleRec=toggleRec;toggleRec=async function(x){if(S?._calendarDirect){const result=await markCalendarRecorded(x);if(!result.ok)alert(result.message||'No se pudo marcar como grabado.');else if(typeof renderCal==='function')renderCal();return;}if(!S?._serviceKey)return oldToggleRec(x);const key=S._serviceKey;try{await api('mark_piece',{session_piece_id:x.session_piece_id,estado:x.estado==='GRABADO'?'PENDIENTE':'GRABADO'});P=await api('portal_get');invalidate();renderCal();renderHist();await renderRecord();const data=await loadItems();if(data.groups.has(key))await openService(key);else{S=null;resetViews();tab('record');}}catch(e){alert(e.message)}};
 
   const oldVBack=$('vback').onclick;
-  $('vback').onclick=()=>{if(S?._calendarDirect){const origin=S?._calendarOrigin||'calendar';S=null;resetViews();tab('calendar');if(origin==='pending'&&typeof window.DoctorPortalCalendar?.showPending==='function')window.DoctorPortalCalendar.showPending();else if(typeof renderCal==='function')renderCal();return;}if(typeof oldVBack==='function')oldVBack();};
+  $('vback').onclick=()=>{if(S?._calendarDirect){const origin=S?._calendarOrigin||'calendar';S=null;$('vback').classList.remove('calendar-floating-back');resetViews();tab('calendar');if(origin==='pending'&&typeof window.DoctorPortalCalendar?.showPending==='function')window.DoctorPortalCalendar.showPending();else if(typeof renderCal==='function')renderCal();return;}if(typeof oldVBack==='function')oldVBack();};
 
   window.DoctorPortalProjects={loadItems,index:()=>displayIndex,labelFor,displayCode,buildDisplayIndex,openCalendarItem,markCalendarRecorded,openCalendarSpecial,calendarItem};
   window.DoctorPortalSpecials=[captureGuide];
