@@ -7,6 +7,7 @@
   const svg=(id,cls='block-ico')=>`<svg class="${cls}" aria-hidden="true"><use href="#${id}"></use></svg>`;
   const list=v=>Array.isArray(v)?v:[v].filter(Boolean);
   const norm=v=>String(v??'').replace(/\s+/g,' ').trim();
+  const teleText=v=>String(v??'').trim().split(/\s+/).filter(Boolean).map(w=>`<span class="tele-token">${esc(w)}</span>`).join(' ');
   const GENERIC_DOCTOR_URL='https://commons.wikimedia.org/wiki/Special:Redirect/file/Female%20doctor.jpg?width=720';
 
   function model(){return window.RecordingModel||null;}
@@ -74,8 +75,7 @@
 
   function projectMeta(p){
     const label=projectLabel(p);
-    const situation=p.estado==='RECORDED'?'Ya grabado':p.production_status?.PRODUCTION_READY?'Listo para grabar':'Preparación en curso';
-    return `${label?`<div class="project-heading">${esc(label)}</div><div class="project-time-note">Hora de Lima · fecha de creación del proyecto</div>`:''}<h2>${esc(pt(p))}</h2><div class="project-details"><p><b>Servicio:</b> ${esc(p.servicio||'Por definir')}</p><p><b>Objetivo:</b> ${esc(p.objetivo||'Por definir')}</p><p><b>Situación:</b> ${esc(situation)}</p></div>`;
+    return `${label?`<div class="project-heading">${esc(label)}</div>`:''}<h2>${esc(pt(p))}</h2><div class="project-details"><p><b>Servicio:</b> ${esc(p.servicio||'Por definir')}</p><p><b>Objetivo:</b> ${esc(p.objetivo||'Por definir')}</p></div>`;
   }
 
   function humanGuide(scene,n){
@@ -149,7 +149,7 @@
     const topRef=(humanScenes.find(s=>s.scene_kind==='PRINCIPAL'&&s.reference_url)||humanScenes.find(s=>s.reference_url))?.reference_url||firstImg(Item);
     document.getElementById('sdetail').style.display='none';document.getElementById('vdetail').style.display='block';
     const recorded=Item.estado==='GRABADO',canRecord=recorded||Boolean(v&&p.production_status?.PRODUCTION_READY);
-    vhero.innerHTML=`<div class="card detail compact-detail"><div class="project-overview-grid">${pieceGuide(topRef,'Referencia visual')}<div class="project-overview-main">${projectMeta(p)}<div class="actions project-main-actions"><button id="teleb" class="btn primary">${ic('playi')} Abrir teleprompter</button><button id="recb" class="btn ok ${recorded?'recorded':''}" ${canRecord?'':'disabled'}>${recorded?ic('check')+' Grabado':ic('check')+' Marcar grabado'}</button></div></div></div>${v?.preparations?.length?`<div class="ib top-prep"><div class="ib-title">${svg('cam')}<span>Antes de empezar</span></div><div class="ib-copy">${esc(v.preparations.join(' '))}</div></div>`:''}</div>`;
+    vhero.innerHTML=`<div class="card detail compact-detail"><div class="project-overview-grid">${pieceGuide(topRef,'Referencia visual')}<div class="project-overview-main">${projectMeta(p)}</div></div><div class="actions project-main-actions"><button id="teleb" class="btn primary">${ic('playi')} Abrir teleprompter</button><button id="recb" class="btn ok ${recorded?'recorded':''}" ${canRecord?'':'disabled'}>${recorded?ic('check')+' Grabado':ic('check')+' Marcar grabado'}</button></div>${v?.preparations?.length?`<div class="ib top-prep"><div class="ib-title">${svg('cam')}<span>Antes de empezar</span></div><div class="ib-copy">${esc(v.preparations.join(' '))}</div></div>`:''}</div>`;
 
     const cards=humanScenes.length?humanScenes.map((s,n)=>{
       const spoken=s.scene_kind==='PRINCIPAL'?sceneText(v,s):'';
@@ -178,11 +178,11 @@
     if(v){
       const scenes=v.scenes.filter(s=>s.scene_kind==='PRINCIPAL'&&(s.spoken_segment_ids||[]).length);
       sceneGuides=scenes.map((s,n)=>({title:`Escena ${n+1} · ${s.title||''}`,text:humanGuide(s,n)}));
-      lines.innerHTML=scenes.map((s,n)=>{const text=sceneText(v,s),closing=(s.spoken_segment_ids||[]).includes(v.closing_segment_id);return `<section class="tele-scene"><div class="tele-scene-head"><div class="tele-scene-id"><span class="tele-scene-num">${n+1}</span><div><b>${esc(s.title||`Escena ${n+1}`)}</b><small>${closing?'CIERRE INCLUIDO · DETENTE AL TERMINAR':'DETENTE · CAMBIA DE ESCENA'}</small></div></div><button class="tele-scene-audio" type="button" data-v7scene="${n}" aria-label="Reproducir guía de la escena ${n+1}">${svg('playi','voice-ico')}<span>Play guía</span></button></div><p class="line" data-i="${n}">${esc(text)}</p></section>`;}).join('');
+      lines.innerHTML=scenes.map((s,n)=>{const text=sceneText(v,s),closing=(s.spoken_segment_ids||[]).includes(v.closing_segment_id);return `<section class="tele-scene"><div class="tele-scene-head"><div class="tele-scene-id"><span class="tele-scene-num">${n+1}</span><div><b>${esc(s.title||`Escena ${n+1}`)}</b><small>${closing?'CIERRE INCLUIDO · DETENTE AL TERMINAR':'DETENTE · CAMBIA DE ESCENA'}</small></div></div><button class="tele-scene-audio" type="button" data-v7scene="${n}" aria-label="Reproducir guía de la escena ${n+1}">${svg('playi','voice-ico')}<span>Play guía</span></button></div><p class="line" data-i="${n}">${teleText(text)}</p></section>`;}).join('');
     }else{
       const scenes=raw.map((shot,idx)=>({shot,idx})).filter(v=>v.shot?.que_se_dice);
       sceneGuides=scenes.map(({shot,idx})=>({title:`Toma ${idx+1}`,text:legacyGuide(shot,idx)}));
-      lines.innerHTML=scenes.length?scenes.map(({shot,idx},si)=>`<section class="tele-scene"><div class="tele-scene-head"><div class="tele-scene-id"><span class="tele-scene-num">${idx+1}</span><div><b>Toma ${idx+1}</b><small>DETENTE · CAMBIA DE TOMA</small></div></div><button class="tele-scene-audio" type="button" data-v7scene="${si}" aria-label="Reproducir guía de la toma ${idx+1}">${svg('playi','voice-ico')}<span>Play guía</span></button></div><p class="line" data-i="${si}">${esc(shot.que_se_dice)}</p></section>`).join(''):String(p.master_script||'').split(/\n+/).filter(Boolean).map((t,i)=>`<section class="tele-scene"><div class="tele-scene-head"><div class="tele-scene-id"><span class="tele-scene-num">${i+1}</span><div><b>Escena ${i+1}</b><small>DETENTE · CAMBIA DE ESCENA</small></div></div></div><p class="line" data-i="${i}">${esc(t)}</p></section>`).join('');
+      lines.innerHTML=scenes.length?scenes.map(({shot,idx},si)=>`<section class="tele-scene"><div class="tele-scene-head"><div class="tele-scene-id"><span class="tele-scene-num">${idx+1}</span><div><b>Toma ${idx+1}</b><small>DETENTE · CAMBIA DE TOMA</small></div></div><button class="tele-scene-audio" type="button" data-v7scene="${si}" aria-label="Reproducir guía de la toma ${idx+1}">${svg('playi','voice-ico')}<span>Play guía</span></button></div><p class="line" data-i="${si}">${teleText(shot.que_se_dice)}</p></section>`).join(''):String(p.master_script||'').split(/\n+/).filter(Boolean).map((t,i)=>`<section class="tele-scene"><div class="tele-scene-head"><div class="tele-scene-id"><span class="tele-scene-num">${i+1}</span><div><b>Escena ${i+1}</b><small>DETENTE · CAMBIA DE ESCENA</small></div></div></div><p class="line" data-i="${i}">${teleText(t)}</p></section>`).join('');
     }
     document.querySelectorAll('[data-v7scene]').forEach(btn=>btn.onclick=()=>{const g=sceneGuides[Number(btn.dataset.v7scene)];if(g)openPlayer(g.title,g.text);});
     fs=44;applyF();sr.value=32;speedL();play=false;playI();tele.classList.add('on');document.body.style.overflow='hidden';scr.scrollTop=0;setTimeout(focus,30);
