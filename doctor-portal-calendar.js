@@ -22,7 +22,7 @@
     RIN:{color:'#625ED1',soft:'#EFEEFF'},
     PAP:{color:'#7D4BC4',soft:'#F2ECFC'},
     BIC:{color:'#C6427B',soft:'#FBEAF2'},
-    EQ:{color:'#F06424',soft:'#FFF0E8'},
+    EQ:{color:'#F06424',soft:'#FFE8DE'},
     DEF:{color:'#52657A',soft:'#EDF2F7'}
   };
 
