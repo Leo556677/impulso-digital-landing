@@ -16,6 +16,17 @@
     return `${g('year')}-${g('month')}-${g('day')}`;
   };
   const TODAY=limaToday();
+  const portalSignature=()=>{
+    if(typeof P==='undefined'||!P)return '';
+    const sessions=(P.sessions||[]).map(x=>`${x.id}:${x.total||0}:${x.recorded||0}`).sort().join('|');
+    const cal=(P.calendar_items||[]).map(x=>`${x.content_id||''}:${x.publish_date||''}:${x.slot_status||''}`).sort().join('|');
+    return sessions+'||'+cal;
+  };
+  const waitForPortal=()=>new Promise((resolve,reject)=>{
+    let tries=0;
+    const tick=()=>{const sig=portalSignature();if(sig)return resolve(sig);if(++tries>80)return reject(Error('El portal todavía no terminó de cargar sus proyectos.'));setTimeout(tick,75);};
+    tick();
+  });
 
   function shortDate(iso){
     const p=new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'short'}).formatToParts(dateObj(iso));
@@ -57,7 +68,9 @@
   }
 
   async function buildPlan(force=false){
-    if(!force&&planCache)return planCache;
+    let signature=portalSignature();
+    if(!signature)signature=await waitForPortal();
+    if(!force&&planCache?.signature===signature)return planCache;
     if(!force&&planPromise)return planPromise;
     planPromise=(async()=>{
       const projectApi=window.DoctorPortalProjects;
@@ -132,7 +145,7 @@
           number:offset>=0?offset+1:null
         };
       });
-      planCache={items,weeks,scheduledCount:scheduled.length,legacyCount:legacyItems.length,firstWeek};
+      planCache={items,weeks,scheduledCount:scheduled.length,legacyCount:legacyItems.length,firstWeek,signature};
       planPromise=null;
       return planCache;
     })().catch(e=>{planPromise=null;throw e;});
