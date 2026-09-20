@@ -264,7 +264,11 @@
   if(previousOpenTele){
     openTele=function(item){
       previousOpenTele(item);
-      if(S?._calendarDirect)setTimeout(()=>showRecordPrompt(item),450);
+      if(S?._calendarDirect){
+        const label=window.DoctorPortalProjects?.labelFor?.(item)||'';
+        if(label&&$('ttitle'))$('ttitle').textContent=[label,pt(item?.pieza)].filter(Boolean).join(' · ');
+        setTimeout(()=>showRecordPrompt(item),450);
+      }
     };
   }
 
