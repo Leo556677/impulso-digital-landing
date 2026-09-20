@@ -176,3 +176,6 @@
   .top.calendar-detail-mode a[aria-label="Configurar negocio"]{order:2;margin-left:auto!important}
   .top.calendar-detail-mode .calendar-header-back{order:3;width:100%;margin-left:0!important;min-height:40px}
 }
+
+.project-main-actions.calendar-direct-actions{grid-template-columns:1fr!important}
+.project-main-actions.calendar-direct-actions #teleb{width:100%}
