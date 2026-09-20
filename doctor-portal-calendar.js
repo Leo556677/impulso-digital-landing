@@ -1,6 +1,6 @@
 (()=>{
   'use strict';
-  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'22'});
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'23'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
@@ -390,9 +390,12 @@
     const o=ensureRecordPrompt();$('recordConfirmError').textContent='';$('recordYesBtn').disabled=false;o.classList.add('on');o.setAttribute('aria-hidden','false');
   }
   function hideExitPrompt(){const o=$('recordConfirmOverlay');if(o){o.classList.remove('on');o.setAttribute('aria-hidden','true');}}
-  function requestTeleExit(){
-    if(!S?._calendarDirect){baseCloseTele?.();return;}
-    if(pieceRecorded(Item?.pieza,Item)){baseCloseTele?.();return;}
+  async function requestTeleExit(e){
+    if(e){e.preventDefault?.();e.stopPropagation?.();}
+    try{if(document.fullscreenElement)await document.exitFullscreen()}catch{}
+    await new Promise(r=>setTimeout(r,60));
+    if(!S?._calendarDirect){await baseCloseTele?.();return;}
+    if(pieceRecorded(Item?.pieza,Item)){await baseCloseTele?.();return;}
     showExitPrompt();
   }
   async function finishTeleExit(recorded){
@@ -406,10 +409,11 @@
   }
 
   function installExitHooks(){
-    if($('closeb'))$('closeb').onclick=requestTeleExit;
-    if($('closeb2'))$('closeb2').onclick=requestTeleExit;
+    const top=$('closeb'),bottom=$('closeb2');
+    if(top){top.onclick=null;top.addEventListener('click',requestTeleExit,{capture:true});}
+    if(bottom){bottom.onclick=null;bottom.addEventListener('click',requestTeleExit,{capture:true});}
     document.addEventListener('keydown',e=>{
-      if(e.key==='Escape'&&$('tele')?.classList.contains('on')&&!document.fullscreenElement){e.preventDefault();requestTeleExit();}
+      if(e.key==='Escape'&&$('tele')?.classList.contains('on')){e.preventDefault();requestTeleExit(e);}
     });
   }
 
