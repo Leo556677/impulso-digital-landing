@@ -4,7 +4,7 @@
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
-  let planCache=null,planPromise=null,selectedWeek=0,weekInitialized=false,showingPending=false,selectedMobileDate='';
+  let planCache=null,planPromise=null,selectedWeek=0,weekInitialized=false,showingPending=false,selectedMobileDate='',filterService='ALL',filterStatus='ALL';
   const baseCloseTele=typeof closeTele==='function'?closeTele:null;
 
   const pad=n=>String(n).padStart(2,'0');
@@ -37,6 +37,7 @@
     EQ:{color:'#F06424',soft:'#FFE8DE'},
     DEF:{color:'#52657A',soft:'#EDF2F7'}
   };
+  const SERVICE_LABELS={TB:'Toxina botulínica',PRP:'PRP facial',LF:'Limpieza / aparatología',RIN:'Rinoplastia',PAP:'Liposucción de papada',BIC:'Bichectomía',EQ:'Marca / equipo',DEF:'Otros'};
 
   function serviceFromKey(key){
     return({S1:'TOXINA BOTULÍNICA',S2:'PRP FACIAL',S3:'LIMPIEZA FACIAL / APARATOLOGÍA',S4:'LIPOSUCCIÓN DE PAPADA',S5:'BICHECTOMÍA',S6:'RINOPLASTIA'})[String(key||'').toUpperCase()]||'CONTENIDO';
@@ -168,6 +169,36 @@
     return planPromise;
   }
 
+  function matchesFilters(item){
+    if(filterService!=='ALL'&&serviceCode(item.service,item.kind)!==filterService)return false;
+    if(filterStatus==='RECORDED'&&!item.recorded)return false;
+    if(filterStatus==='PENDING'&&item.recorded)return false;
+    return true;
+  }
+  function filteredWeek(week){
+    return {...week,rows:(week?.rows||[]).filter(matchesFilters)};
+  }
+  function renderHeroFilters(plan){
+    const mount=$('calendarHeroFilters');if(!mount)return;
+    const codes=[...new Set((plan?.scheduled||[]).map(x=>serviceCode(x.service,x.kind)).filter(Boolean))];
+    codes.sort((a,b)=>(SERVICE_LABELS[a]||a).localeCompare(SERVICE_LABELS[b]||b,'es'));
+    const serviceOptions=['<option value="ALL">Todos los servicios</option>',...codes.map(code=>`<option value="${esc(code)}" ${filterService===code?'selected':''}>${esc(SERVICE_LABELS[code]||code)}</option>`)].join('');
+    const pending=plan?.pending?.length||0;
+    mount.innerHTML=`<div class="calendar-filter-controls">
+      <label><span>Servicio</span><select id="calendarServiceFilter">${serviceOptions}</select></label>
+      <label><span>Estado de grabación</span><select id="calendarStatusFilter">
+        <option value="ALL" ${filterStatus==='ALL'?'selected':''}>Todos</option>
+        <option value="PENDING" ${filterStatus==='PENDING'?'selected':''}>Por grabar</option>
+        <option value="RECORDED" ${filterStatus==='RECORDED'?'selected':''}>Grabados</option>
+      </select></label>
+      ${pending?`<button type="button" class="record-alert hero-record-alert" data-show-pending aria-label="${pending} guiones pendientes de grabar"><span class="record-alert-dot">!</span><b>${pending}</b><span>por grabar</span></button>`:''}
+    </div>`;
+    const sf=$('calendarServiceFilter'),st=$('calendarStatusFilter');
+    if(sf)sf.onchange=()=>{filterService=sf.value||'ALL';selectedMobileDate='';draw();};
+    if(st)st.onchange=()=>{filterStatus=st.value||'ALL';selectedMobileDate='';draw();};
+    mount.querySelector('[data-show-pending]')?.addEventListener('click',()=>showPending());
+  }
+
   function statusMeta(item){
     if(item.recorded)return{label:'YA GRABADO',cls:'recorded',icon:'check'};
     if(item.kind==='capture')return{label:'CAPTURA PENDIENTE',cls:'capture',icon:'cam'};
@@ -266,7 +297,6 @@
         <button type="button" data-week-move="1" ${selectedWeek>=plan.weeks.length-1?'disabled':''} aria-label="Semana siguiente">${ic('right')}</button>
       </div>
       <div class="cal-toolbar-actions">
-        ${pending?`<button type="button" class="record-alert" data-show-pending aria-label="${pending} guiones pendientes de grabar"><span class="record-alert-dot">!</span><b>${pending}</b><span>por grabar</span></button>`:''}
         <div class="cal-view-switch" role="group" aria-label="Cambiar vista"><button type="button" data-cal-view="week" class="${calendarView==='week'?'active':''}">▦ <span>Semana</span></button><button type="button" data-cal-view="list" class="${calendarView==='list'?'active':''}">☷ <span>Lista</span></button></div>
       </div>
     </div>`;
@@ -303,7 +333,6 @@
       selectedMobileDate=btn.dataset.mobileDate||'';
       draw();
     });
-    document.querySelector('[data-show-pending]')?.addEventListener('click',()=>showPending());
     bindCards('calendar');
   }
 
@@ -316,8 +345,9 @@
       const plan=await buildPlan(force);
       window.PortalTrace?.log('CAL_DRAW_PLAN',{weeks:plan?.weeks?.length||0,selectedWeek});
       if(!plan.weeks.length){host.innerHTML='<div class="card empty">Todavía no hay semanas oficiales en el calendario.</div>';return;}
-      const week=plan.weeks[selectedWeek];
+      const baseWeek=plan.weeks[selectedWeek],week=filteredWeek(baseWeek);
       window.DoctorPortalProjects?.clearBottomBack?.();
+      renderHeroFilters(plan);
       ensureMobileDate(week);
       host.innerHTML=toolbar(plan)+mobileWeekStrip(week)+(calendarView==='list'?weekList(week):weekGrid(week));
       bindCalendar(plan);
@@ -331,6 +361,7 @@
     host.innerHTML='<div class="card cal-loading">Buscando guiones pendientes…</div>';
     try{
       const plan=await buildPlan(force);
+      renderHeroFilters(plan);
       host.innerHTML=pendingPanel(plan);
       window.DoctorPortalProjects?.showBottomBack?.(()=>{selectedWeek=currentWeekIndex(plan.weeks);selectedMobileDate='';showingPending=false;draw();});
       bindCards('pending');
