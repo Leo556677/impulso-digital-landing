@@ -1,6 +1,6 @@
 (()=>{
   'use strict';
-  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'18'});
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'19'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
@@ -414,6 +414,11 @@
 
   installExitHooks();
   setTimeout(()=>{
+    if(window.__PORTAL_HAS_ACCESS__===false){
+      window.PortalTrace?.warn('CAL_SKIP_NO_ACCESS','Calendario detenido porque este navegador no tiene acceso guardado.');
+      const h=$('calbox');if(h)h.innerHTML='';
+      return;
+    }
     const host=$('calbox');
     if(host&&!host.__traceObserver){
       const obs=new MutationObserver(()=>{
