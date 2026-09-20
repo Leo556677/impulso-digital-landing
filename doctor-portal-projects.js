@@ -124,9 +124,9 @@
   function captureCard(){
     return `<article class="card service-category capture-special jsCapture" tabindex="0" role="button" aria-label="Abrir guía de humanización"><div class="service-card-top"><div><div class="service-eyebrow">PROYECTO ${String(captureGuide.projectNumber).padStart(3,'0')} · HUMANIZACIÓN · ${captureGuide.key}</div><h3>${captureGuide.title}</h3><p>1 grabación especial pendiente</p></div><span class="service-arrow">${ic('right')}</span></div><div class="capture-special-status"><b>${captureGuide.date}</b><span>GRABAR 6–10 CLIPS</span></div><div class="service-card-foot"><span>Sin texto para memorizar</span><span>Guía paso a paso</span></div></article>`;
   }
-  function openCaptureGuide(){
-    backTab='record';
-    S={_captureGuide:true,session:{id:null,nombre:'Humanización',fecha:'2026-09-26',lugar:null,notas:null},items:[]};
+  function openCaptureGuide(from='record'){
+    backTab=from;
+    S={_captureGuide:true,_calendarDirect:from==='calendar',session:{id:null,nombre:'Humanización',fecha:'2026-09-26',lugar:null,notas:null},items:[]};
     tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';
     $('sbacktxt').textContent='Volver a servicios';
     $('shero').innerHTML=`<div class="card detail capture-hero"><div class="date">PROYECTO ${String(captureGuide.projectNumber).padStart(3,'0')} · ${captureGuide.date} · HUMANIZACIÓN</div><h2>${captureGuide.subtitle}</h2><p class="capture-lead">Hoy no tienen que aprender un guion. Solo graben estas acciones reales, una por una.</p><div class="capture-badge">6–10 clips · vertical 9:16 · 2–4 s cada uno</div></div>`;
@@ -160,12 +160,55 @@
     try{const data=await loadItems(),g=data.groups.get(key);if(!g||!g.items.length){resetViews();tab('record');return;}backTab='record';S={_serviceKey:key,session:{id:null,nombre:g.name,fecha:null,lugar:null,notas:null},items:g.items};tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';$('sbacktxt').textContent='Volver a servicios';$('vback').innerHTML=`${ic('left')}Volver al servicio`;const total=g.items.length,recorded=g.items.filter(isRecorded).length,pc=total?Math.round(recorded/total*100):0;$('shero').innerHTML=`<div class="card detail service-detail"><div class="date">SERVICIO</div><h2>${esc(g.name)}</h2><div class="service-detail-copy">Elige el proyecto que vas a grabar.</div><div class="prog"><span style="width:${pc}%"></span></div><small>${recorded} de ${total} videos grabados</small></div>`;$('setup').innerHTML=`<div class="card setup service-setup"><b>Proyectos de ${esc(g.name)}</b><br>Cada tarjeta conserva el proyecto. La etiqueta indica si está en calendario, si sigue en preparación o si ya puede grabarse.</div>`;$('videos').className='vgrid';renderVideos(g.items);scrollTo(0,0);}catch(e){err(e.message)}
   }
 
-  const oldSBack=$('sback').onclick;$('sback').onclick=()=>{if(S?._captureGuide||S?._serviceKey){S=null;$('videos').className='vgrid';resetViews();tab('record');return;}if(typeof oldSBack==='function')oldSBack();};
-  const oldOpenSession=openSession;openSession=async function(id,from='record'){$('vback').innerHTML=`${ic('left')}Volver a la sesión`;return oldOpenSession(id,from);};
-  const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,legacyRecorded=item?.pieza?.estado==='RECORDED',ready=item?.pieza?.production_status?.PRODUCTION_READY===true||legacyRecorded||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}else if(btn&&legacyRecorded&&item?.estado!=='GRABADO'){btn.innerHTML='Confirmar grabado';btn.title='La pieza ya consta como grabada; este botón sincroniza el estado de la sesión.';}};
-  const oldToggleRec=toggleRec;toggleRec=async function(x){if(!S?._serviceKey)return oldToggleRec(x);const key=S._serviceKey;try{await api('mark_piece',{session_piece_id:x.session_piece_id,estado:x.estado==='GRABADO'?'PENDIENTE':'GRABADO'});P=await api('portal_get');invalidate();renderCal();renderHist();await renderRecord();const data=await loadItems();if(data.groups.has(key))await openService(key);else{S=null;resetViews();tab('record');}}catch(e){alert(e.message)}};
+  async function calendarItem(contentId){
+    const data=await loadItems();
+    const found=data.all.find(x=>x?.pieza?.id===contentId);
+    if(found)return found;
+    const extra=await api('piece_get',{content_id:contentId});
+    return extra?.item||null;
+  }
+  async function openCalendarItem(contentId){
+    try{
+      const item=await calendarItem(contentId);
+      if(!item){err('No se pudo abrir este proyecto.');return false;}
+      backTab='calendar';
+      S={_calendarDirect:true,session:item._session||{id:null,nombre:'Calendario',fecha:null,lugar:null,notas:null},items:[item]};
+      tab('record');
+      $('rhome').style.display='none';
+      $('sdetail').style.display='none';
+      $('vdetail').style.display='block';
+      $('vback').innerHTML=`${ic('left')}Volver al calendario`;
+      openVideo(0);
+      scrollTo(0,0);
+      return true;
+    }catch(e){err(e?.message||'No se pudo abrir este proyecto.');return false;}
+  }
+  async function markCalendarRecorded(item){
+    if(!item)return{ok:false,message:'Proyecto no disponible.'};
+    if(item.estado==='GRABADO'||item?.pieza?.estado==='RECORDED'||item?.pieza?.production_status?.RECORDED===true||item?.pieza?.estado==='PUBLISHED')return{ok:true,already:true};
+    if(!item.session_piece_id)return{ok:false,message:'Este proyecto todavía no está vinculado a una sesión de grabación.'};
+    try{
+      await api('mark_piece',{session_piece_id:item.session_piece_id,estado:'GRABADO'});
+      P=await api('portal_get');
+      invalidate();
+      await loadItems(true);
+      return{ok:true};
+    }catch(e){return{ok:false,message:e?.message||'No se pudo marcar como grabado.'};}
+  }
+  function openCalendarSpecial(kind){
+    if(kind==='capture'){openCaptureGuide('calendar');return true;}
+    return false;
+  }
 
-  window.DoctorPortalProjects={loadItems,index:()=>displayIndex,labelFor,displayCode,buildDisplayIndex};
+  const oldSBack=$('sback').onclick;$('sback').onclick=()=>{if(S?._captureGuide||S?._serviceKey){const target=S?._calendarDirect?'calendar':'record';S=null;$('videos').className='vgrid';resetViews();tab(target);if(target==='calendar'&&typeof renderCal==='function')renderCal();return;}if(typeof oldSBack==='function')oldSBack();};
+  const oldOpenSession=openSession;openSession=async function(id,from='record'){$('vback').innerHTML=`${ic('left')}Volver a la sesión`;return oldOpenSession(id,from);};
+  const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,legacyRecorded=item?.pieza?.estado==='RECORDED'||item?.pieza?.production_status?.RECORDED===true||item?.pieza?.estado==='PUBLISHED',ready=item?.pieza?.production_status?.PRODUCTION_READY===true||legacyRecorded||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}else if(btn&&legacyRecorded&&item?.estado!=='GRABADO'){btn.innerHTML='Confirmar grabado';btn.title='La pieza ya consta como grabada; este botón sincroniza el estado de la sesión.';}if(S?._calendarDirect){$('vback').innerHTML=`${ic('left')}Volver al calendario`;}};
+  const oldToggleRec=toggleRec;toggleRec=async function(x){if(S?._calendarDirect){const result=await markCalendarRecorded(x);if(!result.ok)alert(result.message||'No se pudo marcar como grabado.');else if(typeof renderCal==='function')renderCal();return;}if(!S?._serviceKey)return oldToggleRec(x);const key=S._serviceKey;try{await api('mark_piece',{session_piece_id:x.session_piece_id,estado:x.estado==='GRABADO'?'PENDIENTE':'GRABADO'});P=await api('portal_get');invalidate();renderCal();renderHist();await renderRecord();const data=await loadItems();if(data.groups.has(key))await openService(key);else{S=null;resetViews();tab('record');}}catch(e){alert(e.message)}};
+
+  const oldVBack=$('vback').onclick;
+  $('vback').onclick=()=>{if(S?._calendarDirect){S=null;resetViews();tab('calendar');if(typeof renderCal==='function')renderCal();return;}if(typeof oldVBack==='function')oldVBack();};
+
+  window.DoctorPortalProjects={loadItems,index:()=>displayIndex,labelFor,displayCode,buildDisplayIndex,openCalendarItem,markCalendarRecorded,openCalendarSpecial,calendarItem};
   window.DoctorPortalSpecials=[captureGuide];
 
   const wait=()=>{if(typeof P!=='undefined'&&P){renderRecord();return;}setTimeout(wait,120);};setTimeout(wait,0);
