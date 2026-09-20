@@ -128,7 +128,7 @@
     backTab=from;
     S={_captureGuide:true,_calendarDirect:from==='calendar',session:{id:null,nombre:'Humanización',fecha:'2026-09-26',lugar:null,notas:null},items:[]};
     tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';
-    $('sbacktxt').textContent='Volver a servicios';
+    $('sbacktxt').textContent=from==='calendar'?'Volver al calendario':'Volver a servicios';
     $('shero').innerHTML=`<div class="card detail capture-hero"><div class="date">PROYECTO ${String(captureGuide.projectNumber).padStart(3,'0')} · ${captureGuide.date} · HUMANIZACIÓN</div><h2>${captureGuide.subtitle}</h2><p class="capture-lead">Hoy no tienen que aprender un guion. Solo graben estas acciones reales, una por una.</p><div class="capture-badge">6–10 clips · vertical 9:16 · 2–4 s cada uno</div></div>`;
     $('setup').innerHTML=`<div class="card setup capture-start"><div class="capture-start-icon">${ic('cam')}</div><div><b>Antes de empezar</b><p><strong>NO HAY TEXTO PARA MEMORIZAR.</strong> Repitan cada toma 2 veces. Cámara quieta, sin zoom. Dejen 1–2 s antes y 2 s después de cada acción.</p></div></div>`;
     $('videos').className='capture-guide';
@@ -179,6 +179,8 @@
       $('vdetail').style.display='block';
       $('vback').innerHTML=`${ic('left')}Volver al calendario`;
       openVideo(0);
+      const heading=document.querySelector('#vhero .project-heading'),dynamicLabel=labelFor(item);
+      if(heading&&dynamicLabel){heading.textContent=dynamicLabel;const note=heading.nextElementSibling;if(note?.classList?.contains('project-time-note'))note.textContent='Orden visual del calendario';}
       scrollTo(0,0);
       return true;
     }catch(e){err(e?.message||'No se pudo abrir este proyecto.');return false;}
