@@ -194,14 +194,26 @@ if($('highlightMode'))$('highlightMode').onchange=e=>{highlightMode=e.target.val
 if($('wordRate'))$('wordRate').oninput=e=>{wordFactor=Math.max(.75,Math.min(1.25,(+e.target.value||100)/100));if($('wordRateVal'))$('wordRateVal').textContent=wordFactor.toFixed(2)+'×';try{localStorage.setItem('do_tele_wordrate',String(wordFactor))}catch{};speedL()};
 if($('countdownSeconds'))$('countdownSeconds').oninput=e=>{countdownSeconds=Math.max(0,Math.min(5,+e.target.value||0));if($('countdownVal'))$('countdownVal').textContent=countdownSeconds+' s';if($('teleCountdownBtn'))$('teleCountdownBtn').textContent=String(countdownSeconds);try{localStorage.setItem('do_tele_countdown',String(countdownSeconds))}catch{}};
 function dragEnabled(){return Boolean(document.fullscreenElement)&&((matchMedia?.('(pointer:coarse)')?.matches)||innerWidth<=1024)}
+function dragBounds(){
+  const root=(document.fullscreenElement||tele)?.getBoundingClientRect?.();
+  if(root&&root.width>0&&root.height>0)return{left:root.left,top:root.top,right:root.right,bottom:root.bottom,width:root.width,height:root.height};
+  const vv=visualViewport;
+  const left=Number(vv?.offsetLeft||0),top=Number(vv?.offsetTop||0),width=Number(vv?.width||innerWidth),height=Number(vv?.height||innerHeight);
+  return{left,top,right:left+width,bottom:top+height,width,height}
+}
 function clampPanel(x,y){
-  const vw=visualViewport?.width||innerWidth,vh=visualViewport?.height||innerHeight,r=telePanel.getBoundingClientRect(),pad=6;
-  return{x:Math.max(pad,Math.min(vw-r.width-pad,x)),y:Math.max(pad,Math.min(vh-r.height-pad,y))}
+  const b=dragBounds(),r=telePanel.getBoundingClientRect(),pad=6;
+  const maxX=Math.max(b.left+pad,b.right-r.width-pad),maxY=Math.max(b.top+pad,b.bottom-r.height-pad);
+  return{x:Math.max(b.left+pad,Math.min(maxX,x)),y:Math.max(b.top+pad,Math.min(maxY,y))}
 }
 function setPanelPosition(x,y,save=true){
   if(!telePanel)return;const p=clampPanel(x,y);
   telePanel.style.left=p.x+'px';telePanel.style.top=p.y+'px';telePanel.style.right='auto';telePanel.style.bottom='auto';telePanel.style.transform='none';
   if(save)try{localStorage.setItem('do_tele_panel_pos',JSON.stringify(p))}catch{}
+}
+function centerTelePanel(save=true){
+  if(!telePanel)return;const b=dragBounds(),r=telePanel.getBoundingClientRect();
+  setPanelPosition(b.left+(b.width-r.width)/2,b.top+(b.height-r.height)/2,save)
 }
 function resetTelePanelPosition(){
   if(!telePanel)return;telePanel.classList.remove('tele-panel-draggable');telePanel.style.left='';telePanel.style.top='';telePanel.style.right='';telePanel.style.bottom='';telePanel.style.transform=''
@@ -211,21 +223,47 @@ function syncTelePanelDrag(){
   if(!dragEnabled()){resetTelePanelPosition();return}
   telePanel.classList.add('tele-panel-draggable');
   requestAnimationFrame(()=>{
-    let saved=null;try{saved=JSON.parse(localStorage.getItem('do_tele_panel_pos')||'null')}catch{}
-    if(saved&&Number.isFinite(saved.x)&&Number.isFinite(saved.y))setPanelPosition(saved.x,saved.y,false);
-    else{const r=telePanel.getBoundingClientRect(),vw=visualViewport?.width||innerWidth,vh=visualViewport?.height||innerHeight;setPanelPosition((vw-r.width)/2,vh-r.height-8,false)}
+    const b=dragBounds(),r=telePanel.getBoundingClientRect();let saved=null;
+    try{saved=JSON.parse(localStorage.getItem('do_tele_panel_pos')||'null')}catch{}
+    const valid=saved&&Number.isFinite(saved.x)&&Number.isFinite(saved.y)&&saved.x>=b.left-r.width&&saved.x<=b.right&&saved.y>=b.top-r.height&&saved.y<=b.bottom;
+    if(valid)setPanelPosition(saved.x,saved.y,false);
+    else setPanelPosition(b.left+(b.width-r.width)/2,b.bottom-r.height-8,false)
   })
 }
-if(teleDragHandle){
-  teleDragHandle.addEventListener('pointerdown',e=>{
-    if(!dragEnabled())return;e.preventDefault();teleDragging=true;teleDragHandle.setPointerCapture?.(e.pointerId);
-    const r=telePanel.getBoundingClientRect();teleDragStart={id:e.pointerId,x:e.clientX,y:e.clientY,left:r.left,top:r.top}
-  });
-  teleDragHandle.addEventListener('pointermove',e=>{if(!teleDragging||!teleDragStart||e.pointerId!==teleDragStart.id)return;e.preventDefault();setPanelPosition(teleDragStart.left+e.clientX-teleDragStart.x,teleDragStart.top+e.clientY-teleDragStart.y,false)});
-  const endDrag=e=>{if(!teleDragging)return;teleDragging=false;teleDragStart=null;const r=telePanel.getBoundingClientRect();setPanelPosition(r.left,r.top,true);try{teleDragHandle.releasePointerCapture?.(e.pointerId)}catch{}};
-  teleDragHandle.addEventListener('pointerup',endDrag);teleDragHandle.addEventListener('pointercancel',endDrag)
+function beginPanelDrag(e){
+  if(!dragEnabled()||!telePanel)return false;
+  e.preventDefault();teleDragging=true;
+  const owner=teleDragHandle||telePanel;owner.setPointerCapture?.(e.pointerId);
+  const r=telePanel.getBoundingClientRect();
+  teleDragStart={id:e.pointerId,x:e.clientX,y:e.clientY,left:r.left,top:r.top};
+  return true
 }
-document.addEventListener('fullscreenchange',()=>setTimeout(syncTelePanelDrag,60));
+function movePanelDrag(e){
+  if(!teleDragging||!teleDragStart||e.pointerId!==teleDragStart.id)return;
+  e.preventDefault();setPanelPosition(teleDragStart.left+(e.clientX-teleDragStart.x),teleDragStart.top+(e.clientY-teleDragStart.y),false)
+}
+function endPanelDrag(e){
+  if(!teleDragging)return;teleDragging=false;const r=telePanel.getBoundingClientRect();teleDragStart=null;setPanelPosition(r.left,r.top,true);
+  try{(teleDragHandle||telePanel).releasePointerCapture?.(e.pointerId)}catch{}
+}
+if(teleDragHandle){
+  teleDragHandle.addEventListener('pointerdown',e=>{if(e.target.closest?.('#teleCenterPanel'))return;beginPanelDrag(e)});
+  teleDragHandle.addEventListener('pointermove',movePanelDrag);
+  teleDragHandle.addEventListener('pointerup',endPanelDrag);
+  teleDragHandle.addEventListener('pointercancel',endPanelDrag)
+}
+if(telePanel){
+  telePanel.addEventListener('pointerdown',e=>{
+    if(e.target.closest?.('button,input,select,a,.tele-config-section,.tele-toolbar-one'))return;
+    if(e.target.closest?.('#teleDragHandle'))return;
+    beginPanelDrag(e)
+  });
+  telePanel.addEventListener('pointermove',movePanelDrag);
+  telePanel.addEventListener('pointerup',endPanelDrag);
+  telePanel.addEventListener('pointercancel',endPanelDrag)
+}
+if($('teleCenterPanel'))$('teleCenterPanel').onclick=e=>{e.preventDefault();e.stopPropagation();centerTelePanel(true)};
+document.addEventListener('fullscreenchange',()=>setTimeout(()=>{syncTelePanelDrag();if(dragEnabled())requestAnimationFrame(()=>centerTelePanel(false))},100));
 visualViewport?.addEventListener('resize',()=>{if(dragEnabled()){const r=telePanel.getBoundingClientRect();setPanelPosition(r.left,r.top,false)}});
 syncTeleSettings();
 async function refresh(){window.PortalTrace?.log('REFRESH_START');P=await api('portal_get');window.PortalTrace?.log('REFRESH_DATA',{sessions:P?.sessions?.length||0,production_items:P?.production_items?.length||0,calendar_items:P?.calendar_items?.length||0,publications:P?.publications?.length||0});if(D.querySelector('.tab[data-tab="record"]')){renderRecord();window.PortalTrace?.log('REFRESH_RENDER_RECORD_OK')}else window.PortalTrace?.log('REFRESH_RENDER_RECORD_SKIPPED','Panel Para grabar eliminado');renderCal();window.PortalTrace?.log('REFRESH_RENDER_CAL_CALLED');renderHist();window.PortalTrace?.log('REFRESH_RENDER_HIST_OK')}async function init(){try{if(q.get('token'))localStorage.setItem(ACCESS_KEY,q.get('token'));}catch{}window.PortalTrace?.log('INIT_START',{has_token:Boolean(token),deep:Boolean(deep)});window.__PORTAL_ACCESS_READY__=resolvePortalAccess();const access=await window.__PORTAL_ACCESS_READY__;if(!access){window.PortalTrace?.error('INIT_NO_ACCESS','Este navegador no tiene token ni sesión iniciada.');const cal=$('calendar'),tabs=D.querySelector('.tabs');if(cal)cal.style.display='none';if(tabs)tabs.style.display='none';return err('Inicia sesión en este navegador para acceder al calendario.',true)}try{$('err').style.display='none';await refresh();if(deep)await openSession(deep,'record');window.PortalTrace?.log('INIT_OK')}catch(e){window.PortalTrace?.error('INIT_FAIL',{message:e?.message||String(e),stack:e?.stack||''});if(e?.message?.includes('sesión')||e?.message?.includes('acceso'))err(e.message,true);else err(e.message)}}init();
