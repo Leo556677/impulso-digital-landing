@@ -47,7 +47,7 @@
 .cal-project:focus{outline:0}
 .cal-project-top{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-bottom:11px}
 .cal-project-code{display:inline-flex;align-items:center;min-height:23px;padding:0 8px;border-radius:6px;background:#1D5EA1;color:#fff;font-size:7.5px;line-height:1;font-weight:950;letter-spacing:.025em;white-space:nowrap}
-.cal-card-arrow{width:34px;height:34px;flex:0 0 34px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.95);color:var(--svc);transition:.16s ease}
+.cal-card-arrow{width:34px;height:34px;flex:0 0 34px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.95);color:var(--p);transition:.16s ease}
 .cal-card-arrow .ico{width:17px;height:17px}
 .cal-service-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .cal-service-code{display:inline-flex;align-items:center;justify-content:center;min-width:31px;height:31px;padding:0 7px;border-radius:999px;background:var(--svc-soft);color:var(--svc);border:1px solid var(--svc-soft);font:950 9px/1 system-ui}
