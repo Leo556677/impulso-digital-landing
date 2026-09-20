@@ -80,7 +80,7 @@
   }
   const displayCode=item=>{const id=item?.pieza?.id;return id?(displayIndex.scheduled.get(id)||displayIndex.legacy.get(id)||''):'';};
   const labelFor=item=>{const id=item?.pieza?.id;if(!id)return'';const scheduled=displayIndex.scheduled.get(id);if(scheduled)return`PROYECTO ${scheduled}${displayIndex.dates.get(id)?' · '+compactDate(displayIndex.dates.get(id)):''}`;const legacy=displayIndex.legacy.get(id);if(legacy)return`PROYECTO ${legacy} · SEMANA PREVIA`;return M?.projectLabel?.(item?.pieza)||'';};
-  const projectSort=(a,b)=>{const ac=displayCode(a),bc=displayCode(b),rank=c=>/^A\d+$/.test(c)?10000+Number(c.slice(1)):Number(c)||99999,ar=rank(ac),br=rank(bc);if(ar!==br)return ar-br;const an=projectNo(a?.pieza),bn=projectNo(b?.pieza);if(an&&bn&&an!==bn)return an-bn;return pt(a?.pieza).localeCompare(pt(b?.pieza),'es');};
+  const projectSort=(a,b)=>{const ac=displayCode(a),bc=displayCode(b),rank=c=>/^A\d+$/.test(c)?-1000+Number(c.slice(1)):Number(c)||99999,ar=rank(ac),br=rank(bc);if(ar!==br)return ar-br;const an=projectNo(a?.pieza),bn=projectNo(b?.pieza);if(an&&bn&&an!==bn)return an-bn;return pt(a?.pieza).localeCompare(pt(b?.pieza),'es');};
   const sig=()=>active().map(s=>`${s.id}:${s.recorded||0}:${s.total||0}`).sort().join('|')+'|'+(P?.calendar_items||[]).map(x=>`${x.content_id}:${x.publish_date}:${x.slot_status}`).sort().join('|');
   const invalidate=()=>{cache.signature='';cache.all=[];cache.groups=new Map();cache.loading=null;};
 
