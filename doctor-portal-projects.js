@@ -128,7 +128,7 @@
     backTab=from;
     S={_captureGuide:true,_calendarDirect:from==='calendar',session:{id:null,nombre:'Humanización',fecha:'2026-09-26',lugar:null,notas:null},items:[]};
     tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';
-    $('sbacktxt').textContent=from==='calendar'?'Volver al calendario':'Volver a servicios';if(from==='calendar')mountCalendarBack($('sback'),'Volver al calendario');else restoreCalendarBack($('sback'));
+    $('sbacktxt').textContent=from==='calendar'?'Volver al calendario':'Volver a servicios';if(from==='calendar')mountCalendarBack($('sback'),'Regresar');else restoreCalendarBack($('sback'));
     $('shero').innerHTML=`<div class="card detail capture-hero"><div class="date">PROYECTO ${String(captureGuide.projectNumber).padStart(3,'0')} · ${captureGuide.date} · HUMANIZACIÓN</div><h2>${captureGuide.subtitle}</h2><p class="capture-lead">Hoy no tienen que aprender un guion. Solo graben estas acciones reales, una por una.</p><div class="capture-badge">6–10 clips · vertical 9:16 · 2–4 s cada uno</div></div>`;
     $('setup').innerHTML=`<div class="card setup capture-start"><div class="capture-start-icon">${ic('cam')}</div><div><b>Antes de empezar</b><p><strong>NO HAY TEXTO PARA MEMORIZAR.</strong> Repitan cada toma 2 veces. Cámara quieta, sin zoom. Dejen 1–2 s antes y 2 s después de cada acción.</p></div></div>`;
     $('videos').className='capture-guide';
@@ -160,28 +160,23 @@
     try{const data=await loadItems(),g=data.groups.get(key);if(!g||!g.items.length){resetViews();tab('record');return;}backTab='record';S={_serviceKey:key,session:{id:null,nombre:g.name,fecha:null,lugar:null,notas:null},items:g.items};tab('record');$('rhome').style.display='none';$('vdetail').style.display='none';$('sdetail').style.display='block';$('sbacktxt').textContent='Volver a servicios';$('vback').innerHTML=`${ic('left')}Volver al servicio`;const total=g.items.length,recorded=g.items.filter(isRecorded).length,pc=total?Math.round(recorded/total*100):0;$('shero').innerHTML=`<div class="card detail service-detail"><div class="date">SERVICIO</div><h2>${esc(g.name)}</h2><div class="service-detail-copy">Elige el proyecto que vas a grabar.</div><div class="prog"><span style="width:${pc}%"></span></div><small>${recorded} de ${total} videos grabados</small></div>`;$('setup').innerHTML=`<div class="card setup service-setup"><b>Proyectos de ${esc(g.name)}</b><br>Cada tarjeta conserva el proyecto. La etiqueta indica si está en calendario, si sigue en preparación o si ya puede grabarse.</div>`;$('videos').className='vgrid';renderVideos(g.items);scrollTo(0,0);}catch(e){err(e.message)}
   }
 
+  function showBottomBack(handler){
+    const nav=document.getElementById('navback'),tabs=document.querySelector('.tabs');
+    if(!nav)return;
+    nav.hidden=false;nav.setAttribute('aria-hidden','false');nav.onclick=handler;tabs?.classList.add('has-back');
+  }
+  function clearBottomBack(){
+    const nav=document.getElementById('navback'),tabs=document.querySelector('.tabs');
+    if(nav){nav.hidden=true;nav.setAttribute('aria-hidden','true');nav.onclick=null;}
+    tabs?.classList.remove('has-back');
+  }
   function mountCalendarBack(btn,label){
-    if(!btn)return;
-    if(!btn.__calendarHome)btn.__calendarHome={parent:btn.parentNode,next:btn.nextSibling};
-    btn.classList.remove('calendar-floating-back');
-    btn.classList.add('calendar-header-back');
-    btn.innerHTML=`${ic('left')}${label}`;
-    const topin=document.querySelector('.topin'),settings=topin?.querySelector('[aria-label="Configurar negocio"]');
-    if(topin){
-      if(settings)topin.insertBefore(btn,settings);else topin.appendChild(btn);
-      document.querySelector('.top')?.classList.add('calendar-detail-mode');
-    }
+    if(btn)btn.style.display='none';
+    showBottomBack(()=>btn?.click());
   }
   function restoreCalendarBack(btn){
-    if(!btn)return;
-    const home=btn.__calendarHome;
-    if(home?.parent){
-      if(home.next&&home.next.parentNode===home.parent)home.parent.insertBefore(btn,home.next);
-      else home.parent.insertBefore(btn,home.parent.firstChild);
-    }
-    btn.classList.remove('calendar-header-back','calendar-floating-back');
-    const anyHeaderBack=document.querySelector('.calendar-header-back');
-    if(!anyHeaderBack)document.querySelector('.top')?.classList.remove('calendar-detail-mode');
+    if(btn)btn.style.display='';
+    clearBottomBack();
   }
 
   async function calendarItem(contentId){
@@ -207,7 +202,7 @@
       $('vdetail').style.display='block';
       $('vback').innerHTML=`${ic('left')}${origin==='pending'?'Volver a pendientes':'Volver al calendario'}`;
       openVideo(0);
-      mountCalendarBack($('vback'),origin==='pending'?'Volver a pendientes':'Volver al calendario');
+      mountCalendarBack($('vback'),'Regresar');
       const heading=document.querySelector('#vhero .project-heading'),dynamicLabel=labelFor(item);
       if(heading&&dynamicLabel){heading.textContent=dynamicLabel;const note=heading.nextElementSibling;if(note?.classList?.contains('project-time-note'))note.textContent=origin==='pending'?'Pendiente de grabación':'Orden visual del calendario';}
       scrollTo(0,0);
@@ -232,13 +227,13 @@
 
   const oldSBack=$('sback').onclick;$('sback').onclick=()=>{if(S?._captureGuide||S?._serviceKey){const target=S?._calendarDirect?'calendar':'record';restoreCalendarBack($('sback'));S=null;$('videos').className='vgrid';resetViews();tab(target);if(target==='calendar'&&typeof renderCal==='function')renderCal();return;}if(typeof oldSBack==='function')oldSBack();};
   const oldOpenSession=openSession;openSession=async function(id,from='record'){restoreCalendarBack($('vback'));$('vback').innerHTML=`${ic('left')}Volver a la sesión`;return oldOpenSession(id,from);};
-  const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,legacyRecorded=item?.pieza?.estado==='RECORDED'||item?.pieza?.production_status?.RECORDED===true||item?.pieza?.estado==='PUBLISHED',ready=item?.pieza?.production_status?.PRODUCTION_READY===true||legacyRecorded||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}else if(btn&&legacyRecorded&&item?.estado!=='GRABADO'){btn.innerHTML='Confirmar grabado';btn.title='La pieza ya consta como grabada; este botón sincroniza el estado de la sesión.';}if(S?._calendarDirect){mountCalendarBack($('vback'),S?._calendarOrigin==='pending'?'Volver a pendientes':'Volver al calendario');if(btn){btn.style.display='none';btn.setAttribute('aria-hidden','true');}document.querySelector('#vhero .project-main-actions')?.classList.add('calendar-direct-actions');}else{restoreCalendarBack($('vback'));if(btn){btn.style.display='';btn.removeAttribute('aria-hidden');}document.querySelector('#vhero .project-main-actions')?.classList.remove('calendar-direct-actions');}};
+  const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,legacyRecorded=item?.pieza?.estado==='RECORDED'||item?.pieza?.production_status?.RECORDED===true||item?.pieza?.estado==='PUBLISHED',ready=item?.pieza?.production_status?.PRODUCTION_READY===true||legacyRecorded||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}else if(btn&&legacyRecorded&&item?.estado!=='GRABADO'){btn.innerHTML='Confirmar grabado';btn.title='La pieza ya consta como grabada; este botón sincroniza el estado de la sesión.';}if(S?._calendarDirect){mountCalendarBack($('vback'),'Regresar');if(btn){btn.style.display='none';btn.setAttribute('aria-hidden','true');}document.querySelector('#vhero .project-main-actions')?.classList.add('calendar-direct-actions');}else{restoreCalendarBack($('vback'));if(btn){btn.style.display='';btn.removeAttribute('aria-hidden');}document.querySelector('#vhero .project-main-actions')?.classList.remove('calendar-direct-actions');}};
   const oldToggleRec=toggleRec;toggleRec=async function(x){if(S?._calendarDirect){const result=await markCalendarRecorded(x);if(!result.ok)alert(result.message||'No se pudo marcar como grabado.');else if(typeof renderCal==='function')renderCal();return;}if(!S?._serviceKey)return oldToggleRec(x);const key=S._serviceKey;try{await api('mark_piece',{session_piece_id:x.session_piece_id,estado:x.estado==='GRABADO'?'PENDIENTE':'GRABADO'});P=await api('portal_get');invalidate();renderCal();renderHist();await renderRecord();const data=await loadItems();if(data.groups.has(key))await openService(key);else{S=null;resetViews();tab('record');}}catch(e){alert(e.message)}};
 
   const oldVBack=$('vback').onclick;
   $('vback').onclick=()=>{if(S?._calendarDirect){const origin=S?._calendarOrigin||'calendar';restoreCalendarBack($('vback'));S=null;resetViews();tab('calendar');if(origin==='pending'&&typeof window.DoctorPortalCalendar?.showPending==='function')window.DoctorPortalCalendar.showPending();else if(typeof renderCal==='function')renderCal();return;}if(typeof oldVBack==='function')oldVBack();};
 
-  window.DoctorPortalProjects={loadItems,index:()=>displayIndex,labelFor,displayCode,buildDisplayIndex,openCalendarItem,markCalendarRecorded,openCalendarSpecial,calendarItem};
+  window.DoctorPortalProjects={loadItems,index:()=>displayIndex,labelFor,displayCode,buildDisplayIndex,openCalendarItem,markCalendarRecorded,openCalendarSpecial,calendarItem,showBottomBack,clearBottomBack};
   window.DoctorPortalSpecials=[captureGuide];
 
   const wait=()=>{if(typeof P!=='undefined'&&P){if(document.querySelector('.tab[data-tab="record"]'))renderRecord();else window.PortalTrace?.log('PROJECTS_RENDER_RECORD_SKIPPED','Panel Para grabar no existe');return;}setTimeout(wait,120);};setTimeout(wait,0);
