@@ -64,3 +64,25 @@
   .tele-scene-audio{width:44px!important;padding:0!important;justify-content:center!important}
   .voice-settings-v7{grid-template-columns:1fr!important}
 }
+
+/* Compact generic doctor visual: one public reference for all scripts */
+.project-overview-grid{display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px;align-items:start}
+.project-overview-main{min-width:0}
+.generic-doctor-wrap{width:180px;max-width:100%;margin:0}
+.generic-doctor-img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;object-position:center 24%;border-radius:17px;border:1px solid #DDE3EA;background:#EEF2F6}
+.generic-doctor-wrap small{display:block;margin-top:6px;color:#7B8492;font-size:8px;font-weight:800;text-align:center}
+.project-overview-main .project-heading{margin-top:0}
+.project-overview-main .project-main-actions{margin-top:12px!important}
+#shots .visual,#shots .compact-ref,#shots .piece-guide-wrap{display:none!important}
+
+@media(max-width:600px){
+  .project-overview-grid{grid-template-columns:112px minmax(0,1fr);gap:11px;align-items:start}
+  .generic-doctor-wrap{width:112px}
+  .generic-doctor-img{border-radius:14px}
+  .generic-doctor-wrap small{font-size:7px;line-height:1.2}
+  .project-overview-main h2{font-size:16px!important;margin:4px 0 7px!important}
+  .project-overview-main .project-details{font-size:10px!important;line-height:1.4!important}
+  .project-overview-main .project-details p{margin:3px 0!important}
+  .project-overview-main .project-main-actions{margin:9px 0 0!important}
+  .project-overview-main .project-main-actions .btn{min-height:44px!important;font-size:11px!important}
+}
