@@ -101,10 +101,8 @@
     if(!force&&planPromise)return planPromise;
     planPromise=(async()=>{
       await waitForPortal();
-      const projectApi=window.DoctorPortalProjects;
-      if(!projectApi?.loadItems)throw Error('No se pudo abrir la biblioteca de grabación.');
-      const production=await projectApi.loadItems(force);
       const rawCalendar=Array.isArray(P?.calendar_items)?P.calendar_items.slice():[];
+      const productionItems=Array.isArray(P?.production_items)?P.production_items.slice():[];
       const weekMap=new Map();
       for(const x of rawCalendar){
         const id=x?.calendario_id||x?.id;
@@ -112,7 +110,7 @@
       }
       const calendarData={slots:rawCalendar,weeks:[...weekMap.values()]};
       const sessionMap=new Map();
-      for(const item of production.all||[]){const id=item?.pieza?.id;if(id&&!sessionMap.has(id))sessionMap.set(id,item);}
+      for(const item of productionItems){const id=item?.pieza?.id;if(id&&!sessionMap.has(id))sessionMap.set(id,item);}
 
       const rawSlots=Array.isArray(calendarData.slots)?calendarData.slots.slice():[];
       rawSlots.sort((a,b)=>String(a.publish_date).localeCompare(String(b.publish_date))||String(a.created_at||'').localeCompare(String(b.created_at||''))||String(a.id).localeCompare(String(b.id)));
@@ -138,7 +136,7 @@
       }));
 
       const externalMap=new Map();
-      for(const item of production.all||[]){
+      for(const item of productionItems){
         const id=item?.pieza?.id;
         if(id&&!officialIds.has(id)&&!externalMap.has(id))externalMap.set(id,item);
       }
