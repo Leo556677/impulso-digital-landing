@@ -217,5 +217,5 @@
   window.DoctorPortalProjects={loadItems,index:()=>displayIndex,labelFor,displayCode,buildDisplayIndex,openCalendarItem,markCalendarRecorded,openCalendarSpecial,calendarItem};
   window.DoctorPortalSpecials=[captureGuide];
 
-  const wait=()=>{if(typeof P!=='undefined'&&P){renderRecord();return;}setTimeout(wait,120);};setTimeout(wait,0);
+  const wait=()=>{if(typeof P!=='undefined'&&P){if(document.querySelector('.tab[data-tab="record"]'))renderRecord();else window.PortalTrace?.log('PROJECTS_RENDER_RECORD_SKIPPED','Panel Para grabar no existe');return;}setTimeout(wait,120);};setTimeout(wait,0);
 })();
