@@ -7,6 +7,7 @@
   const svg=(id,cls='block-ico')=>`<svg class="${cls}" aria-hidden="true"><use href="#${id}"></use></svg>`;
   const list=v=>Array.isArray(v)?v:[v].filter(Boolean);
   const norm=v=>String(v??'').replace(/\s+/g,' ').trim();
+  const GENERIC_DOCTOR_URL='https://commons.wikimedia.org/wiki/Special:Redirect/file/Female%20doctor.jpg?width=720';
 
   function model(){return window.RecordingModel||null;}
   function approvedView(p){try{return model()?.approvedView?.(p)||null;}catch{return null;}}
@@ -51,9 +52,8 @@
     return `<div class="visual compact-ref ${extra}"><span class="visual-status">Cargando referencia…</span><img src="${esc(url)}" alt="${esc(label)}" loading="${eager?'eager':'lazy'}" decoding="async" ${eager?'fetchpriority="high"':'fetchpriority="low"'}></div>`;
   }
 
-  function pieceGuide(url,label='Así debe verse al comenzar'){
-    if(!url||!/^https?:\/\//i.test(url))return '';
-    return `<div class="piece-guide-wrap project-start-guide"><div class="piece-guide-title">${esc(label)}</div>${imgBox(url,label,true,'piece-guide')}</div>`;
+  function pieceGuide(_url,label='Referencia visual'){
+    return `<div class="generic-doctor-wrap project-start-guide"><img class="generic-doctor-img" src="${GENERIC_DOCTOR_URL}" alt="Referencia visual genérica de profesional médico" loading="eager" decoding="async" fetchpriority="high"><small>Referencia visual genérica</small></div>`;
   }
 
   function wireImages(root){
@@ -149,18 +149,18 @@
     const topRef=(humanScenes.find(s=>s.scene_kind==='PRINCIPAL'&&s.reference_url)||humanScenes.find(s=>s.reference_url))?.reference_url||firstImg(Item);
     document.getElementById('sdetail').style.display='none';document.getElementById('vdetail').style.display='block';
     const recorded=Item.estado==='GRABADO',canRecord=recorded||Boolean(v&&p.production_status?.PRODUCTION_READY);
-    vhero.innerHTML=`<div class="card detail compact-detail">${pieceGuide(topRef,'Así debe verse al comenzar')}<div class="actions project-main-actions"><button id="teleb" class="btn primary">${ic('playi')} Abrir teleprompter</button><button id="recb" class="btn ok ${recorded?'recorded':''}" ${canRecord?'':'disabled'}>${recorded?ic('check')+' Grabado':ic('check')+' Marcar grabado'}</button></div>${projectMeta(p)}${v?.preparations?.length?`<div class="ib top-prep"><div class="ib-title">${svg('cam')}<span>Antes de empezar</span></div><div class="ib-copy">${esc(v.preparations.join(' '))}</div></div>`:''}</div>`;
+    vhero.innerHTML=`<div class="card detail compact-detail"><div class="project-overview-grid">${pieceGuide(topRef,'Referencia visual')}<div class="project-overview-main">${projectMeta(p)}<div class="actions project-main-actions"><button id="teleb" class="btn primary">${ic('playi')} Abrir teleprompter</button><button id="recb" class="btn ok ${recorded?'recorded':''}" ${canRecord?'':'disabled'}>${recorded?ic('check')+' Grabado':ic('check')+' Marcar grabado'}</button></div></div></div>${v?.preparations?.length?`<div class="ib top-prep"><div class="ib-title">${svg('cam')}<span>Antes de empezar</span></div><div class="ib-copy">${esc(v.preparations.join(' '))}</div></div>`:''}</div>`;
 
     const cards=humanScenes.length?humanScenes.map((s,n)=>{
       const spoken=s.scene_kind==='PRINCIPAL'?sceneText(v,s):'';
       const closing=(s.spoken_segment_ids||[]).includes(v.closing_segment_id);
-      const ref=imgBox(s.reference_url,s.title||`Escena ${n+1}`,n===0);
+      const ref='';
       const script=spoken?`<div class="say"><div class="say-label">${svg('msg')}<span>Guion${closing?' · Cierre incluido':''}</span></div><div class="say-copy">${esc(spoken)}</div></div>`:`<div class="say support-say"><div class="say-label">${svg('cam')}<span>Video de apoyo</span></div><div class="say-copy">No necesitas hablar en esta escena.</div></div>`;
       const actions=list(s.actions).filter(Boolean).join(' '),camera=list(s.camera_instructions).filter(Boolean).join(' ');
       return `<article class="card shot human-scene"><div class="shothead"><div class="sleft"><span class="sn">${n+1}</span><div><b>${esc(s.title||`Escena ${n+1}`)}</b><div class="stime">${s.scene_kind==='PRINCIPAL'?'Escena hablada':'Video de apoyo'}</div></div></div><span class="shotcount">${n+1}/${humanScenes.length}</span></div>${ref}${script}<button class="scene-guide-play" type="button" data-scene-guide="${n}">${svg('playi','voice-ico-v7')}<span>Play guía de esta escena</span></button><div class="ins">${block('action-block','Dónde colocarte','pin',s.position)}${block('visual-block','Dónde mirar','eye',s.gaze)}${block('action-block','Qué debes hacer','move',actions)}${block('visual-block','Al terminar','pause',s.finish_instruction)}${block('visual-block','Para quien graba','cam',camera)}</div></article>`;
     }).join(''):raw.map((s,n)=>{
       const action=humanize([s.accion,s.mirada_gesto].filter(Boolean).join('. ')),seen=humanize([s.que_se_ve,s.camara].filter(Boolean).join('. '));
-      const ref=imgBox(s.reference_url,'Composición de la toma',n===0),script=s.que_se_dice?`<div class="say"><div class="say-label">${svg('msg')}<span>Guion</span></div><div class="say-copy">${esc(s.que_se_dice)}</div></div>`:`<div class="say support-say"><div class="say-copy">Video de apoyo: no necesitas hablar.</div></div>`;
+      const ref='',script=s.que_se_dice?`<div class="say"><div class="say-label">${svg('msg')}<span>Guion</span></div><div class="say-copy">${esc(s.que_se_dice)}</div></div>`:`<div class="say support-say"><div class="say-copy">Video de apoyo: no necesitas hablar.</div></div>`;
       return `<article class="card shot"><div class="shothead"><div class="sleft"><span class="sn">${n+1}</span><div><b>Toma ${n+1}</b><div class="stime">${esc(s.tiempo||'')}</div></div></div><span class="shotcount">${n+1}/${raw.length}</span></div>${ref}${script}<button class="scene-guide-play" type="button" data-legacy-guide="${n}">${svg('playi','voice-ico-v7')}<span>Play guía de esta toma</span></button><div class="ins">${block('action-block','Qué haces','move',action)}${block('visual-block','Qué debe verse','eye',seen)}</div></article>`;
     }).join('');
 
@@ -168,7 +168,7 @@
     shotsEl.innerHTML=cards||'<div class="card empty">Las indicaciones todavía no están cargadas.</div>';
     document.querySelectorAll('[data-scene-guide]').forEach(btn=>btn.onclick=()=>{const n=Number(btn.dataset.sceneGuide),s=humanScenes[n];if(s)openPlayer(`Escena ${n+1} · ${s.title||''}`,humanGuide(s,n));});
     document.querySelectorAll('[data-legacy-guide]').forEach(btn=>btn.onclick=()=>{const n=Number(btn.dataset.legacyGuide),s=raw[n];if(s)openPlayer(`Toma ${n+1}`,legacyGuide(s,n));});
-    wireImages(vhero);wireImages(shotsEl);document.getElementById('teleb').onclick=()=>openTele(Item);if(canRecord)document.getElementById('recb').onclick=()=>toggleRec(Item);requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));
+    document.getElementById('teleb').onclick=()=>openTele(Item);if(canRecord)document.getElementById('recb').onclick=()=>toggleRec(Item);requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));
   };
 
   openTele=function(x){
