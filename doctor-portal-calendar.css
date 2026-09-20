@@ -1,27 +1,26 @@
-/* Weekly project calendar · responsive */
+/* Calendar workspace · two-week responsive view */
 #calendar{padding-bottom:28px}
 #calendar .hero{margin-bottom:14px}
+.tabs{grid-template-columns:repeat(2,1fr)!important}
 
 .cal-loading{padding:22px;text-align:center;color:var(--m);font-weight:800}
-
-.cal-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;margin-bottom:10px}
-.cal-summary{display:grid;grid-template-columns:repeat(3,minmax(92px,1fr));gap:10px;flex:1;max-width:520px}
-.cal-summary>div{display:flex;flex-direction:column;gap:2px;padding-right:10px;border-right:1px solid #ececf1}
-.cal-summary>div:last-child{border-right:0}
-.cal-summary b{font-size:18px;line-height:1;color:var(--i)}
-.cal-summary span{font-size:9px;line-height:1.25;color:var(--m);font-weight:850;text-transform:uppercase;letter-spacing:.05em}
-
+.cal-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;margin-bottom:10px}
+.cal-two-week-nav{display:flex;align-items:center;gap:10px;min-width:0}
+.cal-two-week-nav>button{width:38px;height:38px;border:1px solid #e0e2e7;border-radius:11px;background:#fff;color:#313743;display:grid;place-items:center;cursor:pointer}
+.cal-two-week-nav>button:disabled{opacity:.35;cursor:not-allowed}
+.cal-two-week-nav>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cal-two-week-nav b{font-size:12px;color:#202633}
+.cal-two-week-nav span{font-size:9px;color:var(--m);font-weight:800}
 .cal-view-switch{display:flex;align-items:center;gap:4px;padding:4px;border:1px solid #e1e2e8;border-radius:12px;background:#f7f7f9;flex:0 0 auto}
 .cal-view-switch button{min-height:40px;border:0;border-radius:9px;background:transparent;color:#666b77;padding:0 13px;font:800 11px/1 system-ui;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
 .cal-view-switch button.active{background:#fff;color:#171a22;box-shadow:0 1px 5px rgba(20,23,31,.09)}
 .cal-view-switch button:focus-visible{outline:2px solid #335fa9;outline-offset:2px}
 .cal-view-icon{font-size:17px;line-height:1}
-
 .cal-explain{margin:0 2px 14px;padding:10px 12px;border-left:3px solid #6b84a5;border-radius:8px;background:#f6f8fb;color:#657086;font-size:10px;line-height:1.45}
 .cal-explain b,.cal-explain strong{color:#24334a}
 
 .cal-plan{display:flex;flex-direction:column;gap:16px}
-.cal-week-block,.cal-list-week{background:#fff;border:1px solid #e5e6eb;border-radius:18px;box-shadow:0 8px 22px rgba(25,31,45,.055);overflow:hidden}
+.cal-week-block,.cal-list-week{background:#fff;border:1px solid #e5e6eb;border-radius:20px;box-shadow:0 10px 28px rgba(25,31,45,.06);overflow:hidden}
 .cal-week-block.previous-week{border-color:#eadfcf;background:linear-gradient(180deg,#fffdf9 0,#fff 52px)}
 .cal-week-head,.cal-list-week-head{min-height:62px;padding:12px 15px;border-bottom:1px solid #ececf1;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .cal-week-head>div,.cal-list-week-head>div{min-width:0}
@@ -31,80 +30,105 @@
 .cal-week-head small,.cal-list-week-head small{font-size:10px;color:var(--m);font-weight:800;white-space:nowrap}
 
 .cal-week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));align-items:stretch}
-.cal-week-day{min-width:0;min-height:230px;border-right:1px solid #ececf1;position:relative;background:#fff}
+.cal-week-day{min-width:0;min-height:285px;border-right:1px solid #ececf1;position:relative;background:#fff}
 .cal-week-day:last-child{border-right:0}
 .cal-week-day.today{box-shadow:inset 0 3px 0 #2b688c}
 .cal-date-head{height:55px;padding:9px 10px 7px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;align-items:start;border-bottom:1px solid #f0f0f3}
 .cal-date-head span{font-size:9px;font-weight:900;color:#78808f;letter-spacing:.06em}
 .cal-date-head b{grid-column:1;grid-row:2;font-size:23px;line-height:1;color:#122441;margin-top:2px}
 .cal-date-head i{grid-column:2;grid-row:1/3;align-self:center;font-style:normal;font-size:8px;font-weight:900;background:#e8f3f6;color:#27637f;padding:4px 6px;border-radius:999px}
-.cal-day-projects{padding:8px;display:flex;flex-direction:column;gap:7px}
+.cal-day-projects{padding:9px;display:flex;flex-direction:column;gap:9px}
 
-.cal-project{border:1px solid #e8e8ed;border-radius:12px;padding:10px;background:#fff;min-width:0}
-.cal-project.legacy{border-color:#ead8bc;background:#fffaf3}
-.cal-project.capture{border-color:#f0d59e;background:#fffaf0}
-.cal-project-top{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px}
+/* Calendar project cards inherit the visual language of service cards */
+.cal-project{position:relative;overflow:hidden;border:1px solid #e3e5ea;border-radius:17px;padding:12px;background:#fff;min-width:0;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.cal-project::after{content:"";position:absolute;right:-30px;top:-38px;width:92px;height:92px;border-radius:50%;background:linear-gradient(135deg,rgba(230,0,126,.08),rgba(255,106,0,.09));pointer-events:none}
+.cal-project:hover,.cal-project:focus{transform:translateY(-2px);box-shadow:0 14px 30px rgba(28,28,33,.09);border-color:rgba(230,0,126,.18);outline:none}
+.cal-project.legacy{border-color:#ead8bc;background:linear-gradient(145deg,#fffdf9,#fff8ee)}
+.cal-project.capture{border-color:#f0d59e;background:linear-gradient(145deg,#fffdf8,#fff8eb)}
+.cal-project.is-recorded{border-color:#9ed9b6;background:linear-gradient(145deg,#ffffff,#f4fff8);box-shadow:0 10px 26px rgba(30,132,78,.09)}
+.cal-project-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;position:relative;z-index:2}
+.cal-project-top>div{min-width:0}
 .cal-project-code{display:inline-flex;align-items:center;min-height:22px;padding:0 7px;border-radius:6px;background:#1f5fa2;color:#fff;font-size:8px;line-height:1;font-weight:900;letter-spacing:.03em;white-space:nowrap}
 .cal-project.legacy .cal-project-code,.cal-list-row.legacy .cal-project-code{background:#a76d1c}
 .cal-project.capture .cal-project-code,.cal-list-row.capture .cal-project-code{background:#c58218}
-.cal-service-code{display:inline-flex;align-items:center;justify-content:center;min-width:29px;height:29px;padding:0 6px;border-radius:999px;background:#f1f5f9;color:#506987;border:1px solid #dfe7ef;font:900 9px/1 system-ui}
-.cal-service-name{font-size:8px;font-weight:900;color:#6c7690;text-transform:uppercase;letter-spacing:.045em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cal-project h3{margin:5px 0 10px;color:#172337;font-size:12px;line-height:1.22;font-weight:900;word-break:normal;overflow-wrap:anywhere}
-.cal-project-status{display:flex;align-items:center;gap:5px;min-height:28px;padding:6px 7px;border-radius:8px;font-size:8px;font-weight:900;line-height:1.15}
+.cal-service-name{font-size:8px;font-weight:900;color:#6c7690;text-transform:uppercase;letter-spacing:.045em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:7px}
+.cal-card-arrow{position:relative;z-index:2;width:32px;height:32px;flex:0 0 32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#f6f1f6,#fff4ec);color:var(--p)}
+.cal-card-arrow .ico{width:17px;height:17px}
+.cal-project-mid{position:relative;z-index:2}
+.cal-project-mid>.cal-service-code{margin-bottom:7px}
+.cal-service-code{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 7px;border-radius:999px;background:#f1f5f9;color:#506987;border:1px solid #dfe7ef;font:900 9px/1 system-ui}
+.cal-project h3{margin:0 0 12px;color:#172337;font-size:12px;line-height:1.23;font-weight:900;overflow-wrap:anywhere}
+.cal-project-status{position:relative;z-index:2;display:flex;align-items:center;gap:5px;min-height:30px;padding:7px 8px;border-radius:9px;font-size:8px;font-weight:900;line-height:1.15}
 .cal-project-status .ico{width:13px;height:13px}
 .cal-project-status.approved{background:#e9f6ef;color:#176741}
 .cal-project-status.previous{background:#f6ead9;color:#8b5c19}
 .cal-project-status.capture{background:#fff0d5;color:#9b6208}
 .cal-project-status.pending{background:#fff1ed;color:#a74c34}
+.cal-project-status.recorded{background:#daf4e4;color:#12683d;border:1px solid #a6dab9}
 
-.cal-empty-day{height:118px;display:flex;align-items:center;justify-content:center;text-align:center;border:1px dashed #e5e6eb;border-radius:10px;color:#a0a6b0;font-size:9px;font-weight:800;background:#fafbfc}
+.cal-recorded-check{position:absolute;right:7px;bottom:7px;z-index:5;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#189957;color:#fff;font-size:24px;font-weight:1000;box-shadow:0 6px 18px rgba(24,153,87,.3);border:3px solid #fff}
+.cal-recorded-check.list-check{right:12px;top:50%;bottom:auto;transform:translateY(-50%)}
+
+.cal-empty-day{height:150px;display:flex;align-items:center;justify-content:center;text-align:center;border:1px dashed #e5e6eb;border-radius:13px;color:#a0a6b0;font-size:9px;font-weight:800;background:#fafbfc}
 
 /* Vertical list mode */
 .cal-list-week-head b{display:block;color:#202b3d;font-size:13px;text-transform:capitalize}
 .cal-list-items{display:flex;flex-direction:column}
-.cal-list-row{display:grid;grid-template-columns:66px minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #ececf1}
+.cal-list-row{position:relative;overflow:hidden;display:grid;grid-template-columns:66px minmax(0,1fr) auto 36px;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid #ececf1;cursor:pointer;transition:background .15s ease}
+.cal-list-row::after{content:"";position:absolute;right:-38px;top:-45px;width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,rgba(230,0,126,.06),rgba(255,106,0,.07));pointer-events:none}
 .cal-list-row:last-child{border-bottom:0}
+.cal-list-row:hover,.cal-list-row:focus{background:#fafbfc;outline:none}
 .cal-list-row.legacy{background:#fffaf3}
 .cal-list-row.capture{background:#fffaf0}
-.cal-list-date{height:54px;border-radius:11px;background:#f4f6f9;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #e6e9ee}
+.cal-list-row.is-recorded{background:#f5fff9}
+.cal-list-date{height:56px;border-radius:12px;background:#f4f6f9;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #e6e9ee;position:relative;z-index:2}
 .cal-list-date span{font-size:8px;font-weight:900;color:#68758a;letter-spacing:.06em}
 .cal-list-date b{font-size:23px;line-height:1;color:#142641;margin-top:2px}
-.cal-list-main{min-width:0}
+.cal-list-main{min-width:0;position:relative;z-index:2}
 .cal-list-meta{display:flex;align-items:center;gap:6px;margin-bottom:5px}
 .cal-list-main h3{margin:4px 0 0;font-size:14px;line-height:1.2;color:#18243a}
 .cal-list-row>.cal-project-status{min-width:130px;justify-content:center;text-align:center}
+.cal-card-arrow.list-arrow{width:34px;height:34px;z-index:2}
 .cal-list-empty{padding:16px;color:#9aa1ad;font-size:10px}
+
+/* Recording confirmation over teleprompter */
+.record-confirm-overlay{position:fixed;inset:0;z-index:250;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(7,10,16,.44);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.record-confirm-overlay.on{display:flex}
+.record-confirm-card{width:min(420px,100%);border-radius:24px;background:rgba(255,255,255,.97);border:1px solid rgba(255,255,255,.8);box-shadow:0 28px 80px rgba(0,0,0,.28);padding:24px;text-align:center;color:#151921}
+.record-confirm-icon{width:54px;height:54px;border-radius:18px;margin:0 auto 13px;display:grid;place-items:center;background:linear-gradient(135deg,#e90078,#ff6a00);color:#fff}
+.record-confirm-icon .ico{width:25px;height:25px}
+.record-confirm-card h2{margin:0 0 8px;font-size:22px;line-height:1.15}
+.record-confirm-card p{margin:0 auto;color:#687180;font-size:12px;line-height:1.5;max-width:330px}
+.record-confirm-error{min-height:22px;margin-top:10px;color:#9a4b26;font-size:10px;font-weight:800}
+.record-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:7px}
+.record-confirm-actions button{min-height:50px;border-radius:14px;border:1px solid #dfe2e7;background:#fff;color:#313744;font-weight:900;cursor:pointer}
+.record-confirm-actions .yes{border-color:#178c52;background:#178c52;color:#fff;display:flex;align-items:center;justify-content:center;gap:7px}
+.record-confirm-actions .yes .ico{width:18px;height:18px}
+.record-confirm-actions button:disabled{opacity:.55;cursor:wait}
 
 @media(max-width:1100px){
   .cal-week-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
   .cal-week-day{border-bottom:1px solid #ececf1}
   .cal-week-day:nth-child(4n){border-right:0}
-  .cal-week-day:nth-last-child(-n+3){border-bottom:0}
   .cal-week-day:nth-child(5),.cal-week-day:nth-child(6){border-right:1px solid #ececf1}
 }
 
 @media(max-width:760px){
   .cal-toolbar{align-items:stretch;flex-direction:column}
-  .cal-summary{max-width:none;width:100%}
+  .cal-two-week-nav{justify-content:space-between}
   .cal-view-switch{width:100%}
   .cal-view-switch button{flex:1;min-height:44px}
   .cal-week-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .cal-week-day{border-right:1px solid #ececf1;border-bottom:1px solid #ececf1}
   .cal-week-day:nth-child(2n){border-right:0}
-  .cal-week-day:nth-child(4n){border-right:0}
-  .cal-week-day:nth-last-child(-n+3){border-bottom:1px solid #ececf1}
-  .cal-week-day:last-child{border-bottom:0}
-  .cal-list-row{grid-template-columns:58px minmax(0,1fr);gap:10px}
+  .cal-list-row{grid-template-columns:58px minmax(0,1fr) 36px;gap:10px}
   .cal-list-row>.cal-project-status{grid-column:2;min-width:0;justify-self:start;margin-top:-3px}
+  .cal-list-row>.list-arrow{grid-column:3;grid-row:1/3}
 }
 
 @media(max-width:520px){
   #calendar .hero h1{font-size:24px}
-  .cal-toolbar{padding:12px}
-  .cal-summary{grid-template-columns:repeat(3,1fr);gap:6px}
-  .cal-summary>div{padding-right:6px}
-  .cal-summary b{font-size:16px}
-  .cal-summary span{font-size:7.5px}
+  .cal-toolbar{padding:11px}
   .cal-explain{font-size:9px}
   .cal-week-head,.cal-list-week-head{padding:11px 12px;align-items:flex-start}
   .cal-week-head h2{font-size:14px}
@@ -115,18 +139,17 @@
   .cal-date-head{height:auto;min-height:100%;border-bottom:0;border-right:1px solid #f0f0f3;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 7px}
   .cal-date-head b{font-size:25px;margin:4px 0}
   .cal-date-head i{font-size:7px}
-  .cal-day-projects{padding:8px}
-  .cal-empty-day{height:72px}
-  .cal-project{padding:10px}
-  .cal-project h3{font-size:13px}
+  .cal-day-projects{padding:9px}
+  .cal-empty-day{height:90px}
+  .cal-project{padding:13px}
+  .cal-project h3{font-size:14px;max-width:86%}
+  .cal-card-arrow{width:38px;height:38px;flex-basis:38px}
   .cal-list-row{padding:10px}
   .cal-list-main h3{font-size:13px}
+  .record-confirm-card{padding:21px 16px}
+  .record-confirm-actions{grid-template-columns:1fr}
 }
 
 @media(max-width:380px){
-  .cal-summary{grid-template-columns:1fr}
-  .cal-summary>div{border-right:0;border-bottom:1px solid #ececf1;padding:6px 0}
-  .cal-summary>div:last-child{border-bottom:0}
-  .cal-summary>div{flex-direction:row;align-items:baseline;gap:8px}
-  .cal-summary span{font-size:8px}
+  .cal-two-week-nav>div span{display:none}
 }
