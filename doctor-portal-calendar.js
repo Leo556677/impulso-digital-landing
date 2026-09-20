@@ -26,6 +26,9 @@
     DEF:{color:'#52657A',soft:'#EDF2F7'}
   };
 
+  function serviceFromKey(key){
+    return({S1:'TOXINA BOTULÍNICA',S2:'PRP FACIAL',S3:'LIMPIEZA FACIAL / APARATOLOGÍA',S4:'LIPOSUCCIÓN DE PAPADA',S5:'BICHECTOMÍA',S6:'RINOPLASTIA'})[String(key||'').toUpperCase()]||'CONTENIDO';
+  }
   function serviceCode(service,kind){
     if(kind==='capture')return'EQ';
     const v=String(service||'').toUpperCase();
@@ -99,9 +102,10 @@
         const code=String(i+1).padStart(3,'0'),sessionItem=slot.content_id?sessionMap.get(slot.content_id):null,piece=slot.pieza||sessionItem?.pieza||null;
         if(slot.content_id)officialIds.add(slot.content_id);
         const special=(window.DoctorPortalSpecials||[]).find(x=>x?.iso===slot.publish_date);
-        const kind=slot.content_id?'scheduled':'capture';
-        const title=piece?.titulo||piece?.tema||(kind==='capture'?(special?.subtitle||special?.title||'Captura especial'):'Proyecto de contenido');
-        const service=piece?.servicio||(kind==='capture'?'MARCA / EQUIPO':'Contenido');
+        const isCapture=!slot.content_id&&String(slot.status||'').toUpperCase()==='NEEDS_CAPTURE';
+        const kind=slot.content_id?'scheduled':(isCapture?'capture':'placeholder');
+        const title=piece?.titulo||piece?.tema||(kind==='capture'?(special?.subtitle||special?.title||'Captura especial'):`Guion pendiente${slot.editorial_key?' · '+slot.editorial_key:''}`);
+        const service=piece?.servicio||(kind==='capture'?'MARCA / EQUIPO':serviceFromKey(slot.service_key));
         return{
           kind,code,date:slot.publish_date,calendarId:slot.calendario_id,content_id:slot.content_id||null,title,service,
           role:roleLabel(slot.strategic_role),slot_status:slot.status||'',piece,sessionItem,special,
@@ -144,6 +148,7 @@
   function statusMeta(item){
     if(item.recorded)return{label:'GRABADO',cls:'recorded'};
     if(item.kind==='capture')return{label:'REQUIERE CAPTURA REAL',cls:'capture'};
+    if(item.kind==='placeholder')return{label:'GUION PENDIENTE',cls:'pending'};
     if(item.kind==='legacy')return{label:'FUERA DEL CALENDARIO',cls:'external'};
     if(item.piece?.production_status?.PRODUCTION_READY===true)return{label:'LISTO PARA GRABAR',cls:'ready'};
     return{label:'GUION APROBADO',cls:'approved'};
@@ -153,7 +158,7 @@
 
   function card(item,list=false){
     const st=statusMeta(item),theme=themeFor(item.service,item.kind);
-    const target=item.kind==='capture'?'data-special="capture"':`data-content="${esc(item.content_id||'')}"`;
+    const target=item.kind==='capture'?'data-special="capture"':(item.content_id?`data-content="${esc(item.content_id)}"`:'data-placeholder="true"');
     if(list){
       return`<article class="cal-list-row ${esc(item.kind)} ${item.recorded?'is-recorded':''}" style="${cssVars(item)}" ${target} data-code="${esc(item.code)}" tabindex="0" role="button">
         ${item.recorded?'<div class="cal-recorded-check list-check">✓</div>':''}
@@ -182,7 +187,7 @@
     for(let i=0;i<7;i++){
       const d=new Date(dateObj(week.start));d.setDate(d.getDate()+i);
       const date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,rows=week.rows.filter(x=>x.date===date);
-      days.push(`<div class="cal-week-day ${date===TODAY?'today':''}">
+      days.push(`<div class="cal-week-day ${date===TODAY?'today':''}" ${rows.length?`style="${cssVars(rows[0])}"`:''}>
         <div class="cal-date-head"><span>${weekday(date)}</span><b>${dayOfMonth(date)}</b>${date===TODAY?'<i>HOY</i>':''}</div>
         <div class="cal-day-projects">${rows.length?rows.map(x=>card(x)).join(''):'<div class="cal-empty-day"><span>Sin proyecto</span></div>'}</div>
       </div>`);
