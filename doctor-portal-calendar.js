@@ -1,6 +1,6 @@
 (()=>{
   'use strict';
-  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'20'});
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'21'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
@@ -408,8 +408,8 @@
     });
   }
 
-  renderCal=function(){draw();};
-  renderPdet=function(){};
+  window.renderCal=function(){draw();};
+  window.renderPdet=function(){};
   window.DoctorPortalCalendar={showPending,showCalendar:async()=>{const p=await buildPlan();selectedWeek=currentWeekIndex(p.weeks);showingPending=false;draw();},refresh:async()=>{planCache=null;planPromise=null;if(showingPending)showPending(true);else draw(true);}};
 
   installExitHooks();
