@@ -288,6 +288,7 @@
       const week=plan.weeks[selectedWeek];
       host.innerHTML=toolbar(plan)+(calendarView==='list'?weekList(week):weekGrid(week));
       bindCalendar(plan);
+      window.PortalTrace?.log('CAL_DRAW_OK',{week:selectedWeek+1,start:week?.start,end:week?.end,cards:host.querySelectorAll('[data-content],[data-special],[data-placeholder]').length,text:host.innerText.slice(0,180)});
     }catch(e){window.PortalTrace?.error('CAL_DRAW_FAIL',{name:e?.name||'',message:e?.message||String(e),stack:e?.stack||'',selectedWeek,hasP:Boolean(typeof P!=='undefined'&&P)});host.innerHTML=`<div class="card empty"><b>No pude cargar el calendario.</b><br>${esc(e?.message||'No se pudo cargar.')}</div>`;}
   }
 
@@ -350,5 +351,22 @@
   window.DoctorPortalCalendar={showPending,showCalendar:async()=>{const p=await buildPlan();selectedWeek=currentWeekIndex(p.weeks);showingPending=false;draw();},refresh:async()=>{planCache=null;planPromise=null;if(showingPending)showPending(true);else draw(true);}};
 
   installExitHooks();
-  setTimeout(()=>{planCache=null;draw();},0);
+  setTimeout(()=>{
+    const host=$('calbox');
+    if(host&&!host.__traceObserver){
+      const obs=new MutationObserver(()=>{
+        const text=host.innerText||'';
+        if(/No pude cargar el calendario|No pudimos cargar tu contenido/i.test(text)){
+          window.PortalTrace?.error('CALBOX_ERROR_VISIBLE',{text:text.slice(0,260),html:host.innerHTML.slice(0,420)});
+        }
+      });
+      obs.observe(host,{childList:true,subtree:true,characterData:true});
+      host.__traceObserver=obs;
+      window.PortalTrace?.log('CALBOX_OBSERVER_READY');
+    }
+    planCache=null;draw();
+    setTimeout(()=>{
+      const h=$('calbox');if(h)window.PortalTrace?.log('CAL_POST_RENDER_STATE',{text:(h.innerText||'').slice(0,220),cards:h.querySelectorAll('[data-content],[data-special],[data-placeholder]').length});
+    },1800);
+  },0);
 })();
