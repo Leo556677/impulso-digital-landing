@@ -69,5 +69,21 @@
   window.addEventListener('error',e=>push('WINDOW_ERROR',{message:e.message,file:e.filename?.split('/').pop(),line:e.lineno,col:e.colno,stack:e.error?.stack||''},'error'));
   window.addEventListener('unhandledrejection',e=>push('UNHANDLED_REJECTION',{message:e.reason?.message||String(e.reason),stack:e.reason?.stack||''},'error'));
   push('LOAD_START',{href:location.pathname,ua:navigator.userAgent.slice(0,120)});
-  document.addEventListener('DOMContentLoaded',()=>{if(debugVisible)ensure();push('DOM_READY',{readyState:document.readyState});},{once:true});
+  async function verifyBuild(){
+    const local=window.__PORTAL_BUILD__||'unknown';
+    try{
+      const r=await fetch('./doctor-portal-build.json?ts='+Date.now(),{cache:'no-store'});
+      const d=await r.json();
+      push('BUILD_CHECK',{local,remote:d?.build||'',calendar:d?.calendar||null,core:d?.core||null});
+      if(d?.build&&local!=='unknown'&&d.build!==local){
+        const key='portal_build_reload_'+d.build;
+        if(sessionStorage.getItem(key)!=='1'){
+          sessionStorage.setItem(key,'1');
+          const u=new URL(location.href);u.searchParams.set('build',d.build);location.replace(u.toString());return;
+        }
+        push('BUILD_MISMATCH_PERSIST',{local,remote:d.build},'error');
+      }
+    }catch(e){push('BUILD_CHECK_FAIL',{message:e?.message||String(e)},'warn');}
+  }
+  document.addEventListener('DOMContentLoaded',()=>{if(debugVisible)ensure();push('DOM_READY',{readyState:document.readyState});verifyBuild();},{once:true});
 })();
