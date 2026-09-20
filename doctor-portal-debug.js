@@ -1,6 +1,6 @@
 (()=>{
   'use strict';
-  const STORE='do_portal_trace_v1';
+  const STORE='do_portal_trace_v2';
   const MAX=120;
   let entries=[];
   let debugVisible=new URLSearchParams(location.search).get('debug')==='1';

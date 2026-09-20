@@ -1,6 +1,6 @@
 (()=>{
   'use strict';
-  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'19'});
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'20'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
@@ -413,9 +413,10 @@
   window.DoctorPortalCalendar={showPending,showCalendar:async()=>{const p=await buildPlan();selectedWeek=currentWeekIndex(p.weeks);showingPending=false;draw();},refresh:async()=>{planCache=null;planPromise=null;if(showingPending)showPending(true);else draw(true);}};
 
   installExitHooks();
-  setTimeout(()=>{
+  setTimeout(async()=>{
+    if(window.__PORTAL_ACCESS_READY__){try{await window.__PORTAL_ACCESS_READY__;}catch{}}
     if(window.__PORTAL_HAS_ACCESS__===false){
-      window.PortalTrace?.warn('CAL_SKIP_NO_ACCESS','Calendario detenido porque este navegador no tiene acceso guardado.');
+      window.PortalTrace?.warn('CAL_SKIP_NO_ACCESS','Calendario detenido porque este navegador no tiene token ni sesión iniciada.');
       const h=$('calbox');if(h)h.innerHTML='';
       return;
     }
