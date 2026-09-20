@@ -38,7 +38,7 @@
         if(pill){pill.className='pill portal-one-status '+status.cls;pill.textContent=status.text;}
         const ready=item?.pieza?.production_status?.PRODUCTION_READY===true||item?.pieza?.estado==='RECORDED'||item?.estado==='GRABADO';
         if(cta&&!ready)cta.textContent='Abrir proyecto';
-        const label=M?.projectLabel?.(item?.pieza)||'';
+        const label=window.DoctorPortalProjects?.labelFor?.(item)||M?.projectLabel?.(item?.pieza)||'';
         if(label&&!el.querySelector('.project-card-label')){
           const title=el.querySelector('h3'),tag=document.createElement('p');
           tag.className='project-card-label';tag.textContent=label;title?.before(tag);
@@ -63,7 +63,24 @@
   const keyOf=v=>String(v||'Sin servicio').trim().replace(/\s+/g,' ').toLocaleUpperCase('es-PE');
   const nameOf=k=>serviceNames[k]||String(k||'Servicio').toLocaleLowerCase('es-PE').replace(/(^|\s|\/\s*)\p{L}/gu,m=>m.toLocaleUpperCase('es-PE'));
   const projectNo=p=>{const visible=Number(p?.metadata?.web_display_number);if(Number.isFinite(visible)&&visible>0)return visible;const identity=Number(p?.metadata?.project_ref_v1?.project_number);return Number.isFinite(identity)&&identity>0?identity:null;};
-  const projectSort=(a,b)=>{const an=projectNo(a?.pieza),bn=projectNo(b?.pieza);if(an&&bn&&an!==bn)return an-bn;if(an&&!bn)return-1;if(!an&&bn)return 1;return pt(a?.pieza).localeCompare(pt(b?.pieza),'es');};
+  let displayIndex={scheduled:new Map(),legacy:new Map(),dates:new Map(),special:new Map(),scheduledRows:[],legacyRows:[]};
+  const compactDate=date=>{if(!date)return'';const d=new Date(date+'T12:00:00');const parts=new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'short'}).formatToParts(d),day=parts.find(x=>x.type==='day')?.value||'',mon=(parts.find(x=>x.type==='month')?.value||'').replace('.','').toUpperCase();return day&&mon?`${day} ${mon}`:'';};
+  function buildDisplayIndex(all=[]){
+    const scheduled=(P?.calendar_items||[]).filter(x=>x?.content_id&&x?.publish_date).map(x=>({...x,_kind:'scheduled'}));
+    if(typeof captureGuide!=='undefined'&&captureGuide?.iso)scheduled.push({content_id:null,publish_date:captureGuide.iso,_kind:'capture',_special:'capture'});
+    scheduled.sort((a,b)=>String(a.publish_date).localeCompare(String(b.publish_date))||String(a._kind).localeCompare(String(b._kind))||String(a.content_id||'').localeCompare(String(b.content_id||'')));
+    const scheduledMap=new Map(),dates=new Map(),special=new Map();
+    scheduled.forEach((row,i)=>{const code=String(i+1).padStart(3,'0');row._displayCode=code;if(row.content_id){scheduledMap.set(row.content_id,code);dates.set(row.content_id,row.publish_date);}if(row._special)special.set(row._special,code);});
+    const scheduledIds=new Set(scheduledMap.keys()),unique=new Map();
+    for(const item of all||[]){const id=item?.pieza?.id;if(id&&!scheduledIds.has(id)&&!unique.has(id))unique.set(id,item);}
+    const legacyRows=[...unique.values()].sort((a,b)=>{const an=Number(a?.pieza?.metadata?.project_ref_v1?.project_number)||999999,bn=Number(b?.pieza?.metadata?.project_ref_v1?.project_number)||999999;if(an!==bn)return an-bn;return pt(a?.pieza).localeCompare(pt(b?.pieza),'es');});
+    const legacy=new Map();legacyRows.forEach((item,i)=>legacy.set(item.pieza.id,`A${i+1}`));
+    displayIndex={scheduled:scheduledMap,legacy,dates,special,scheduledRows:scheduled,legacyRows};
+    return displayIndex;
+  }
+  const displayCode=item=>{const id=item?.pieza?.id;return id?(displayIndex.scheduled.get(id)||displayIndex.legacy.get(id)||''):'';};
+  const labelFor=item=>{const id=item?.pieza?.id;if(!id)return'';const scheduled=displayIndex.scheduled.get(id);if(scheduled)return`PROYECTO ${scheduled}${displayIndex.dates.get(id)?' · '+compactDate(displayIndex.dates.get(id)):''}`;const legacy=displayIndex.legacy.get(id);if(legacy)return`PROYECTO ${legacy} · SEMANA PREVIA`;return M?.projectLabel?.(item?.pieza)||'';};
+  const projectSort=(a,b)=>{const ac=displayCode(a),bc=displayCode(b),rank=c=>/^A\d+$/.test(c)?10000+Number(c.slice(1)):Number(c)||99999,ar=rank(ac),br=rank(bc);if(ar!==br)return ar-br;const an=projectNo(a?.pieza),bn=projectNo(b?.pieza);if(an&&bn&&an!==bn)return an-bn;return pt(a?.pieza).localeCompare(pt(b?.pieza),'es');};
   const sig=()=>active().map(s=>`${s.id}:${s.recorded||0}:${s.total||0}`).sort().join('|')+'|'+(P?.calendar_items||[]).map(x=>`${x.content_id}:${x.publish_date}:${x.slot_status}`).sort().join('|');
   const invalidate=()=>{cache.signature='';cache.all=[];cache.groups=new Map();cache.loading=null;};
 
@@ -76,7 +93,10 @@
       if(!sessions.length){cache.signature=s;cache.all=[];cache.groups=new Map();cache.loading=null;return cache;}
       const details=await Promise.all(sessions.map(async session=>{const data=await api('session_get',{session_id:session.id});return{session:data.session,items:data.items||[]};}));
       const calendarMap=new Map((P?.calendar_items||[]).map(x=>[x.content_id,x]));
-      const all=details.flatMap(d=>(d.items||[]).map(item=>({...item,calendar:calendarMap.get(item?.pieza?.id)||null,_session:d.session}))).sort(projectSort),groups=new Map();
+      const all=details.flatMap(d=>(d.items||[]).map(item=>({...item,calendar:calendarMap.get(item?.pieza?.id)||null,_session:d.session})));
+      buildDisplayIndex(all);
+      all.sort(projectSort);
+      const groups=new Map();
       for(const item of all){const key=keyOf(item?.pieza?.servicio);if(!groups.has(key))groups.set(key,{key,name:nameOf(key),items:[]});groups.get(key).items.push(item);}
       cache.signature=s;cache.all=all;cache.groups=groups;cache.loading=null;return cache;
     })().catch(e=>{cache.loading=null;throw e;});
@@ -86,6 +106,7 @@
   const captureGuide={
     projectNumber:6,
     key:'MARCA-01',
+    iso:'2026-09-26',
     date:'26 SEP',
     title:'Detrás de cámaras',
     subtitle:'Lo que no se ve antes de recibir a una persona',
@@ -143,6 +164,9 @@
   const oldOpenSession=openSession;openSession=async function(id,from='record'){$('vback').innerHTML=`${ic('left')}Volver a la sesión`;return oldOpenSession(id,from);};
   const oldOpenVideo=openVideo;openVideo=function(i){oldOpenVideo(i);const item=Item,legacyRecorded=item?.pieza?.estado==='RECORDED',ready=item?.pieza?.production_status?.PRODUCTION_READY===true||legacyRecorded||item?.estado==='GRABADO',btn=$('recb');if(btn&&!ready){btn.disabled=true;btn.innerHTML='Preparación pendiente';btn.title='Producción todavía no ha dejado esta pieza lista para grabar.';}else if(btn&&legacyRecorded&&item?.estado!=='GRABADO'){btn.innerHTML='Confirmar grabado';btn.title='La pieza ya consta como grabada; este botón sincroniza el estado de la sesión.';}};
   const oldToggleRec=toggleRec;toggleRec=async function(x){if(!S?._serviceKey)return oldToggleRec(x);const key=S._serviceKey;try{await api('mark_piece',{session_piece_id:x.session_piece_id,estado:x.estado==='GRABADO'?'PENDIENTE':'GRABADO'});P=await api('portal_get');invalidate();renderCal();renderHist();await renderRecord();const data=await loadItems();if(data.groups.has(key))await openService(key);else{S=null;resetViews();tab('record');}}catch(e){alert(e.message)}};
+
+  window.DoctorPortalProjects={loadItems,index:()=>displayIndex,labelFor,displayCode,buildDisplayIndex};
+  window.DoctorPortalSpecials=[captureGuide];
 
   const wait=()=>{if(typeof P!=='undefined'&&P){renderRecord();return;}setTimeout(wait,120);};setTimeout(wait,0);
 })();
