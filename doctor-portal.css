@@ -65,3 +65,15 @@ body{overflow-x:hidden}
 @media (max-width:1024px) and (pointer:coarse){
   .tele:fullscreen .tele-panel,.tele:-webkit-full-screen .tele-panel{width:min(560px,calc(100vw - 12px))!important}
 }
+
+/* Draggable fullscreen control panel: larger grab target + explicit centering */
+.tele-drag-handle{display:none;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;min-height:34px;padding:4px 6px 7px;cursor:grab;touch-action:none;user-select:none}
+.tele-drag-handle .tele-drag-pill{justify-self:end;width:54px;height:5px;border-radius:999px;background:#515965}
+.tele-drag-handle small{font:850 9px/1 system-ui;color:#8f98a5;white-space:nowrap}
+.tele-drag-handle #teleCenterPanel{justify-self:end;width:34px;height:30px;border:1px solid #343b46;border-radius:9px;background:#171c23;color:#fff;font:950 16px/1 system-ui;display:grid;place-items:center}
+.tele-panel.tele-panel-draggable .tele-drag-handle{display:grid!important}
+.tele-panel.tele-panel-draggable{touch-action:none}
+.tele-panel.tele-panel-draggable button,.tele-panel.tele-panel-draggable input,.tele-panel.tele-panel-draggable select{touch-action:auto}
+@media (max-width:1024px) and (pointer:coarse){
+  .tele-panel.tele-panel-draggable{width:min(560px,calc(100vw - 12px))!important;max-width:calc(100vw - 12px)!important}
+}
