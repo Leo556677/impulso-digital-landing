@@ -14,6 +14,17 @@
     return `${g('year')}-${g('month')}-${g('day')}`;
   };
   const TODAY=limaToday();
+  const portalSignature=()=>{
+    if(typeof P==='undefined'||!P)return '';
+    const sessions=(P.sessions||[]).map(x=>`${x.id}:${x.total||0}:${x.recorded||0}`).sort().join('|');
+    const cal=(P.calendar_items||[]).map(x=>`${x.calendario_id||''}:${x.content_id||''}:${x.publish_date||''}:${x.slot_status||''}`).sort().join('|');
+    return sessions+'||'+cal;
+  };
+  const waitForPortal=()=>new Promise((resolve,reject)=>{
+    let tries=0;
+    const tick=()=>{if(portalSignature())return resolve(true);if(++tries>80)return reject(Error('El portal todavía no terminó de cargar sus datos.'));setTimeout(tick,75);};
+    tick();
+  });
 
   const THEMES={
     TB:{color:'#2868B8',soft:'#EAF2FF'},
@@ -89,9 +100,17 @@
     if(!force&&planCache)return planCache;
     if(!force&&planPromise)return planPromise;
     planPromise=(async()=>{
+      await waitForPortal();
       const projectApi=window.DoctorPortalProjects;
       if(!projectApi?.loadItems)throw Error('No se pudo abrir la biblioteca de grabación.');
-      const [calendarData,production]=await Promise.all([api('calendar_get'),projectApi.loadItems(force)]);
+      const production=await projectApi.loadItems(force);
+      const rawCalendar=Array.isArray(P?.calendar_items)?P.calendar_items.slice():[];
+      const weekMap=new Map();
+      for(const x of rawCalendar){
+        const id=x?.calendario_id||x?.id;
+        if(id&&!weekMap.has(id))weekMap.set(id,{id,calendar_key:x.calendar_key||'',status:x.status||'ACTIVE',week_start:x.week_start,week_end:x.week_end});
+      }
+      const calendarData={slots:rawCalendar,weeks:[...weekMap.values()]};
       const sessionMap=new Map();
       for(const item of production.all||[]){const id=item?.pieza?.id;if(id&&!sessionMap.has(id))sessionMap.set(id,item);}
 
@@ -102,13 +121,13 @@
         const code=String(i+1).padStart(3,'0'),sessionItem=slot.content_id?sessionMap.get(slot.content_id):null,piece=slot.pieza||sessionItem?.pieza||null;
         if(slot.content_id)officialIds.add(slot.content_id);
         const special=(window.DoctorPortalSpecials||[]).find(x=>x?.iso===slot.publish_date);
-        const isCapture=!slot.content_id&&String(slot.status||'').toUpperCase()==='NEEDS_CAPTURE';
+        const isCapture=!slot.content_id&&String(slot.slot_status||slot.status||'').toUpperCase()==='NEEDS_CAPTURE';
         const kind=slot.content_id?'scheduled':(isCapture?'capture':'placeholder');
         const title=piece?.titulo||piece?.tema||(kind==='capture'?(special?.subtitle||special?.title||'Captura especial'):`Guion pendiente${slot.editorial_key?' · '+slot.editorial_key:''}`);
         const service=piece?.servicio||(kind==='capture'?'MARCA / EQUIPO':serviceFromKey(slot.service_key));
         return{
           kind,code,date:slot.publish_date,calendarId:slot.calendario_id,content_id:slot.content_id||null,title,service,
-          role:roleLabel(slot.strategic_role),slot_status:slot.status||'',piece,sessionItem,special,
+          role:roleLabel(slot.strategic_role),slot_status:slot.slot_status||slot.status||'',piece,sessionItem,special,
           recorded:piece?pieceRecorded(piece,sessionItem):false
         };
       });
