@@ -1,4 +1,16 @@
-const API='https://xnlzsgulskqyecfgzhwa.supabase.co/functions/v1/content-recording-session',KEY='sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',q=new URLSearchParams(location.search),ACCESS_KEY='do_portal_access_v1',initialToken=q.get('token')||localStorage.getItem(ACCESS_KEY)||'',deep=q.get('session')||'',D=document,$=x=>D.getElementById(x),ic=id=>`<svg class="ico"><use href="#${id}"/></svg>`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;let token=initialToken,authJwt='',authClient=null;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));let P=null,S=null,Item=null,backTab='record',calCur=new Date(),selDate='',play=false,last=0,raf=0,fs=44,ai=0;window.__PORTAL_HAS_ACCESS__=token?true:null;
+const API='https://xnlzsgulskqyecfgzhwa.supabase.co/functions/v1/content-recording-session',
+  KEY='sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',
+  q=new URLSearchParams(location.search),
+  ACCESS_KEY='do_portal_access_v1',
+  initialToken=q.get('token')||localStorage.getItem(ACCESS_KEY)||'',
+  deep=q.get('session')||'',
+  D=document,
+  $=x=>D.getElementById(x),
+  ic=id=>`<svg class="ico"><use href="#${id}"/></svg>`,
+  esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let token=initialToken,authJwt='',authClient=null;
+let P=null,S=null,Item=null,backTab='record',calCur=new Date(),selDate='',play=false,last=0,raf=0,fs=44,ai=0;
+window.__PORTAL_HAS_ACCESS__=token?true:null;
 async function api(action,extra={}){window.PortalTrace?.log('API_START',{action,mode:token?'portal-token':authJwt?'user-session':'none'});let r,d;const headers={'Content-Type':'application/json','apikey':KEY};if(authJwt)headers['Authorization']='Bearer '+authJwt;try{r=await fetch(API,{method:'POST',headers,body:JSON.stringify({action,token,business_slug:'dr-olano',...extra})});d=await r.json().catch(()=>({}));window.PortalTrace?.log('API_RESPONSE',{action,http:r.status,http_ok:r.ok,body_ok:d?.ok===true,error:d?.error||'',message:d?.message||''});}catch(e){window.PortalTrace?.error('API_FETCH_ERROR',{action,message:e?.message||String(e),stack:e?.stack||''});throw e}if(!r.ok||!d.ok){const e=new Error(d.message||'No pudimos cargar tu contenido.');window.PortalTrace?.error('API_FAIL',{action,http:r.status,error:d?.error||'',message:e.message,body_keys:Object.keys(d||{})});throw e}return d}async function resolvePortalAccess(){
   if(token){window.__PORTAL_HAS_ACCESS__=true;window.PortalTrace?.log('ACCESS_MODE',{mode:'portal-token'});return true;}
   try{
