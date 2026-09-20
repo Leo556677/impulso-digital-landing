@@ -161,11 +161,14 @@
   }
 
   async function calendarItem(contentId){
-    const data=await loadItems();
-    const found=data.all.find(x=>x?.pieza?.id===contentId);
-    if(found)return found;
+    const summary=(P?.production_items||[]).find(x=>x?.pieza?.id===contentId)||null;
     const extra=await api('piece_get',{content_id:contentId});
-    return extra?.item||null;
+    const item=extra?.item||summary;
+    if(item&&summary){
+      item.session_piece_id=item.session_piece_id||summary.session_piece_id;
+      item.estado=item.estado||summary.estado;
+    }
+    return item||null;
   }
   async function openCalendarItem(contentId,label='',origin='calendar'){
     try{
@@ -195,7 +198,6 @@
       await api('mark_piece',{session_piece_id:item.session_piece_id,estado:'GRABADO'});
       P=await api('portal_get');
       invalidate();
-      await loadItems(true);
       return{ok:true};
     }catch(e){return{ok:false,message:e?.message||'No se pudo marcar como grabado.'};}
   }
