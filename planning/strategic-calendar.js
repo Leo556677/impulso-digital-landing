@@ -125,8 +125,8 @@ function projectClass(s){
  return s?.content_id?'has-project':'pending-project'
 }
 function searchable(s){const item=itemFor(s);return norm([projectLabel(s),s.editorial_key,item?.editorial_key,item?.title,item?.question,item?.signal,item?.payoff,serviceName(s),roleNames[s.strategic_role]||s.strategic_role,s.rationale,s.expected_signal,s.execution_note,statusNames[s.status]||s.status,briefNames[s.brief_status]||s.brief_status].join(' '))}
-function filters(){return{svc:document.querySelector('#strategyService')?.value||'',st:document.querySelector('#strategyStatus')?.value||'',q:norm(document.querySelector('#strategySearch')?.value||'')}}
-function matches(s,f=filters()){return(!f.svc||(s.service_key||'MARCA')===f.svc)&&(!f.st||s.status===f.st)&&(!f.q||searchable(s).includes(f.q))}
+function filters(){return{stream:document.querySelector('#strategyStream')?.value||'',svc:document.querySelector('#strategyService')?.value||'',st:document.querySelector('#strategyStatus')?.value||'',q:norm(document.querySelector('#strategySearch')?.value||'')}}
+function matches(s,f=filters()){return(!f.stream||(s.content_stream||'GENERAL')===f.stream)&&(!f.svc||(s.service_key||'MARCA')===f.svc)&&(!f.st||s.status===f.st)&&(!f.q||searchable(s).includes(f.q))}
 function slotsFor(cal){return slots.filter(s=>s.calendario_id===cal?.id).sort((a,b)=>a.publish_date.localeCompare(b.publish_date))}
 function globalMatches(){const f=filters();return slots.filter(s=>matches(s,f))}
 function currentMatches(){return slotsFor(calendars[current]).filter(s=>matches(s))}
