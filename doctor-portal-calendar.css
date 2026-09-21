@@ -255,28 +255,3 @@
   .record-confirm-actions{grid-template-columns:1fr}
   .record-confirm-actions button{min-height:52px}
 }
-
-
-/* WhatsApp handoff: copied report + clear paste instructions */
-.whatsapp-handoff-overlay{position:fixed;inset:0;z-index:430;display:none;place-items:center;padding:18px;background:rgba(3,4,5,.86);backdrop-filter:blur(8px)}
-.whatsapp-handoff-overlay.on{display:grid}
-.whatsapp-handoff-card{width:min(500px,100%);border:1px solid rgba(255,255,255,.14);border-radius:24px;background:#11161D;color:#fff;padding:26px 22px 22px;box-shadow:0 26px 86px rgba(0,0,0,.52);text-align:center}
-.whatsapp-handoff-icon{width:62px;height:62px;margin:0 auto 12px;border-radius:19px;display:grid;place-items:center;background:#168B50;color:#fff;font:1000 30px/1 system-ui}
-.whatsapp-handoff-kicker{display:block;margin-bottom:6px;font:950 9px/1 system-ui;letter-spacing:.14em;color:#78E3A5}
-.whatsapp-handoff-card h2{margin:0;font-size:26px;line-height:1.08}
-.whatsapp-handoff-card>p{margin:10px auto 16px;max-width:390px;color:#B9C1CC;font:650 13px/1.45 system-ui}
-.whatsapp-handoff-step{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center;text-align:left;margin:8px 0;padding:11px 12px;border:1px solid #2B3440;border-radius:14px;background:#171E27}
-.whatsapp-handoff-step>b{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#243140;color:#fff;font:950 13px/1 system-ui}
-.whatsapp-handoff-step>span{font:750 12px/1.35 system-ui;color:#E8EDF3}
-.whatsapp-handoff-actions{display:grid;grid-template-columns:1fr 1.45fr;gap:10px;margin-top:16px}
-.whatsapp-handoff-actions button{min-height:52px;border:1px solid #343C48;border-radius:14px;background:#1B222C;color:#fff;font:900 11px/1.15 system-ui;padding:10px 12px;cursor:pointer}
-.whatsapp-handoff-actions button.open{border-color:#168B50;background:#168B50}
-.whatsapp-handoff-actions button:disabled{opacity:.6;cursor:wait}
-@media(max-width:560px){
-  .whatsapp-handoff-overlay{align-items:end;padding:12px 12px max(16px,calc(env(safe-area-inset-bottom) + 12px))}
-  .whatsapp-handoff-card{border-radius:24px;padding:22px 16px 16px}
-  .whatsapp-handoff-card h2{font-size:23px}
-  .whatsapp-handoff-card>p{font-size:12px}
-  .whatsapp-handoff-actions{grid-template-columns:1fr}
-  .whatsapp-handoff-actions button.open{order:-1;min-height:56px;font-size:12px}
-}
