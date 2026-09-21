@@ -181,7 +181,7 @@ function statusLabel(s){return statusNames[s.status]||s.status||'Por definir'}
 function compactCard(s){
  const d=dval(s.publish_date),item=itemFor(s),svc=s.service_key||'MARCA',expanded=openId===s.id;
  const weekday=new Intl.DateTimeFormat('es-PE',{weekday:'short'}).format(d).replace('.','').toUpperCase();
- return `<article class="day" data-service="${svc}" data-open="${expanded?'true':'false'}">
+ return `<article class="day" data-service="${svc}" data-stream="${esc(s.content_stream||'GENERAL')}" data-open="${expanded?'true':'false'}">
   <button class="day-toggle" type="button" data-slot="${esc(s.id)}" aria-expanded="${expanded}">
     <div class="accent"></div>
     <div class="day-head"><span class="weekday">${weekday}</span><strong>${d.getDate()}</strong></div>
