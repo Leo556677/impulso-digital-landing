@@ -4,9 +4,12 @@
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   const TELE_HISTORY_KEY='__olanoTeleExitV24';
+  const PORTAL_HISTORY_KEY='__olanoPortalGuardV1';
+  const WHATSAPP_GROUP_JID='120363429125363385@g.us';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
   let planCache=null,planPromise=null,selectedWeek=0,weekInitialized=false,showingPending=false,selectedMobileDate='',filterService='ALL',filterStatus='ALL';
   let teleExitBusy=false,telePromptOpen=false,teleHistoryArmed=false,teleIgnoreNextPop=false,teleHistorySeq=0,teleFullscreenManualUntil=0,teleSuppressFullscreenExit=false;
+  let portalBackSuppressedUntil=0,portalGuardSeq=0;
   const teleTraceRows=[];
   const baseCloseTele=typeof closeTele==='function'?closeTele:null;
   const baseOpenTele=typeof openTele==='function'?openTele:null;
@@ -410,6 +413,7 @@
     try{
       if(history.state?.[TELE_HISTORY_KEY]){
         teleIgnoreNextPop=true;
+        portalBackSuppressedUntil=Date.now()+850;
         history.back();
         setTimeout(()=>{teleIgnoreNextPop=false;},500);
       }
@@ -481,6 +485,99 @@
       showExitPrompt(source);
     }finally{teleExitBusy=false;}
   }
+  function reportDateText(raw){
+    const iso=String(raw||'').slice(0,10);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(iso))return 'Fecha no programada';
+    const d=new Date(iso+'T12:00:00');
+    const value=new Intl.DateTimeFormat('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d);
+    return value.charAt(0).toUpperCase()+value.slice(1);
+  }
+  function recordingReportMeta(item){
+    const calendarRow=(P?.calendar_items||[]).find(x=>x?.content_id===item?.pieza?.id)||null;
+    const project=(item?.__calendarLabel||window.DoctorPortalProjects?.labelFor?.(item)||'PROYECTO SIN NÚMERO').replace(/\s*·.*$/,'').trim();
+    const date=item?.__calendarDate||calendarRow?.publish_date||S?.session?.fecha||TODAY;
+    return{project,date,title:pt(item?.pieza),content_id:item?.pieza?.id||null};
+  }
+  function buildRecordingWhatsAppReport(item){
+    const m=recordingReportMeta(item);
+    return[
+      '📢 *REPORTE DE GRABACIÓN – DR. OLANO*',
+      '',
+      '✅ *Estado:* VIDEO GRABADO',
+      '📅 *Día:* '+reportDateText(m.date),
+      '🆔 *Proyecto:* '+m.project,
+      '🎬 *Video:* '+m.title,
+      '',
+      '📎 *Siguiente paso:* En breve se enviará el video en formato de archivo.'
+    ].join('\n');
+  }
+  function copyRecordingReport(text){
+    try{
+      if(navigator.clipboard?.writeText){
+        navigator.clipboard.writeText(text).then(
+          ()=>window.PortalTrace?.log('WHATSAPP_REPORT_COPIED'),
+          e=>window.PortalTrace?.warn('WHATSAPP_REPORT_COPY_FAIL',{message:e?.message||String(e)})
+        );
+        return;
+      }
+    }catch{}
+    try{
+      const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+    }catch{}
+  }
+  function redirectRecordingReportToWhatsApp(item){
+    const text=buildRecordingWhatsAppReport(item);
+    copyRecordingReport(text);
+    const native='whatsapp://send?jid='+encodeURIComponent(WHATSAPP_GROUP_JID)+'&text='+encodeURIComponent(text);
+    const fallback='https://wa.me/?text='+encodeURIComponent(text);
+    window.PortalTrace?.log('WHATSAPP_GROUP_REDIRECT_START',{jid:WHATSAPP_GROUP_JID,content_id:item?.pieza?.id||null,project:item?.__calendarLabel||null});
+    let departed=false;
+    const onVisibility=()=>{if(document.hidden)departed=true;};
+    const onBlur=()=>{departed=true;};
+    document.addEventListener('visibilitychange',onVisibility,{once:true});
+    window.addEventListener('blur',onBlur,{once:true});
+    try{window.location.href=native;}catch(e){window.PortalTrace?.warn('WHATSAPP_NATIVE_OPEN_FAIL',{message:e?.message||String(e)});}
+    setTimeout(()=>{
+      document.removeEventListener('visibilitychange',onVisibility);
+      window.removeEventListener('blur',onBlur);
+      if(departed||document.hidden||!document.hasFocus())return;
+      window.PortalTrace?.warn('WHATSAPP_GROUP_REDIRECT_FALLBACK',{reason:'native-jid-not-opened'});
+      window.location.href=fallback;
+    },1500);
+  }
+  function armPortalBackGuard(reason='init'){
+    try{
+      if(history.state?.[PORTAL_HISTORY_KEY])return;
+      portalGuardSeq+=1;
+      history.pushState({...history.state,[PORTAL_HISTORY_KEY]:portalGuardSeq},'',location.href);
+      window.PortalTrace?.log('PORTAL_BACK_GUARD_ARMED',{reason,seq:portalGuardSeq});
+    }catch(e){window.PortalTrace?.warn('PORTAL_BACK_GUARD_FAIL',{message:e?.message||String(e)});}
+  }
+  async function handlePortalBrowserBack(e){
+    if(Date.now()<portalBackSuppressedUntil)return;
+    if($('tele')?.classList.contains('on'))return;
+    window.PortalTrace?.log('PORTAL_BACK_DETECTED',{view:document.querySelector('.view.on')?.id||null,pending:showingPending,week:selectedWeek,state:e?.state||null});
+    const vdetail=$('vdetail'),sdetail=$('sdetail');
+    let handled=false,action='root-protected';
+    if(vdetail&&vdetail.style.display!=='none'){
+      handled=true;action='project-detail';$('vback')?.click();
+    }else if(sdetail&&sdetail.style.display!=='none'){
+      handled=true;action='session-detail';$('sback')?.click();
+    }else if(showingPending){
+      handled=true;action='pending-to-calendar';showingPending=false;selectedMobileDate='';await draw();
+    }else{
+      const view=document.querySelector('.view.on')?.id||'calendar';
+      if(view==='history'||view==='record'){
+        handled=true;action=view+'-to-calendar';resetViews();tab('calendar');await draw();
+      }else if(view==='calendar'&&selectedWeek>0){
+        handled=true;action='previous-week';selectedWeek-=1;selectedMobileDate='';await draw();
+      }
+    }
+    window.PortalTrace?.log('PORTAL_BACK_HANDLED',{handled,action});
+    setTimeout(()=>armPortalBackGuard('after-back'),0);
+  }
+
   async function finishTeleExit(recorded){
     const source=$('recordConfirmOverlay')?.dataset.source||'aviso';
     if(!recorded){
@@ -509,6 +606,7 @@
       return;
     }
     if(Item)Item.estado='GRABADO';
+    const reportItem=Item;
     teleExitTrace('GUARDADO_OK',{calendarDirect,origin,session_synced:result?.session_synced!==false});
     hideExitPrompt('guardado');
     await closeTeleAfterDecision('grabado');
@@ -519,6 +617,7 @@
     }else{
       try{if(typeof renderHist==='function')renderHist();}catch{}
     }
+    setTimeout(()=>redirectRecordingReportToWhatsApp(reportItem),180);
   }
 
   function installExitHooks(){
@@ -558,6 +657,10 @@
       armTeleHistory('back-protection');
       requestTeleExit(e,'back-celular');
     });
+    window.addEventListener('popstate',e=>{
+      if($('tele')?.classList.contains('on'))return;
+      handlePortalBrowserBack(e);
+    });
     document.addEventListener('fullscreenchange',()=>{
       const isFull=Boolean(document.fullscreenElement);
       teleExitTrace('FULLSCREEN_CHANGE',{isFull,manual:Date.now()<=teleFullscreenManualUntil,suppressed:teleSuppressFullscreenExit});
@@ -572,6 +675,7 @@
   window.DoctorPortalCalendar={showPending,showCalendar:async()=>{const p=await buildPlan();selectedWeek=currentWeekIndex(p.weeks);showingPending=false;draw();},refresh:async()=>{planCache=null;planPromise=null;if(showingPending)showPending(true);else draw(true);}};
 
   installExitHooks();
+  armPortalBackGuard('portal-load');
   setTimeout(async()=>{
     if(window.__PORTAL_ACCESS_READY__){try{await window.__PORTAL_ACCESS_READY__;}catch{}}
     if(window.__PORTAL_HAS_ACCESS__===false){
