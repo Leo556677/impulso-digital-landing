@@ -3,8 +3,8 @@ const PUBLIC_BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb';
 let BUSINESS=PUBLIC_BUSINESS;
 let BUSINESS_CTX=null;
 
-const names={S1:'Toxina botulínica',S2:'PRP facial',S3:'Limpieza facial',S4:'Liposucción de papada',S5:'Bichectomía',S6:'Rinoplastia'};
-const serviceShort={S1:'TB',S2:'PRP',S3:'LF',S4:'PAP',S5:'BIC',S6:'RIN',MARCA:'EQ'};
+const names={S1:'Toxina botulínica',S2:'PRP facial',S3:'Limpieza facial',S4:'Liposucción de papada',S5:'Blefaroplastia',S6:'Rinoplastia'};
+const serviceShort={S1:'TB',S2:'PRP',S3:'LF',S4:'PAP',S5:'BLE',S6:'RIN',MARCA:'EQ'};
 const roleNames={DOLOR_IDENTIFICACION:'Identificación',VALOR_EDUCACION:'Valor / educación',AUTORIDAD_CONFIANZA:'Autoridad / confianza',OBJECION:'Objeción',VENTA_SUAVE:'Venta suave',HUMANIZACION:'Humanización',COMUNIDAD_RELACION:'Comunidad / relación'};
 const statusNames={PLANNED:'Planificado',NEEDS_CAPTURE:'Requiere captura real',NEEDS_SCRIPT:'Falta guion',SCRIPTED:'Guion listo',APPROVED:'Guion aprobado',RECORDED:'Grabado',READY:'Listo para publicar',PUBLISHED:'Publicado',SKIPPED:'Omitido'};
 const briefNames={NOT_REQUIRED:'Sin preparación adicional',USE_EXISTING_APPROVED:'Usar guion aprobado',READY_TO_SCRIPT:'Brief listo para guion',WAITING_CAPTURE:'Primero capturar material real',BLOCKED:'Bloqueado'};
