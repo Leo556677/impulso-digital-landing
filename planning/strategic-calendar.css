@@ -125,3 +125,25 @@ h1{font-family:Georgia,"Times New Roman",serif;font-size:42px;line-height:1;marg
  .script-paper{padding:17px 16px;max-height:none}
  .script-paper p{font-size:14px;line-height:1.65}
 }
+
+
+/* Parallel operational streams · Estética / Cirugía */
+.strategy-filters{grid-template-columns:132px 145px 145px minmax(220px,1fr) auto auto}
+.day-stack{display:grid;gap:10px;align-content:start;min-width:0}
+.day-stack>.day{height:auto}
+.day-stack .day-toggle{min-height:318px}
+.day[data-stream="ESTETICA"]{--stream-shell:#a35f36}
+.day[data-stream="CIRUGIA"]{--stream-shell:#28566b}
+.day[data-stream="GENERAL"]{--stream-shell:#6c6671}
+.day[data-stream] .project-badge{box-shadow:inset 3px 0 0 var(--stream-shell),inset 0 1px 0 rgba(255,255,255,.16)}
+@media(max-width:1100px){
+  .strategy-filters{grid-template-columns:1fr 1fr 1fr}
+  .strategy-search{grid-column:1/-1}
+  .strategy-filters #strategyResultCount{grid-column:1/-1}
+}
+@media(max-width:760px){
+  .strategy-filters{grid-template-columns:1fr 1fr}
+  .strategy-search{grid-column:1/-1}
+  .day-stack{gap:8px}
+  .day-stack .day-toggle{min-height:300px}
+}
