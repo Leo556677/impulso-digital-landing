@@ -40,7 +40,7 @@ function renderCal(){let a=gp();if(!selDate&&a.length){selDate=a[0].date;calCur=
 function renderHist(){let a=done();$('hsessions').innerHTML=a.length?a.map(s=>`<article class="card hist"><div class="row"><div><div class="date">${esc(fd(s.fecha))}</div><h3>${esc(st(s))}</h3><div class="sub">${ic('cam')}${s.total} videos grabados</div></div><span class="pill ok">${ic('check')} Completada</span></div><button class="cta hopen" data-id="${s.id}">Ver contenido</button></article>`).join(''):'<div class="card empty">Todavía no hay sesiones completadas.</div>';D.querySelectorAll('.hopen').forEach(b=>b.onclick=()=>openSession(b.dataset.id,'history'));let p=gp().slice(0,8);$('hpubs').innerHTML=p.length?p.map(x=>`<article class="card hist"><div class="date">${esc(fd(x.date))}</div><h3>${esc(x.title)}</h3><div class="plats">${ph(x.plats)}</div></article>`).join(''):'<div class="card empty">Todavía no hay publicaciones registradas.</div>'}
 const tele=$('tele'),scr=$('scroll'),lines=$('lines'),sr=$('srange'),fr=$('frange'),telePanel=$('telePanel'),teleDragHandle=$('teleDragHandle');
 let highlightMode='word',wordFactor=1,countdownSeconds=3,countdownActive=false,countdownRun=0,activeConfig='';
-let teleTokens=[],teleWordIndex=0,teleWordElapsed=0,teleDragging=false,teleDragStart=null;
+let teleTokens=[],teleWordIndex=0,teleWordElapsed=0,telePxPerSec=0,teleDragging=false,teleDragStart=null;
 try{
   highlightMode=localStorage.getItem('do_tele_highlight')||'word';
   wordFactor=Math.max(.75,Math.min(1.25,Number(localStorage.getItem('do_tele_wordrate')||1)));
@@ -83,12 +83,19 @@ function tokenFactor(token){
   return t.length>12?1.12:1;
 }
 function tokenDuration(token){return (60/effectiveWpm())*tokenFactor(token)}
+function refreshTeleVelocity(){
+  if(!teleTokens.length||!scr){telePxPerSec=0;return}
+  const first=teleTokens[0],lastToken=teleTokens[teleTokens.length-1],box=scr.getBoundingClientRect(),a=first.getBoundingClientRect(),b=lastToken.getBoundingClientRect();
+  const firstY=a.top-box.top+scr.scrollTop+a.height/2,lastY=b.top-box.top+scr.scrollTop+b.height/2;
+  const travel=Math.max(1,lastY-firstY),seconds=Math.max(1,(teleTokens.length/effectiveWpm())*60);
+  telePxPerSec=Math.max(4,travel/seconds)
+}
 function prepareTeleTrack(reset=true){
   teleTokens=[...D.querySelectorAll('.tele-token')];
   teleTokens.forEach((t,i)=>t.dataset.teleIndex=String(i));
   if(reset){teleWordIndex=0;teleWordElapsed=0}
   else teleWordIndex=Math.max(0,Math.min(teleTokens.length-1,teleWordIndex));
-  paintCurrentWord();
+  refreshTeleVelocity();paintCurrentWord();
   requestAnimationFrame(()=>followCurrentWord(0,true))
 }
 function currentToken(){return teleTokens[Math.max(0,Math.min(teleTokens.length-1,teleWordIndex))]||null}
@@ -166,13 +173,13 @@ function applyF(){
 if($('fdown'))$('fdown').onclick=()=>{fs=Math.max(16,fs-1);applyF()};
 if($('fup'))$('fup').onclick=()=>{fs=Math.min(80,fs+1);applyF()};
 if(fr)fr.oninput=e=>{fs=+e.target.value;applyF()};
-function speedL(){if($('sval'))$('sval').textContent=Math.round(effectiveWpm())+' ppm';try{localStorage.setItem('do_tele_speed',String(sr.value))}catch{}}
+function speedL(){if($('sval'))$('sval').textContent=Math.round(effectiveWpm())+' ppm';try{localStorage.setItem('do_tele_speed',String(sr.value))}catch{};if(tele?.classList.contains('on'))refreshTeleVelocity()}
 sr.oninput=speedL;
 if($('speeddown'))$('speeddown').onclick=()=>{sr.value=String(Math.max(+sr.min,+sr.value-1));speedL()};
 if($('speedup'))$('speedup').onclick=()=>{sr.value=String(Math.min(+sr.max,+sr.value+1));speedL()};
 function playI(){const running=play||countdownActive;$('playb').innerHTML=running?ic('pause'):ic('playi');$('playb').setAttribute('aria-label',running?'Pausar':'Reproducir')}
 function pauseAuto(){play=false;last=0;cancelAnimationFrame(raf);playI()}
-function startAuto(){countdownActive=false;play=true;last=0;teleWordElapsed=0;playI();raf=requestAnimationFrame(tick)}
+function startAuto(){countdownActive=false;play=true;last=0;teleWordElapsed=0;teleWordIndex=nearestTokenToFocus();refreshTeleVelocity();playI();raf=requestAnimationFrame(tick)}
 function delay(ms){return new Promise(r=>setTimeout(r,ms))}
 async function startCountdown(){
   const seconds=Math.max(0,Math.min(5,Number(countdownSeconds)||0));
@@ -183,20 +190,18 @@ async function startCountdown(){
   if(run!==countdownRun)return;if(o)o.hidden=true;startAuto()
 }
 function advanceWord(dt){
-  if(!teleTokens.length)return;
-  teleWordElapsed+=dt;let guard=0;
-  while(teleWordIndex<teleTokens.length-1&&guard++<20){
-    const dur=tokenDuration(currentToken());
-    if(teleWordElapsed<dur)break;
-    teleWordElapsed-=dur;teleWordIndex++;
-  }
-  if(teleWordIndex>=teleTokens.length-1&&teleWordElapsed>=tokenDuration(currentToken())){pauseAuto()}
+  if(!teleTokens.length||!scr)return;
+  const step=Math.max(0,telePxPerSec)*dt,max=Math.max(0,scr.scrollHeight-scr.clientHeight);
+  scr.scrollTop=Math.min(max,scr.scrollTop+step);
+  teleWordIndex=nearestTokenToFocus();teleWordElapsed=0;
 }
 function tick(t){
   if(!play)return;
   if(!last)last=t;
-  const dt=Math.min(.12,(t-last)/1000);last=t;
-  advanceWord(dt);paintCurrentWord();followCurrentWord(dt,false);
+  const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;
+  advanceWord(dt);paintCurrentWord();
+  const end=teleTokens[teleTokens.length-1];
+  if(end&&end.getBoundingClientRect().bottom<=focusY()){pauseAuto();return}
   raf=requestAnimationFrame(tick)
 }
 $('playb').onclick=()=>{
