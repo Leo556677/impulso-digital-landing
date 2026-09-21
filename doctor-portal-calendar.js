@@ -1,11 +1,11 @@
 (()=>{
   'use strict';
-  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'24'});
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'27'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   const TELE_HISTORY_KEY='__olanoTeleExitV24';
   const PORTAL_HISTORY_KEY='__olanoPortalGuardV1';
-  const WHATSAPP_GROUP_JID='120363429125363385@g.us';
+  const WHATSAPP_GROUP_INVITE_URL='https://chat.whatsapp.com/E2zVHOsEd1qEx2nFG3Wexn';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
   let planCache=null,planPromise=null,selectedWeek=0,weekInitialized=false,showingPending=false,selectedMobileDate='',filterService='ALL',filterStatus='ALL';
   let teleExitBusy=false,telePromptOpen=false,teleHistoryArmed=false,teleIgnoreNextPop=false,teleHistorySeq=0,teleFullscreenManualUntil=0,teleSuppressFullscreenExit=false;
@@ -496,40 +496,32 @@
       '📎 *Siguiente paso:* En breve se enviará el video en formato de archivo.'
     ].join('\n');
   }
-  function copyRecordingReport(text){
+  async function copyRecordingReport(text){
+    try{sessionStorage.setItem('do_last_recording_report',text);}catch{}
     try{
       if(navigator.clipboard?.writeText){
-        navigator.clipboard.writeText(text).then(
-          ()=>window.PortalTrace?.log('WHATSAPP_REPORT_COPIED'),
-          e=>window.PortalTrace?.warn('WHATSAPP_REPORT_COPY_FAIL',{message:e?.message||String(e)})
-        );
-        return;
+        await navigator.clipboard.writeText(text);
+        window.PortalTrace?.log('WHATSAPP_REPORT_COPIED',{method:'clipboard'});
+        return true;
       }
-    }catch{}
+    }catch(e){window.PortalTrace?.warn('WHATSAPP_REPORT_COPY_FAIL',{method:'clipboard',message:e?.message||String(e)});}
     try{
       const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';
-      document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
-    }catch{}
+      document.body.appendChild(ta);ta.select();
+      const ok=document.execCommand('copy');
+      ta.remove();
+      window.PortalTrace?.log('WHATSAPP_REPORT_COPIED',{method:'execCommand',ok});
+      return Boolean(ok);
+    }catch(e){
+      window.PortalTrace?.warn('WHATSAPP_REPORT_COPY_FAIL',{method:'execCommand',message:e?.message||String(e)});
+      return false;
+    }
   }
-  function redirectRecordingReportToWhatsApp(item){
+  async function redirectRecordingReportToWhatsApp(item){
     const text=buildRecordingWhatsAppReport(item);
-    copyRecordingReport(text);
-    const native='whatsapp://send?jid='+encodeURIComponent(WHATSAPP_GROUP_JID)+'&text='+encodeURIComponent(text);
-    const fallback='https://wa.me/?text='+encodeURIComponent(text);
-    window.PortalTrace?.log('WHATSAPP_GROUP_REDIRECT_START',{jid:WHATSAPP_GROUP_JID,content_id:item?.pieza?.id||null,project:item?.__calendarLabel||null});
-    let departed=false;
-    const onVisibility=()=>{if(document.hidden)departed=true;};
-    const onBlur=()=>{departed=true;};
-    document.addEventListener('visibilitychange',onVisibility,{once:true});
-    window.addEventListener('blur',onBlur,{once:true});
-    try{window.location.href=native;}catch(e){window.PortalTrace?.warn('WHATSAPP_NATIVE_OPEN_FAIL',{message:e?.message||String(e)});}
-    setTimeout(()=>{
-      document.removeEventListener('visibilitychange',onVisibility);
-      window.removeEventListener('blur',onBlur);
-      if(departed||document.hidden||!document.hasFocus())return;
-      window.PortalTrace?.warn('WHATSAPP_GROUP_REDIRECT_FALLBACK',{reason:'native-jid-not-opened'});
-      window.location.href=fallback;
-    },1500);
+    const copied=await copyRecordingReport(text);
+    window.PortalTrace?.log('WHATSAPP_GROUP_REDIRECT_START',{invite_url:WHATSAPP_GROUP_INVITE_URL,content_id:item?.pieza?.id||null,project:item?.__calendarLabel||null,copied});
+    window.location.href=WHATSAPP_GROUP_INVITE_URL;
   }
   function armPortalBackGuard(reason='init'){
     try{
