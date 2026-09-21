@@ -380,22 +380,7 @@
     }catch(e){host.innerHTML=`<div class="card empty"><b>No pude cargar los pendientes.</b><br>${esc(e?.message||'No se pudo cargar.')}</div>`;}
   }
 
-  function ensureTeleExitTrace(){
-    let box=$('teleExitTrace');
-    if(box)return box;
-    box=document.createElement('div');box.id='teleExitTrace';box.setAttribute('aria-live','polite');
-    box.innerHTML='<div class="tele-exit-trace-head"><b>TRAZA · TELEPROMPTER</b><span id="teleExitTraceState">LISTO</span></div><div id="teleExitTraceRows"></div>';
-    document.body.appendChild(box);
-    return box;
-  }
   function teleExitTrace(event,detail={}){
-    const time=new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-    const row={time,event:String(event),detail};
-    teleTraceRows.push(row);if(teleTraceRows.length>5)teleTraceRows.shift();
-    const box=ensureTeleExitTrace(),rows=$('teleExitTraceRows'),stateEl=$('teleExitTraceState');
-    box.classList.toggle('on',Boolean($('tele')?.classList.contains('on')||telePromptOpen));
-    if(stateEl)stateEl.textContent=String(event).replaceAll('_',' ');
-    if(rows)rows.innerHTML=teleTraceRows.map(x=>'<div><time>'+esc(x.time)+'</time><span>'+esc(x.event.replaceAll('_',' '))+'</span></div>').join('');
     window.PortalTrace?.log('TELE_EXIT_'+String(event),detail);
   }
   function armTeleHistory(reason='open'){
@@ -456,7 +441,7 @@
     teleExitTrace('CERRANDO_TELEPROMPTER',{reason});
     await baseCloseTele?.();
     releaseTeleHistory(reason);
-    setTimeout(()=>ensureTeleExitTrace().classList.remove('on'),500);
+
   }
   async function requestTeleExit(e,source='x'){
     if(e){e.preventDefault?.();e.stopPropagation?.();}
