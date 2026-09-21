@@ -55,7 +55,7 @@
   const compactDate=date=>{if(!date)return'';const d=new Date(date+'T12:00:00');const parts=new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'short'}).formatToParts(d),day=parts.find(x=>x.type==='day')?.value||'',mon=(parts.find(x=>x.type==='month')?.value||'').replace('.','').toUpperCase();return day&&mon?`${day} ${mon}`:'';};
   function buildDisplayIndex(all=[]){
     const scheduled=(P?.calendar_items||[]).filter(x=>x?.content_id&&x?.publish_date).map(x=>({...x,_kind:'scheduled'}));
-    if(typeof captureGuide!=='undefined'&&captureGuide?.iso)scheduled.push({content_id:null,publish_date:captureGuide.iso,_kind:'capture',_special:'capture'});
+    if(typeof captureGuide!=='undefined'&&captureGuide?.iso&&window.DoctorPortalArea?.area==='all')scheduled.push({content_id:null,publish_date:captureGuide.iso,_kind:'capture',_special:'capture'});
     scheduled.sort((a,b)=>String(a.publish_date).localeCompare(String(b.publish_date))||String(a._kind).localeCompare(String(b._kind))||String(a.content_id||'').localeCompare(String(b.content_id||'')));
     const scheduledMap=new Map(),dates=new Map(),special=new Map();
     scheduled.forEach((row,i)=>{const code=String(i+1).padStart(3,'0');row._displayCode=code;if(row.content_id){scheduledMap.set(row.content_id,code);dates.set(row.content_id,row.publish_date);}if(row._special)special.set(row._special,code);});
@@ -79,7 +79,7 @@
     cache.loading=(async()=>{
       const sessions=active();
       if(!sessions.length){cache.signature=s;cache.all=[];cache.groups=new Map();cache.loading=null;return cache;}
-      const details=await Promise.all(sessions.map(async session=>{const data=await api('session_get',{session_id:session.id});return{session:data.session,items:data.items||[]};}));
+      const details=await Promise.all(sessions.map(async session=>{let data=await api('session_get',{session_id:session.id});data=window.DoctorPortalArea?.filterSessionPayload?.(data)||data;return{session:data.session,items:data.items||[]};}));
       const calendarMap=new Map((P?.calendar_items||[]).map(x=>[x.content_id,x]));
       const all=details.flatMap(d=>(d.items||[]).map(item=>({...item,calendar:calendarMap.get(item?.pieza?.id)||null,_session:d.session})));
       buildDisplayIndex(all);
@@ -128,7 +128,7 @@
   function renderServices(groups){
     const host=$('sessions'),list=ordered(groups);host.className='service-grid';
     host.innerHTML=list.length?list.map(g=>{const total=g.items.length,recorded=g.items.filter(isRecorded).length,pending=total-recorded,pc=total?Math.round(recorded/total*100):0;return`<article class="card service-category jsService" data-service="${esc(g.key)}" tabindex="0" role="button" aria-label="Abrir ${esc(g.name)}"><div class="service-card-top"><div><div class="service-eyebrow">SERVICIO</div><h3>${esc(g.name)}</h3><p>${pending} ${pending===1?'proyecto pendiente':'proyectos pendientes'}</p></div><span class="service-arrow">${ic('right')}</span></div><div class="service-card-foot"><span>${recorded}/${total} grabados</span><span>${total} ${total===1?'proyecto':'proyectos'}</span></div><div class="prog"><span style="width:${pc}%"></span></div></article>`;}).join(''):'<div class="card empty"><b>No tienes proyectos pendientes de grabación.</b><br>Cuando exista contenido de producción, aparecerá dentro de su servicio con una etiqueta de estado.</div>';
-    host.insertAdjacentHTML('beforeend',captureCard());
+    if(window.DoctorPortalArea?.area==='all')host.insertAdjacentHTML('beforeend',captureCard());
     host.querySelectorAll('.jsService').forEach(el=>{const open=()=>openService(el.dataset.service);el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}};});
     host.querySelectorAll('.jsCapture').forEach(el=>{const open=()=>openCaptureGuide();el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}};});
   }
@@ -171,7 +171,8 @@
     const summary=(P?.production_items||[]).find(x=>x?.pieza?.id===contentId)||null;
     const calendarRow=(P?.calendar_items||[]).find(x=>x?.content_id===contentId)||null;
     const extra=await api('piece_get',{content_id:contentId});
-    const item=extra?.item||summary;
+    const candidate=extra?.item||summary;
+    const item=candidate&&(!window.DoctorPortalArea||window.DoctorPortalArea.allowsPiece(candidate?.pieza))?candidate:null;
     if(item&&summary){
       item.session_piece_id=item.session_piece_id||summary.session_piece_id;
       item.estado=item.estado||summary.estado;
@@ -248,7 +249,7 @@
   $('vback').onclick=()=>{if(S?._calendarDirect){const origin=S?._calendarOrigin||'calendar';restoreCalendarBack($('vback'));S=null;resetViews();tab('calendar');if(origin==='pending'&&typeof window.DoctorPortalCalendar?.showPending==='function')window.DoctorPortalCalendar.showPending();else if(typeof renderCal==='function')renderCal();return;}if(typeof oldVBack==='function')oldVBack();};
 
   window.DoctorPortalProjects={loadItems,index:()=>displayIndex,labelFor,displayCode,buildDisplayIndex,openCalendarItem,markCalendarRecorded,openCalendarSpecial,calendarItem,showBottomBack,clearBottomBack};
-  window.DoctorPortalSpecials=[captureGuide];
+  window.DoctorPortalSpecials=window.DoctorPortalArea?.area==='all'?[captureGuide]:[];
 
   const wait=()=>{if(typeof P!=='undefined'&&P){if(document.querySelector('.tab[data-tab="record"]'))renderRecord();else window.PortalTrace?.log('PROJECTS_RENDER_RECORD_SKIPPED','Panel Para grabar no existe');return;}setTimeout(wait,120);};setTimeout(wait,0);
 })();
