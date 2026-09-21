@@ -284,7 +284,7 @@
     for(let i=0;i<7;i++){
       const d=new Date(dateObj(week.start));d.setDate(d.getDate()+i);
       const date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,rows=week.rows.filter(x=>x.date===date);
-      days.push(`<div class="cal-week-day ${date===TODAY?'today':''}" ${rows.length?`style="${cssVars(rows[0])}"`:''}>
+      days.push(`<div class="cal-week-day ${date===TODAY?'today':''}" ${rows.length===1?`style="${cssVars(rows[0])}"`:''}>
         <div class="cal-date-head"><span>${weekday(date)}</span><b>${dayOfMonth(date)}</b>${date===TODAY?'<i>HOY</i>':''}</div>
         <div class="cal-day-projects">${rows.length?rows.map(x=>card(x)).join(''):'<div class="cal-empty-day"><span>Sin proyecto</span></div>'}</div>
       </div>`);
