@@ -1,6 +1,6 @@
 # Plan editorial Dr. Olano · edición 2
 
-71 preguntas propuestas en 19 colecciones cerradas: PRP 13 (4+3+2+4), toxina 12, limpieza 12, liposucción de papada 12, bichectomía 12, rinoplastia 10. Otras 26 fichas están en reserva de investigación, fuera de numeración y calendario. La cantidad procede de preguntas distintas del dossier 16/17 y una pregunta adicional de proceso PRP respaldada por P1; no de multiplicar factores ni de cuotas de producción.
+119 preguntas activas en el plan vivo: PRP 21, toxina 22, limpieza 20, liposucción de papada 20, blefaroplastia 16 y rinoplastia 20. Supabase es la fuente de verdad; este README solo resume la edición actual.
 
 ## Uso
 
@@ -13,7 +13,7 @@
 
 ## Numeración y cobertura
 
-Cada colección tiene edición, miembros fijos, episodios y total. Filtros y fechas no renumeran. Cambiar alcance exige otra edición. Las 71 piezas constituyen esta propuesta de ciclo, no un máximo de posibilidades, ni 71 guiones aprobados. Por elección expresa de Kal el 17/09/2026, los seis servicios avanzan en paralelo: una pieza de cada servicio por día natural desde el 21/09/2026. Se conserva la secuencia y numeración de cada colección. Los primeros diez días tienen seis piezas; después se ve la necesidad de ampliar las colecciones más cortas. Las fechas son referenciales y no obligan a grabar ni publicar. La edición anterior se conserva; la vigente usa olano-editorial-v2 y olano-plan-v2.json.
+Cada colección tiene edición, miembros fijos, episodios y total. Filtros y fechas no renumeran. Cambiar alcance exige otra edición. Las 71 piezas constituyen esta propuesta de ciclo, no un máximo de posibilidades, ni 71 guiones aprobados. Los seis servicios activos del Content Engine son toxina botulínica, PRP facial, limpieza facial, liposucción de papada, blefaroplastia y rinoplastia. La edición viva es `olano-editorial-v13`; la calendarización real se decide en Segunda Capa.
 
 La cobertura muestra 8 objetivos × 3 temperaturas y los 3 motivos, 9 categorías, 14 formatos, 15 familias. Distingue intención del plan y uso registrado. Los ceros en metadata heredada no prueban ausencia. RETORNO legado se advierte como relación, no se suma como cuarta temperatura. No se rellena RESERVA sin comprobar ruta/oferta. C5 y familias basadas en testimonios, rutinas, experiencias o experimentos requieren material real. S6 incluye los ocho objetivos; las afirmaciones de oferta, ejecutor y ruta de reserva requieren confirmación antes de usarlas en guiones.
 
