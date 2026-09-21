@@ -64,6 +64,12 @@
     const code=serviceCode(service,kind);
     return{code:code==='DEF'?'VID':code,...(THEMES[code]||THEMES.DEF)};
   }
+  function streamFor(item){
+    const code=serviceCode(item?.service,item?.kind);
+    if(['TB','PRP','LF'].includes(code))return'ESTETICA';
+    if(['RIN','PAP','BLE'].includes(code))return'CIRUGIA';
+    return'GENERAL';
+  }
   function cssVars(item){
     const t=themeFor(item.service,item.kind);
     return`--svc:${t.color};--svc-soft:${t.soft}`;
