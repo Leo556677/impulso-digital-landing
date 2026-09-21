@@ -1,6 +1,6 @@
 (()=>{
   'use strict';
-  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'27'});
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'28'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   const TELE_HISTORY_KEY='__olanoTeleExitV24';
@@ -129,7 +129,9 @@
       rawSlots.sort((a,b)=>String(a.publish_date).localeCompare(String(b.publish_date))||String(a.created_at||'').localeCompare(String(b.created_at||''))||String(a.id).localeCompare(String(b.id)));
       const officialIds=new Set();
       const scheduled=rawSlots.map((slot,i)=>{
-        const code=String(i+1).padStart(3,'0'),sessionItem=slot.content_id?sessionMap.get(slot.content_id):null,piece=slot.pieza||sessionItem?.pieza||null;
+        const sessionItem=slot.content_id?sessionMap.get(slot.content_id):null,piece=slot.pieza||sessionItem?.pieza||null;
+        const isTest=Boolean(piece?.test_id||piece?.metadata?.test_id||piece?.metadata?.portal_test===true);
+        const code=isTest?'PRUEBA':String(i+1).padStart(3,'0');
         if(slot.content_id)officialIds.add(slot.content_id);
         const special=(window.DoctorPortalSpecials||[]).find(x=>x?.iso===slot.publish_date);
         const isCapture=!slot.content_id&&String(slot.slot_status||slot.status||'').toUpperCase()==='NEEDS_CAPTURE';
@@ -137,8 +139,8 @@
         const title=piece?.titulo||piece?.tema||(kind==='capture'?(special?.subtitle||special?.title||'Captura especial'):`Guion pendiente${slot.editorial_key?' · '+slot.editorial_key:''}`);
         const service=piece?.servicio||(kind==='capture'?'MARCA / EQUIPO':serviceFromKey(slot.service_key));
         return{
-          kind,code,date:slot.publish_date,calendarId:slot.calendario_id,content_id:slot.content_id||null,title,service,
-          role:roleLabel(slot.strategic_role),slot_status:slot.slot_status||slot.status||'',piece,sessionItem,special,
+          kind,code,date:slot.publish_date,calendarId:slot.calendario_id,content_id:slot.content_id||null,title,service,isTest,
+          role:isTest?'PRUEBA CONTROLADA':roleLabel(slot.strategic_role),slot_status:slot.slot_status||slot.status||'',piece,sessionItem,special,
           recorded:piece?pieceRecorded(piece,sessionItem):false
         };
       });
@@ -159,7 +161,7 @@
       }));
 
       const pending=[
-        ...scheduled.filter(x=>x.content_id&&!x.recorded),
+        ...scheduled.filter(x=>x.content_id&&!x.recorded&&!x.isTest),
         ...external.filter(x=>!x.recorded)
       ];
 
@@ -204,6 +206,8 @@
   }
 
   function statusMeta(item){
+    if(item.isTest&&item.recorded)return{label:'PRUEBA COMPLETADA',cls:'recorded',icon:'check'};
+    if(item.isTest)return{label:'PRUEBA · FALTA GRABAR',cls:'ready',icon:'cam'};
     if(item.recorded)return{label:'YA GRABADO',cls:'recorded',icon:'check'};
     if(item.kind==='capture')return{label:'CAPTURA PENDIENTE',cls:'capture',icon:'cam'};
     if(item.kind==='placeholder')return{label:'GUION PENDIENTE',cls:'pending',icon:'msg'};
@@ -212,7 +216,7 @@
     return{label:'PENDIENTE',cls:'pending',icon:'msg'};
   }
 
-  function projectLabel(item){return`PROYECTO ${item.code}${item.date?' · '+compactDate(item.date):''}`;}
+  function projectLabel(item){return item?.isTest?`PROYECTO PRUEBA${item.date?' · '+compactDate(item.date):''}`:`PROYECTO ${item.code}${item.date?' · '+compactDate(item.date):''}`;}
 
   function card(item,list=false){
     const st=statusMeta(item),theme=themeFor(item.service,item.kind);
