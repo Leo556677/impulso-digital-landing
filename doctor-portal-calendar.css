@@ -247,16 +247,6 @@
 .record-confirm-actions button.yes{border-color:#168B50;background:#168B50}
 .record-confirm-actions button:disabled{opacity:.55;cursor:wait}
 
-#teleExitTrace{position:fixed;left:max(10px,env(safe-area-inset-left));top:max(76px,calc(env(safe-area-inset-top) + 68px));z-index:390;display:none;width:min(360px,calc(100vw - 20px));border:1px solid rgba(255,255,255,.16);border-radius:12px;background:rgba(7,10,14,.88);color:#fff;padding:8px 9px;box-shadow:0 10px 30px rgba(0,0,0,.28);backdrop-filter:blur(8px);pointer-events:none}
-#teleExitTrace.on{display:block}
-.tele-exit-trace-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
-.tele-exit-trace-head b{font:950 8px/1 system-ui;letter-spacing:.09em;color:#AFC7E7}
-.tele-exit-trace-head span{font:950 8px/1 system-ui;color:#7EF0B0}
-#teleExitTraceRows{display:grid;gap:3px}
-#teleExitTraceRows>div{display:grid;grid-template-columns:58px minmax(0,1fr);gap:7px;align-items:center;font:750 8px/1.2 system-ui}
-#teleExitTraceRows time{color:#8E9AAA}
-#teleExitTraceRows span{color:#E9EEF4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
 @media(max-width:560px){
   .record-confirm-overlay{align-items:end;padding:12px 12px max(16px,calc(env(safe-area-inset-bottom) + 12px))}
   .record-confirm-card{border-radius:22px;padding:22px 16px 16px}
@@ -264,5 +254,4 @@
   .record-confirm-card p{font-size:12px}
   .record-confirm-actions{grid-template-columns:1fr}
   .record-confirm-actions button{min-height:52px}
-  #teleExitTrace{top:max(70px,calc(env(safe-area-inset-top) + 62px));width:min(330px,calc(100vw - 20px))}
 }
