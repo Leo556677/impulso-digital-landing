@@ -196,8 +196,12 @@ function compactCard(s){
 }
 function addDays(iso,n){const d=dval(iso);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
 function calendarColumns(cal){
- const byDate=new Map(slotsFor(cal).map(s=>[s.publish_date,s]));
- return Array.from({length:7},(_,i)=>{const date=addDays(cal.week_start,i),slot=byDate.get(date)||null;return{date,slot}})
+ const byDate=new Map();
+ for(const s of slotsFor(cal)){
+   if(!byDate.has(s.publish_date))byDate.set(s.publish_date,[]);
+   byDate.get(s.publish_date).push(s);
+ }
+ return Array.from({length:7},(_,i)=>{const date=addDays(cal.week_start,i);return{date,slots:byDate.get(date)||[]}})
 }
 function emptyDay(date,hadSlot=false){
  const d=dval(date),weekday=new Intl.DateTimeFormat('es-PE',{weekday:'short'}).format(d).replace('.','').toUpperCase();
