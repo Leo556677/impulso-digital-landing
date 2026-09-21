@@ -47,7 +47,20 @@ try{
   countdownSeconds=Math.max(0,Math.min(5,Number(localStorage.getItem('do_tele_countdown')??3)));
 }catch{}
 function txt(x){let a=(x.tomas||[]).filter(t=>t.que_se_dice).map(t=>t.que_se_dice);return a.length?a:String(x.pieza?.master_script||'').split(/\n+/).filter(Boolean)}
-function teleTextCore(v){return String(v??'').trim().split(/\s+/).filter(Boolean).map(w=>`<span class="tele-token">${esc(w)}</span>`).join(' ')}
+function rehookPhrases(x){return(Array.isArray(x?.pieza?.rehooks)?x.pieza.rehooks:[]).map(r=>String(r?.frase||r?.phrase||r?.texto||r?.text||'').trim()).filter(Boolean)}
+function teleWordKey(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
+function teleTextCore(v,rehooks=[]){
+  const words=String(v??'').trim().split(/\s+/).filter(Boolean),keys=words.map(teleWordKey),marks=Array(words.length).fill(null);
+  rehooks.forEach((phrase,pi)=>{
+    const p=String(phrase||'').trim().split(/\s+/).filter(Boolean),pk=p.map(teleWordKey).filter(Boolean);
+    if(!pk.length||pk.length>keys.length)return;
+    for(let i=0;i<=keys.length-pk.length;i++){
+      let ok=true;for(let j=0;j<pk.length;j++){if(keys[i+j]!==pk[j]){ok=false;break}}
+      if(ok){for(let j=0;j<pk.length;j++)marks[i+j]=pi;break}
+    }
+  });
+  return words.map((w,i)=>`<span class="tele-token${marks[i]!==null?' tele-rehook':''}"${marks[i]!==null?` data-rehook="${marks[i]}"`:''}>${esc(w)}</span>`).join(' ')
+}
 function baseWpm(){return Math.max(60,Math.min(240,Number(sr?.value)||120))}
 function effectiveWpm(){return Math.max(45,Math.min(300,baseWpm()*wordFactor))}
 function tokenFactor(token){
@@ -73,16 +86,29 @@ function visualRowTokens(token){
   const r=token.getBoundingClientRect(),parent=token.parentElement;
   return teleTokens.filter(t=>{if(t.parentElement!==parent)return false;const q=t.getBoundingClientRect();return Math.abs(q.top-r.top)<=2})
 }
+function paintRehookState(){
+  const fy=focusY(),groups=new Map();
+  D.querySelectorAll('.tele-rehook').forEach(t=>{const id=t.dataset.rehook||'0';if(!groups.has(id))groups.set(id,[]);groups.get(id).push(t)});
+  groups.forEach(tokens=>{
+    const last=tokens[tokens.length-1],passed=last.getBoundingClientRect().bottom<fy;
+    tokens.forEach(t=>t.classList.toggle('rehook-passed',passed));
+  });
+  D.querySelectorAll('.line.rehook-line').forEach(line=>{
+    const rs=[...line.querySelectorAll('.tele-rehook')];
+    line.classList.toggle('rehook-passed',rs.length>0&&rs.every(t=>t.classList.contains('rehook-passed')));
+  });
+}
 function paintCurrentWord(){
   const linesAll=[...D.querySelectorAll('.line')],token=currentToken();
   teleTokens.forEach(t=>t.classList.remove('focused'));
   linesAll.forEach(x=>x.classList.remove('active','near'));
-  if(!token)return;
+  if(!token){paintRehookState();return}
   const parent=token.closest('.line');
   const idx=linesAll.indexOf(parent);ai=Math.max(0,idx);
   linesAll.forEach((x,i)=>{x.classList.toggle('active',i===idx);x.classList.toggle('near',Math.abs(i-idx)===1)});
   if(highlightMode==='line')visualRowTokens(token).forEach(t=>t.classList.add('focused'));
-  else token.classList.add('focused')
+  else token.classList.add('focused');
+  paintRehookState()
 }
 function followCurrentWord(dt=0,snap=false){
   const token=currentToken();if(!token)return;
@@ -99,7 +125,9 @@ function nearestTokenToFocus(){
 }
 function openTele(x){
   $('ttitle').textContent=pt(x.pieza);
-  lines.innerHTML=txt(x).map((t,i)=>`<p class="line" data-i="${i}">${teleTextCore(t)}</p>`).join('');
+  const rehooks=rehookPhrases(x);
+  lines.innerHTML=txt(x).map((t,i)=>`<p class="line" data-i="${i}">${teleTextCore(t,rehooks)}</p>`).join('');
+  D.querySelectorAll('.line').forEach(line=>line.classList.toggle('rehook-line',Boolean(line.querySelector('.tele-rehook'))));
   try{
     fs=Number(localStorage.getItem('do_tele_font'))||(innerWidth<600?34:44);
     const savedSpeed=Number(localStorage.getItem('do_tele_speed')||120);sr.value=String(savedSpeed<60?120:savedSpeed)
