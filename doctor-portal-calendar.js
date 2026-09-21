@@ -40,14 +40,14 @@
     LF:{color:'#168CB3',soft:'#E6F6FB'},
     RIN:{color:'#625ED1',soft:'#EFEEFF'},
     PAP:{color:'#7D4BC4',soft:'#F2ECFC'},
-    BIC:{color:'#C6427B',soft:'#FBEAF2'},
+    BLE:{color:'#C6427B',soft:'#FBEAF2'},
     EQ:{color:'#F06424',soft:'#FFE8DE'},
     DEF:{color:'#52657A',soft:'#EDF2F7'}
   };
-  const SERVICE_LABELS={TB:'Toxina botulínica',PRP:'PRP facial',LF:'Limpieza / aparatología',RIN:'Rinoplastia',PAP:'Liposucción de papada',BIC:'Bichectomía',EQ:'Marca / equipo',DEF:'Otros'};
+  const SERVICE_LABELS={TB:'Toxina botulínica',PRP:'PRP facial',LF:'Limpieza / aparatología',RIN:'Rinoplastia',PAP:'Liposucción de papada',BLE:'Blefaroplastia',EQ:'Marca / equipo',DEF:'Otros'};
 
   function serviceFromKey(key){
-    return({S1:'TOXINA BOTULÍNICA',S2:'PRP FACIAL',S3:'LIMPIEZA FACIAL / APARATOLOGÍA',S4:'LIPOSUCCIÓN DE PAPADA',S5:'BICHECTOMÍA',S6:'RINOPLASTIA'})[String(key||'').toUpperCase()]||'CONTENIDO';
+    return({S1:'TOXINA BOTULÍNICA',S2:'PRP FACIAL',S3:'LIMPIEZA FACIAL / APARATOLOGÍA',S4:'LIPOSUCCIÓN DE PAPADA',S5:'BLEFAROPLASTIA',S6:'RINOPLASTIA'})[String(key||'').toUpperCase()]||'CONTENIDO';
   }
   function serviceCode(service,kind){
     if(kind==='capture')return'EQ';
@@ -56,7 +56,7 @@
     if(v.includes('PRP'))return'PRP';
     if(v.includes('RINOP'))return'RIN';
     if(v.includes('PAPADA'))return'PAP';
-    if(v.includes('BICHE'))return'BIC';
+    if(v.includes('BLEFAR'))return'BLE';
     if(v.includes('LIMPIEZA')||v.includes('HIDRA')||v.includes('APARATOLOG'))return'LF';
     return'DEF';
   }
