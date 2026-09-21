@@ -278,3 +278,62 @@
   .cal-project{padding:10px}
   .cal-day-projects{gap:7px}
 }
+
+
+/* Combined Dr. Olano calendar: fixed visual lanes so row 1 and row 2 stay horizontally aligned */
+body[data-portal-area="all"] .cal-week-day{min-height:590px}
+body[data-portal-area="all"] .cal-day-projects{
+  display:grid;
+  grid-template-rows:repeat(2,minmax(0,1fr));
+  gap:8px;
+  min-height:0;
+}
+body[data-portal-area="all"] .cal-project{
+  min-height:0;
+  height:100%;
+  overflow:hidden;
+}
+body[data-portal-area="all"] .cal-project[data-stream="ESTETICA"]{grid-row:1}
+body[data-portal-area="all"] .cal-project[data-stream="CIRUGIA"]{grid-row:2}
+body[data-portal-area="all"] .cal-project h3{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:4;
+  overflow:hidden;
+}
+body[data-portal-area="all"] .cal-role{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+}
+.cal-general-strip{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:150px minmax(0,1fr);
+  gap:10px;
+  align-items:stretch;
+}
+.cal-general-label{
+  border:1px solid #DFE4E9;
+  border-radius:14px;
+  background:#F7F7F8;
+  padding:13px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.cal-general-label span{font-size:8px;font-weight:950;letter-spacing:.08em;color:#747983}
+.cal-general-label b{font-size:13px;color:#202631;margin-top:3px}
+.cal-general-items{min-width:0}
+.cal-general-items .cal-list-row{border:1px solid #DFE4E9;border-radius:14px}
+@media(max-width:900px){
+  body[data-portal-area="all"] .cal-week-day{min-height:560px}
+}
+@media(max-width:720px){
+  body[data-portal-area="all"] .cal-week-day{min-height:0}
+  body[data-portal-area="all"] .cal-day-projects{display:flex;flex-direction:column}
+  body[data-portal-area="all"] .cal-project[data-stream]{grid-row:auto;height:auto;min-height:210px}
+  .cal-general-strip{grid-template-columns:1fr}
+  .cal-general-label{padding:10px 12px}
+}
