@@ -281,17 +281,22 @@
 
   function weekGrid(week){
     const days=[];
+    const splitGeneral=window.DoctorPortalArea?.area==='all';
+    const generalRows=splitGeneral?week.rows.filter(x=>streamFor(x)==='GENERAL'):[];
     for(let i=0;i<7;i++){
       const d=new Date(dateObj(week.start));d.setDate(d.getDate()+i);
-      const date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,rows=week.rows.filter(x=>x.date===date);
+      const date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      const rows=week.rows.filter(x=>x.date===date&&(!splitGeneral||streamFor(x)!=='GENERAL'));
       days.push(`<div class="cal-week-day ${date===TODAY?'today':''}" ${rows.length===1?`style="${cssVars(rows[0])}"`:''}>
         <div class="cal-date-head"><span>${weekday(date)}</span><b>${dayOfMonth(date)}</b>${date===TODAY?'<i>HOY</i>':''}</div>
         <div class="cal-day-projects">${rows.length?rows.map(x=>card(x)).join(''):'<div class="cal-empty-day"><span>Sin proyecto</span></div>'}</div>
       </div>`);
     }
+    const generalStrip=generalRows.length?`<div class="cal-general-strip"><div class="cal-general-label"><span>TRANSVERSAL</span><b>Marca / equipo</b></div><div class="cal-general-items">${generalRows.map(x=>card(x,true)).join('')}</div></div>`:'';
     return`<section class="cal-week-block">
       <header class="cal-week-head"><div><span>SEMANA ${String(week.number).padStart(2,'0')}</span><h2>${esc(weekRange(week.start,week.end))}</h2></div><small>${week.rows.length} ${week.rows.length===1?'proyecto':'proyectos'}</small></header>
       <div class="cal-week-grid">${days.join('')}</div>
+      ${generalStrip}
       ${mobileSelected(week)}
     </section>`;
   }
