@@ -18,7 +18,7 @@ const SERVICE_COLORS={
   'toxina botulinica':['#db2777','#fdf2f8','#be185d'],
   'hydrafacial / limpieza con aparatologia':['#0891b2','#ecfeff','#0e7490'],
   'liposuccion de papada':['#ea580c','#fff7ed','#c2410c'],
-  'bichectomia':['#ca8a04','#fefce8','#a16207']
+  'blefaroplastia':['#ca8a04','#fefce8','#a16207']
 };
 function servicePalette(service){
   const key=norm(service);
