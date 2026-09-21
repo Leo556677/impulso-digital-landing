@@ -154,7 +154,13 @@ function renderWeekNav(){
  const u=new URL(location.href);u.searchParams.set('week',cal.calendar_key);if(BUSINESS_CTX)u.searchParams.set('negocio',BUSINESS);history.replaceState(null,'',u.pathname+u.search);
 }
 function renderFilters(){
- const svc=document.querySelector('#strategyService'),st=document.querySelector('#strategyStatus'),keepSvc=svc.value,keepSt=st.value;
+ const streamEl=document.querySelector('#strategyStream'),svc=document.querySelector('#strategyService'),st=document.querySelector('#strategyStatus');
+ const keepStream=streamEl?.value||'',keepSvc=svc.value,keepSt=st.value;
+ const streams=[...new Set(slots.map(s=>s.content_stream||'GENERAL'))].sort();
+ if(streamEl){
+   streamEl.innerHTML='<option value="">Ambas áreas</option>'+streams.map(k=>`<option value="${esc(k)}">${esc(k==='ESTETICA'?'Medicina estética':k==='CIRUGIA'?'Cirugía':'Transversal')}</option>`).join('');
+   streamEl.value=streams.includes(keepStream)?keepStream:'';
+ }
  const services=[...new Set(slots.map(s=>s.service_key||'MARCA'))].sort();
  svc.innerHTML='<option value="">Todos</option>'+services.map(k=>`<option value="${esc(k)}">${esc(k==='MARCA'?'Marca / equipo':names[k]||k)}</option>`).join('');
  const statuses=[...new Set(slots.map(s=>s.status))];
