@@ -42,9 +42,9 @@
   'use strict';
   if(typeof renderRecord!=='function'||typeof api!=='function')return;
 
-  const serviceOrder=['TOXINA BOTULÍNICA','PRP FACIAL','HYDRAFACIAL / LIMPIEZA CON APARATOLOGÍA','LIPOSUCCIÓN DE PAPADA','BICHECTOMÍA','RINOPLASTIA'];
+  const serviceOrder=['TOXINA BOTULÍNICA','PRP FACIAL','HYDRAFACIAL / LIMPIEZA CON APARATOLOGÍA','LIPOSUCCIÓN DE PAPADA','BLEFAROPLASTIA','RINOPLASTIA'];
   const serviceNames={
-    'TOXINA BOTULÍNICA':'Toxina botulínica','PRP FACIAL':'PRP facial','HYDRAFACIAL / LIMPIEZA CON APARATOLOGÍA':'Limpieza / aparatología','LIPOSUCCIÓN DE PAPADA':'Liposucción de papada','BICHECTOMÍA':'Bichectomía','RINOPLASTIA':'Rinoplastia'
+    'TOXINA BOTULÍNICA':'Toxina botulínica','PRP FACIAL':'PRP facial','HYDRAFACIAL / LIMPIEZA CON APARATOLOGÍA':'Limpieza / aparatología','LIPOSUCCIÓN DE PAPADA':'Liposucción de papada','BLEFAROPLASTIA':'Blefaroplastia','RINOPLASTIA':'Rinoplastia'
   };
   const cache={signature:'',all:[],groups:new Map(),loading:null};
   const isRecorded=x=>x?.estado==='GRABADO'||x?.pieza?.estado==='RECORDED'||x?.pieza?.estado==='PUBLISHED'||x?.pieza?.production_status?.RECORDED===true;
