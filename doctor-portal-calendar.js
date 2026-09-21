@@ -532,13 +532,16 @@
     const native='whatsapp://send?jid='+encodeURIComponent(WHATSAPP_GROUP_JID)+'&text='+encodeURIComponent(text);
     const fallback='https://wa.me/?text='+encodeURIComponent(text);
     window.PortalTrace?.log('WHATSAPP_GROUP_REDIRECT_START',{jid:WHATSAPP_GROUP_JID,content_id:item?.pieza?.id||null,project:item?.__calendarLabel||null});
-    let hidden=false;
-    const onVisibility=()=>{if(document.hidden)hidden=true;};
+    let departed=false;
+    const onVisibility=()=>{if(document.hidden)departed=true;};
+    const onBlur=()=>{departed=true;};
     document.addEventListener('visibilitychange',onVisibility,{once:true});
+    window.addEventListener('blur',onBlur,{once:true});
     try{window.location.href=native;}catch(e){window.PortalTrace?.warn('WHATSAPP_NATIVE_OPEN_FAIL',{message:e?.message||String(e)});}
     setTimeout(()=>{
       document.removeEventListener('visibilitychange',onVisibility);
-      if(hidden||document.hidden)return;
+      window.removeEventListener('blur',onBlur);
+      if(departed||document.hidden||!document.hasFocus())return;
       window.PortalTrace?.warn('WHATSAPP_GROUP_REDIRECT_FALLBACK',{reason:'native-jid-not-opened'});
       window.location.href=fallback;
     },1500);
