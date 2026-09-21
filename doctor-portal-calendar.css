@@ -255,3 +255,26 @@
   .record-confirm-actions{grid-template-columns:1fr}
   .record-confirm-actions button{min-height:52px}
 }
+
+
+/* Operational area separation: group tone != service tone */
+.cal-day-projects{gap:8px}
+.cal-project{
+  flex:1 1 auto;
+  border:1px solid #E3E8EE;
+  border-radius:12px;
+  padding:10px;
+  background:#fff;
+}
+.cal-project[data-stream="ESTETICA"]{--stream:#A35F36;background:linear-gradient(180deg,#FFF9F5,#fff);border-color:#E9D9CD}
+.cal-project[data-stream="CIRUGIA"]{--stream:#28566B;background:linear-gradient(180deg,#F4F9FB,#fff);border-color:#D5E3E9}
+.cal-project[data-stream="GENERAL"]{--stream:#686B73;background:linear-gradient(180deg,#F7F7F8,#fff);border-color:#E0E1E4}
+.cal-project[data-stream] .cal-project-code{background:var(--stream)}
+.cal-list-row[data-stream="ESTETICA"]{--stream:#A35F36;box-shadow:inset 4px 0 0 var(--stream)}
+.cal-list-row[data-stream="CIRUGIA"]{--stream:#28566B;box-shadow:inset 4px 0 0 var(--stream)}
+.cal-list-row[data-stream="GENERAL"]{--stream:#686B73;box-shadow:inset 4px 0 0 var(--stream)}
+.cal-list-row[data-stream] .cal-project-code{background:var(--stream)}
+@media(max-width:720px){
+  .cal-project{padding:10px}
+  .cal-day-projects{gap:7px}
+}
