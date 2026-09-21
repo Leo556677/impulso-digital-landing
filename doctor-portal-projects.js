@@ -169,11 +169,18 @@
 
   async function calendarItem(contentId){
     const summary=(P?.production_items||[]).find(x=>x?.pieza?.id===contentId)||null;
+    const calendarRow=(P?.calendar_items||[]).find(x=>x?.content_id===contentId)||null;
     const extra=await api('piece_get',{content_id:contentId});
     const item=extra?.item||summary;
     if(item&&summary){
       item.session_piece_id=item.session_piece_id||summary.session_piece_id;
       item.estado=item.estado||summary.estado;
+    }
+    if(item&&calendarRow){
+      item.__calendarDate=calendarRow.publish_date||item.__calendarDate||null;
+      item.__calendarWeekStart=calendarRow.week_start||calendarRow.week?.week_start||null;
+      item.__calendarWeekEnd=calendarRow.week_end||calendarRow.week?.week_end||null;
+      item.__calendarEditorialKey=calendarRow.editorial_key||null;
     }
     return item||null;
   }
@@ -182,6 +189,10 @@
       const item=await calendarItem(contentId);
       if(!item){err('No se pudo abrir este proyecto.');return false;}
       item.__calendarLabel=label||item.__calendarLabel||'';
+      if(!item.__calendarDate){
+        const row=(P?.calendar_items||[]).find(x=>x?.content_id===contentId);
+        if(row)item.__calendarDate=row.publish_date||null;
+      }
       backTab='calendar';
       S={_calendarDirect:true,_calendarOrigin:origin,session:item._session||{id:null,nombre:'Calendario',fecha:null,lugar:null,notas:null},items:[item]};
       tab('record');
