@@ -75,7 +75,7 @@ function markTeleRehooks(phrases=[]){
   return matched
 }
 function baseWpm(){return Math.max(60,Math.min(240,Number(sr?.value)||120))}
-function effectiveWpm(){return Math.max(45,Math.min(300,baseWpm()*wordFactor))}
+function effectiveWpm(){return baseWpm()}
 function tokenFactor(token){
   const t=String(token?.textContent||'').trim();
   if(/[.!?…]["')\]]*$/.test(t))return 1.85;
