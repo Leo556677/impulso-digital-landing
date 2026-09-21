@@ -53,10 +53,16 @@ function teleTextCore(v,rehooks=[]){
   const words=String(v??'').trim().split(/\s+/).filter(Boolean),keys=words.map(teleWordKey),marks=Array(words.length).fill(null);
   rehooks.forEach((phrase,pi)=>{
     const p=String(phrase||'').trim().split(/\s+/).filter(Boolean),pk=p.map(teleWordKey).filter(Boolean);
-    if(!pk.length||pk.length>keys.length)return;
-    for(let i=0;i<=keys.length-pk.length;i++){
-      let ok=true;for(let j=0;j<pk.length;j++){if(keys[i+j]!==pk[j]){ok=false;break}}
-      if(ok){for(let j=0;j<pk.length;j++)marks[i+j]=pi;break}
+    if(!pk.length)return;
+    for(let i=0;i<keys.length;i++){
+      if(keys[i]!==pk[0])continue;
+      let j=0,k=i,extra=0;
+      while(k<keys.length&&j<pk.length&&extra<=3){
+        if(keys[k]===pk[j])j++;
+        else extra++;
+        k++;
+      }
+      if(j===pk.length){for(let n=i;n<k;n++)marks[n]=pi;break}
     }
   });
   return words.map((w,i)=>`<span class="tele-token${marks[i]!==null?' tele-rehook':''}"${marks[i]!==null?` data-rehook="${marks[i]}"`:''}>${esc(w)}</span>`).join(' ')
