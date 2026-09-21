@@ -521,11 +521,48 @@
       return false;
     }
   }
-  async function redirectRecordingReportToWhatsApp(item){
+  function ensureWhatsAppHandoff(){
+    let o=document.getElementById('whatsappHandoffOverlay');
+    if(o)return o;
+    o=document.createElement('div');
+    o.id='whatsappHandoffOverlay';
+    o.className='whatsapp-handoff-overlay';
+    o.setAttribute('aria-hidden','true');
+    o.innerHTML=`<div class="whatsapp-handoff-card" role="dialog" aria-modal="true" aria-labelledby="whatsappHandoffTitle">
+      <div class="whatsapp-handoff-icon">✓</div>
+      <span class="whatsapp-handoff-kicker">REPORTE LISTO</span>
+      <h2 id="whatsappHandoffTitle">Reporte copiado</h2>
+      <p>Ahora abriremos directamente el grupo del Dr. Olano.</p>
+      <div class="whatsapp-handoff-step"><b>1</b><span>Toca el cuadro <strong>Mensaje</strong> para abrir el teclado.</span></div>
+      <div class="whatsapp-handoff-step"><b>2</b><span>Pulsa <strong>PEGAR</strong> y luego envía el reporte.</span></div>
+      <div class="whatsapp-handoff-actions">
+        <button type="button" id="whatsappHandoffCopyBtn">COPIAR OTRA VEZ</button>
+        <button type="button" id="whatsappHandoffOpenBtn" class="open">ABRIR GRUPO DEL DR. OLANO</button>
+      </div>
+    </div>`;
+    document.body.appendChild(o);
+    return o;
+  }
+  async function showRecordingReportHandoff(item){
     const text=buildRecordingWhatsAppReport(item);
     const copied=await copyRecordingReport(text);
-    window.PortalTrace?.log('WHATSAPP_GROUP_REDIRECT_START',{invite_url:WHATSAPP_GROUP_INVITE_URL,content_id:item?.pieza?.id||null,project:item?.__calendarLabel||null,copied});
-    window.location.href=WHATSAPP_GROUP_INVITE_URL;
+    const o=ensureWhatsAppHandoff();
+    o.classList.add('on');o.setAttribute('aria-hidden','false');
+    const copyBtn=$('whatsappHandoffCopyBtn'),openBtn=$('whatsappHandoffOpenBtn');
+    if(copyBtn)copyBtn.onclick=async()=>{
+      const ok=await copyRecordingReport(text);
+      copyBtn.textContent=ok?'✓ COPIADO':'COPIAR OTRA VEZ';
+      setTimeout(()=>{copyBtn.textContent='COPIAR OTRA VEZ';},1600);
+    };
+    if(openBtn)openBtn.onclick=async()=>{
+      openBtn.disabled=true;
+      openBtn.textContent='ABRIENDO WHATSAPP…';
+      await copyRecordingReport(text);
+      window.PortalTrace?.log('WHATSAPP_GROUP_REDIRECT_START',{invite_url:WHATSAPP_GROUP_INVITE_URL,content_id:item?.pieza?.id||null,project:item?.__calendarLabel||null,copied});
+      window.location.href=WHATSAPP_GROUP_INVITE_URL;
+      setTimeout(()=>{openBtn.disabled=false;openBtn.textContent='ABRIR GRUPO DEL DR. OLANO';},2200);
+    };
+    window.PortalTrace?.log('WHATSAPP_HANDOFF_VISIBLE',{content_id:item?.pieza?.id||null,copied});
   }
   function armPortalBackGuard(reason='init'){
     try{
@@ -598,7 +635,7 @@
     }else{
       try{if(typeof renderHist==='function')renderHist();}catch{}
     }
-    setTimeout(()=>redirectRecordingReportToWhatsApp(reportItem),180);
+    setTimeout(()=>showRecordingReportHandoff(reportItem),180);
   }
 
   function installExitHooks(){
