@@ -1,11 +1,15 @@
 (()=>{
   'use strict';
-  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'23'});
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'24'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
+  const TELE_HISTORY_KEY='__olanoTeleExitV24';
   let calendarView=localStorage.getItem(VIEW_KEY)==='list'?'list':'week';
   let planCache=null,planPromise=null,selectedWeek=0,weekInitialized=false,showingPending=false,selectedMobileDate='',filterService='ALL',filterStatus='ALL';
+  let teleExitBusy=false,telePromptOpen=false,teleHistoryArmed=false,teleIgnoreNextPop=false,teleHistorySeq=0,teleFullscreenManualUntil=0,teleSuppressFullscreenExit=false;
+  const teleTraceRows=[];
   const baseCloseTele=typeof closeTele==='function'?closeTele:null;
+  const baseOpenTele=typeof openTele==='function'?openTele:null;
 
   const pad=n=>String(n).padStart(2,'0');
   const dateObj=iso=>new Date(String(iso)+'T12:00:00');
@@ -373,12 +377,54 @@
     }catch(e){host.innerHTML=`<div class="card empty"><b>No pude cargar los pendientes.</b><br>${esc(e?.message||'No se pudo cargar.')}</div>`;}
   }
 
+  function ensureTeleExitTrace(){
+    let box=$('teleExitTrace');
+    if(box)return box;
+    box=document.createElement('div');box.id='teleExitTrace';box.setAttribute('aria-live','polite');
+    box.innerHTML='<div class="tele-exit-trace-head"><b>TRAZA · TELEPROMPTER</b><span id="teleExitTraceState">LISTO</span></div><div id="teleExitTraceRows"></div>';
+    document.body.appendChild(box);
+    return box;
+  }
+  function teleExitTrace(event,detail={}){
+    const time=new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+    const row={time,event:String(event),detail};
+    teleTraceRows.push(row);if(teleTraceRows.length>5)teleTraceRows.shift();
+    const box=ensureTeleExitTrace(),rows=$('teleExitTraceRows'),stateEl=$('teleExitTraceState');
+    box.classList.toggle('on',Boolean($('tele')?.classList.contains('on')||telePromptOpen));
+    if(stateEl)stateEl.textContent=String(event).replaceAll('_',' ');
+    if(rows)rows.innerHTML=teleTraceRows.map(x=>'<div><time>'+esc(x.time)+'</time><span>'+esc(x.event.replaceAll('_',' '))+'</span></div>').join('');
+    window.PortalTrace?.log('TELE_EXIT_'+String(event),detail);
+  }
+  function armTeleHistory(reason='open'){
+    if(teleHistoryArmed)return;
+    try{
+      teleHistorySeq+=1;
+      history.pushState({...history.state,[TELE_HISTORY_KEY]:teleHistorySeq},'',location.href);
+      teleHistoryArmed=true;
+      teleExitTrace('BACK_ARMED',{reason,seq:teleHistorySeq});
+    }catch(e){window.PortalTrace?.warn('TELE_HISTORY_ARM_FAIL',{message:e?.message||String(e)});}
+  }
+  function releaseTeleHistory(reason='close'){
+    if(!teleHistoryArmed)return;
+    teleHistoryArmed=false;
+    try{
+      if(history.state?.[TELE_HISTORY_KEY]){
+        teleIgnoreNextPop=true;
+        history.back();
+        setTimeout(()=>{teleIgnoreNextPop=false;},500);
+      }
+      teleExitTrace('BACK_RELEASED',{reason});
+    }catch(e){teleIgnoreNextPop=false;window.PortalTrace?.warn('TELE_HISTORY_RELEASE_FAIL',{message:e?.message||String(e)});}
+  }
   function ensureRecordPrompt(){
     let o=document.getElementById('recordConfirmOverlay');if(o)return o;
     o=document.createElement('div');o.id='recordConfirmOverlay';o.className='record-confirm-overlay';o.setAttribute('aria-hidden','true');
     o.innerHTML=`<div class="record-confirm-card" role="dialog" aria-modal="true" aria-labelledby="recordConfirmTitle">
-      <div class="record-confirm-icon">${ic('cam')}</div><h2 id="recordConfirmTitle">¿Ya cumpliste con grabar?</h2>
-      <p>Confirma el estado antes de salir del teleprompter.</p><div id="recordConfirmError" class="record-confirm-error"></div>
+      <div class="record-confirm-icon">${ic('cam')}</div>
+      <span class="record-confirm-kicker">ANTES DE SALIR</span>
+      <h2 id="recordConfirmTitle">¿Ya cumpliste con grabar?</h2>
+      <p id="recordConfirmCopy">Confirma el estado antes de salir del teleprompter.</p>
+      <div id="recordConfirmError" class="record-confirm-error"></div>
       <div class="record-confirm-actions"><button type="button" id="recordNoBtn">No grabé</button><button type="button" id="recordYesBtn" class="yes">${ic('check')} Sí, grabé</button></div>
     </div>`;
     document.body.appendChild(o);
@@ -386,34 +432,138 @@
     document.getElementById('recordYesBtn').onclick=()=>finishTeleExit(true);
     return o;
   }
-  function showExitPrompt(){
-    const o=ensureRecordPrompt();$('recordConfirmError').textContent='';$('recordYesBtn').disabled=false;o.classList.add('on');o.setAttribute('aria-hidden','false');
+  function showExitPrompt(source='salida'){
+    const o=ensureRecordPrompt(),pieceAlready=pieceRecorded(Item?.pieza,Item),sessionAlready=Item?.estado==='GRABADO';
+    telePromptOpen=true;
+    $('recordConfirmError').textContent='';
+    $('recordYesBtn').disabled=false;
+    $('recordConfirmCopy').textContent=pieceAlready&&!sessionAlready
+      ? 'Este video ya figura grabado o publicado, pero la sesión todavía está pendiente. Confirma para sincronizarla.'
+      : 'Si eliges “Sí, grabé”, el estado se actualizará en el calendario y en el control de grabación.';
+    o.dataset.source=source;o.classList.add('on');o.setAttribute('aria-hidden','false');
+    teleExitTrace('AVISO_VISIBLE',{source,calendarDirect:Boolean(S?._calendarDirect),hasSessionPiece:Boolean(Item?.session_piece_id),pieceAlready,sessionAlready});
   }
-  function hideExitPrompt(){const o=$('recordConfirmOverlay');if(o){o.classList.remove('on');o.setAttribute('aria-hidden','true');}}
-  async function requestTeleExit(e){
+  function hideExitPrompt(reason='hide'){
+    const o=$('recordConfirmOverlay');telePromptOpen=false;
+    if(o){o.classList.remove('on');o.setAttribute('aria-hidden','true');}
+    teleExitTrace('AVISO_OCULTO',{reason});
+  }
+  async function closeTeleAfterDecision(reason='close'){
+    teleExitTrace('CERRANDO_TELEPROMPTER',{reason});
+    await baseCloseTele?.();
+    releaseTeleHistory(reason);
+    setTimeout(()=>ensureTeleExitTrace().classList.remove('on'),500);
+  }
+  async function requestTeleExit(e,source='x'){
     if(e){e.preventDefault?.();e.stopPropagation?.();}
-    try{if(document.fullscreenElement)await document.exitFullscreen()}catch{}
-    await new Promise(r=>setTimeout(r,60));
-    if(!S?._calendarDirect){await baseCloseTele?.();return;}
-    if(pieceRecorded(Item?.pieza,Item)){await baseCloseTele?.();return;}
-    showExitPrompt();
+    if(!$('tele')?.classList.contains('on'))return;
+    if(telePromptOpen){teleExitTrace('SALIDA_IGNORADA_AVISO_ABIERTO',{source});return;}
+    if(teleExitBusy){teleExitTrace('SALIDA_DUPLICADA',{source});return;}
+    teleExitBusy=true;
+    teleExitTrace('SALIDA_SOLICITADA',{source,fullscreen:Boolean(document.fullscreenElement),calendarDirect:Boolean(S?._calendarDirect),itemState:Item?.estado||null,sessionPiece:Item?.session_piece_id||null});
+    try{
+      if(document.fullscreenElement){
+        teleSuppressFullscreenExit=true;
+        try{await document.exitFullscreen();teleExitTrace('FULLSCREEN_CERRADO',{source});}catch(err){teleExitTrace('FULLSCREEN_ERROR',{message:err?.message||String(err)});}
+        await new Promise(r=>setTimeout(r,80));
+        setTimeout(()=>{teleSuppressFullscreenExit=false;},350);
+      }
+      if(!Item){
+        teleExitTrace('SIN_ITEM',{source});
+        await closeTeleAfterDecision('sin-item');
+        return;
+      }
+      if(Item?.estado==='GRABADO'){
+        teleExitTrace('YA_GRABADO',{source});
+        await closeTeleAfterDecision('ya-grabado');
+        return;
+      }
+      showExitPrompt(source);
+    }finally{teleExitBusy=false;}
   }
   async function finishTeleExit(recorded){
-    if(!recorded){hideExitPrompt();baseCloseTele?.();return;}
-    const yes=$('recordYesBtn'),error=$('recordConfirmError');yes.disabled=true;error.textContent='Guardando…';
-    const origin=S?._calendarOrigin||'calendar',result=await window.DoctorPortalProjects?.markCalendarRecorded?.(Item);
-    if(!result?.ok){error.textContent=result?.message||'No se pudo marcar como grabado.';yes.disabled=false;return;}
+    const source=$('recordConfirmOverlay')?.dataset.source||'aviso';
+    if(!recorded){
+      teleExitTrace('RESPUESTA_NO_GRABE',{source});
+      hideExitPrompt('no-grabe');
+      await closeTeleAfterDecision('no-grabe');
+      return;
+    }
+    const yes=$('recordYesBtn'),error=$('recordConfirmError');
+    yes.disabled=true;error.textContent='Guardando y sincronizando…';
+    teleExitTrace('RESPUESTA_SI_GRABE',{source,content_id:Item?.pieza?.id||null,session_piece_id:Item?.session_piece_id||null});
+    const origin=S?._calendarOrigin||'calendar',calendarDirect=Boolean(S?._calendarDirect);
+    let result=null;
+    try{
+      result=await window.DoctorPortalProjects?.markCalendarRecorded?.(Item);
+      if(!result?.ok&&Item?.session_piece_id){
+        await api('mark_piece',{session_piece_id:Item.session_piece_id,estado:'GRABADO'});
+        P=await api('portal_get');
+        result={ok:true,fallback:true};
+      }
+    }catch(e){result={ok:false,message:e?.message||String(e)};}
+    if(!result?.ok){
+      error.textContent=result?.message||'No se pudo marcar como grabado.';
+      yes.disabled=false;
+      teleExitTrace('GUARDADO_ERROR',{message:error.textContent});
+      return;
+    }
     if(Item)Item.estado='GRABADO';
-    hideExitPrompt();baseCloseTele?.();S=null;resetViews();tab('calendar');planCache=null;planPromise=null;
-    if(origin==='pending')await showPending(true);else await draw(true);
+    teleExitTrace('GUARDADO_OK',{calendarDirect,origin,session_synced:result?.session_synced!==false});
+    hideExitPrompt('guardado');
+    await closeTeleAfterDecision('grabado');
+    planCache=null;planPromise=null;
+    if(calendarDirect){
+      S=null;resetViews();tab('calendar');
+      if(origin==='pending')await showPending(true);else await draw(true);
+    }else{
+      try{if(typeof renderHist==='function')renderHist();}catch{}
+    }
   }
 
   function installExitHooks(){
+    if(baseOpenTele&&baseOpenTele.__olanoExitWrapped!==true){
+      const wrapped=function(x){
+        const result=baseOpenTele(x);
+        armTeleHistory('teleprompter-open');
+        teleExitTrace('TELEPROMPTER_ABIERTO',{content_id:x?.pieza?.id||null,title:pt(x?.pieza),calendarDirect:Boolean(S?._calendarDirect),sessionPiece:x?.session_piece_id||null});
+        return result;
+      };
+      wrapped.__olanoExitWrapped=true;
+      openTele=wrapped;
+    }
     const top=$('closeb'),bottom=$('closeb2');
-    if(top){top.onclick=null;top.addEventListener('click',requestTeleExit,{capture:true});}
-    if(bottom){bottom.onclick=null;bottom.addEventListener('click',requestTeleExit,{capture:true});}
+    if(top){
+      top.onclick=e=>requestTeleExit(e,'x-superior');
+      top.addEventListener('pointerup',()=>teleExitTrace('X_POINTER',{button:'superior'}),{passive:true});
+    }
+    if(bottom){
+      bottom.onclick=e=>requestTeleExit(e,'x-inferior');
+    }
+    $('fullb')?.addEventListener('click',()=>{
+      teleFullscreenManualUntil=Date.now()+1400;
+      teleExitTrace('BOTON_FULLSCREEN',{entering:!document.fullscreenElement});
+    },{capture:true});
     document.addEventListener('keydown',e=>{
-      if(e.key==='Escape'&&$('tele')?.classList.contains('on')){e.preventDefault();requestTeleExit(e);}
+      if(e.key==='Escape'&&$('tele')?.classList.contains('on')){
+        if(document.fullscreenElement)return;
+        e.preventDefault();requestTeleExit(e,'escape');
+      }
+    });
+    window.addEventListener('popstate',e=>{
+      if(teleIgnoreNextPop){teleIgnoreNextPop=false;window.PortalTrace?.log('TELE_EXIT_POP_IGNORED');return;}
+      if(!$('tele')?.classList.contains('on'))return;
+      teleHistoryArmed=false;
+      teleExitTrace('BACK_CELULAR_DETECTADO',{state:e.state||null});
+      armTeleHistory('back-protection');
+      requestTeleExit(e,'back-celular');
+    });
+    document.addEventListener('fullscreenchange',()=>{
+      const isFull=Boolean(document.fullscreenElement);
+      teleExitTrace('FULLSCREEN_CHANGE',{isFull,manual:Date.now()<=teleFullscreenManualUntil,suppressed:teleSuppressFullscreenExit});
+      if(isFull||!$('tele')?.classList.contains('on')||teleSuppressFullscreenExit)return;
+      if(Date.now()<=teleFullscreenManualUntil)return;
+      requestTeleExit(null,'back-fullscreen');
     });
   }
 

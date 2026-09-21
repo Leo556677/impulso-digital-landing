@@ -199,14 +199,29 @@
   }
   async function markCalendarRecorded(item){
     if(!item)return{ok:false,message:'Proyecto no disponible.'};
-    if(item.estado==='GRABADO'||item?.pieza?.estado==='RECORDED'||item?.pieza?.production_status?.RECORDED===true||item?.pieza?.estado==='PUBLISHED')return{ok:true,already:true};
-    if(!item.session_piece_id)return{ok:false,message:'Este proyecto todavía no está vinculado a una sesión de grabación.'};
+    const pieceAlready=item?.pieza?.estado==='RECORDED'||item?.pieza?.production_status?.RECORDED===true||item?.pieza?.estado==='PUBLISHED';
+    const sessionAlready=item.estado==='GRABADO';
+    if(sessionAlready&&pieceAlready)return{ok:true,already:true,session_synced:true};
+    if(!item.session_piece_id){
+      if(pieceAlready)return{ok:true,already:true,session_synced:false,message:'La pieza ya figura grabada/publicada, pero no tiene vínculo de sesión para sincronizar.'};
+      return{ok:false,message:'Este proyecto todavía no está vinculado a una sesión de grabación.'};
+    }
     try{
+      window.PortalTrace?.log('RECORD_SYNC_START',{content_id:item?.pieza?.id||null,session_piece_id:item.session_piece_id,pieceAlready,sessionAlready});
       await api('mark_piece',{session_piece_id:item.session_piece_id,estado:'GRABADO'});
+      item.estado='GRABADO';
+      if(item.pieza){
+        item.pieza.production_status={...(item.pieza.production_status||{}),RECORDED:true};
+        if(item.pieza.estado==='APPROVED')item.pieza.estado='RECORDED';
+      }
       P=await api('portal_get');
       invalidate();
-      return{ok:true};
-    }catch(e){return{ok:false,message:e?.message||'No se pudo marcar como grabado.'};}
+      window.PortalTrace?.log('RECORD_SYNC_OK',{content_id:item?.pieza?.id||null,session_piece_id:item.session_piece_id,pieceAlready});
+      return{ok:true,already:pieceAlready,session_synced:true};
+    }catch(e){
+      window.PortalTrace?.error('RECORD_SYNC_FAIL',{content_id:item?.pieza?.id||null,session_piece_id:item.session_piece_id,message:e?.message||String(e)});
+      return{ok:false,message:e?.message||'No se pudo marcar como grabado.'};
+    }
   }
   function openCalendarSpecial(kind){
     if(kind==='capture'){openCaptureGuide('calendar');return true;}
