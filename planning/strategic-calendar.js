@@ -310,10 +310,13 @@ function renderDetail(){
 }
 function render(){
  if(!calendars.length)return;
- const global=globalMatches(),week=currentMatches(),root=document.querySelector('#calendarApp'),cal=calendars[current],visibleIds=new Set(week.map(s=>s.id));
+ const global=globalMatches(),week=currentMatches(),root=document.querySelector('#calendarApp'),cal=calendars[current];
  document.querySelector('#strategyResultCount').textContent=`${global.length} resultado${global.length===1?'':'s'} · ${new Set(global.map(x=>x.calendario_id)).size} semana${new Set(global.map(x=>x.calendario_id)).size===1?'':'s'}`;
  renderWeekNav();renderStats(week);
- const cards=calendarColumns(cal).map(({date,slot})=>slot&&visibleIds.has(slot.id)?compactCard(slot):emptyDay(date,Boolean(slot))).join('');
+ const cards=calendarColumns(cal).map(({date,slots:daySlots})=>{
+   const visible=daySlots.filter(s=>matches(s));
+   return `<div class="day-stack">${visible.length?visible.map(compactCard).join(''):emptyDay(date,daySlots.length>0)}</div>`;
+ }).join('');
  root.innerHTML=`<div class="calendar-shell"><div class="day-grid">${cards}</div></div>`;
  root.querySelectorAll('[data-slot]').forEach(btn=>btn.addEventListener('click',()=>{openId=openId===btn.dataset.slot?null:btn.dataset.slot;render()}));
  renderDetail();
