@@ -355,10 +355,11 @@ async function load(){
   document.querySelector('#prevWeek').addEventListener('click',()=>{if(current>0){current--;openId=null;render()}});
   document.querySelector('#nextWeek').addEventListener('click',()=>{if(current<calendars.length-1){current++;openId=null;render()}});
   document.querySelector('#weekSelect').addEventListener('change',e=>{current=Number(e.target.value)||0;openId=null;render()});
+  document.querySelector('#strategyStream')?.addEventListener('change',onFilter);
   document.querySelector('#strategyService').addEventListener('change',onFilter);
   document.querySelector('#strategyStatus').addEventListener('change',onFilter);
   document.querySelector('#strategySearch').addEventListener('input',onFilter);
-  document.querySelector('#strategyReset').addEventListener('click',()=>{document.querySelector('#strategyService').value='';document.querySelector('#strategyStatus').value='';document.querySelector('#strategySearch').value='';openId=null;render()});
+  document.querySelector('#strategyReset').addEventListener('click',()=>{if(document.querySelector('#strategyStream'))document.querySelector('#strategyStream').value='';document.querySelector('#strategyService').value='';document.querySelector('#strategyStatus').value='';document.querySelector('#strategySearch').value='';openId=null;render()});
  }catch(err){
   root.innerHTML=`<div class="error">No se pudo cargar el calendario estratégico: ${esc(err?.message||err)}</div>`;
  }
