@@ -122,3 +122,40 @@ body{overflow-x:hidden}
 @media(max-width:600px){
   .line.rehook-line::before{font-size:.28em}
 }
+
+
+/* Teleprompter legibility V2: never split a word between visual rows */
+.line{
+  hyphens:none!important;
+  -webkit-hyphens:none!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+}
+.tele-token{white-space:nowrap!important}
+
+/* Put the rehook cue exactly where the rehook begins. */
+.line.rehook-line::before{content:none!important}
+.tele-token.tele-rehook.rehook-start::before{
+  content:"ÉNFASIS · PAUSA";
+  display:inline-block;
+  margin:0 .45em 0 0;
+  padding:.28em .48em;
+  border-radius:.45em;
+  background:rgba(70,229,138,.12);
+  border:1px solid rgba(70,229,138,.55);
+  color:#46E58A;
+  font-size:.30em;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.08em;
+  vertical-align:.24em;
+  text-shadow:none;
+}
+.tele-token.tele-rehook.rehook-start.rehook-passed::before{
+  background:rgba(255,90,103,.12);
+  border-color:rgba(255,90,103,.55);
+  color:#FF5A67;
+}
+@media(max-width:600px){
+  .tele-token.tele-rehook.rehook-start::before{font-size:.34em}
+}
