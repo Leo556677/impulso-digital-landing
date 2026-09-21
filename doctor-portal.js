@@ -52,7 +52,7 @@ function teleWordKey(v){return String(v??'').normalize('NFD').replace(/[\u0300-\
 function teleTextCore(v){return String(v??'').trim().split(/\s+/).filter(Boolean).map(w=>`<span class="tele-token">${esc(w)}</span>`).join(' ')}
 function markTeleRehooks(phrases=[]){
   const tokens=[...D.querySelectorAll('.tele-token')],keys=tokens.map(t=>teleWordKey(t.textContent));let matched=0;
-  tokens.forEach(t=>{t.classList.remove('tele-rehook','rehook-passed');delete t.dataset.rehook});
+  tokens.forEach(t=>{t.classList.remove('tele-rehook','rehook-passed','rehook-start','rehook-end');delete t.dataset.rehook});
   phrases.forEach((phrase,pi)=>{
     const pk=String(phrase||'').trim().split(/\s+/).map(teleWordKey).filter(Boolean);
     if(!pk.length)return;
@@ -66,6 +66,7 @@ function markTeleRehooks(phrases=[]){
       }
       if(j===pk.length){
         for(let n=i;n<k;n++){tokens[n].classList.add('tele-rehook');tokens[n].dataset.rehook=String(pi)}
+        tokens[i].classList.add('rehook-start');tokens[Math.max(i,k-1)].classList.add('rehook-end');
         matched++;break
       }
     }
