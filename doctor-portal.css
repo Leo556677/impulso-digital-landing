@@ -77,3 +77,48 @@ body{overflow-x:hidden}
 @media (max-width:1024px) and (pointer:coarse){
   .tele-panel.tele-panel-draggable{width:min(560px,calc(100vw - 12px))!important;max-width:calc(100vw - 12px)!important}
 }
+
+
+/* Teleprompter rehooks: upcoming = green, fully past the reading line = red */
+.line.rehook-line{
+  position:relative;
+  opacity:.94!important;
+  padding-top:.62em;
+}
+.line.rehook-line::before{
+  content:"ÉNFASIS · PAUSA";
+  position:absolute;
+  top:0;
+  left:0;
+  font-size:.23em;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.12em;
+  color:#46E58A;
+  text-shadow:0 0 18px rgba(70,229,138,.24);
+}
+.line.rehook-line.rehook-passed::before{
+  color:#FF5A67;
+  text-shadow:0 0 18px rgba(255,90,103,.22);
+}
+.tele-token.tele-rehook{
+  color:#46E58A!important;
+  font-weight:950;
+  text-shadow:0 0 15px rgba(70,229,138,.22);
+}
+.tele-token.tele-rehook.rehook-passed{
+  color:#FF5A67!important;
+  text-shadow:0 0 15px rgba(255,90,103,.22);
+}
+.tele-token.tele-rehook.focused{
+  color:#46E58A!important;
+  text-decoration:underline;
+  text-decoration-thickness:.09em;
+  text-underline-offset:.12em;
+}
+.tele-token.tele-rehook.rehook-passed.focused{
+  color:#FF5A67!important;
+}
+@media(max-width:600px){
+  .line.rehook-line::before{font-size:.28em}
+}
