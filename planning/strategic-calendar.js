@@ -154,7 +154,13 @@ function renderWeekNav(){
  const u=new URL(location.href);u.searchParams.set('week',cal.calendar_key);if(BUSINESS_CTX)u.searchParams.set('negocio',BUSINESS);history.replaceState(null,'',u.pathname+u.search);
 }
 function renderFilters(){
- const svc=document.querySelector('#strategyService'),st=document.querySelector('#strategyStatus'),keepSvc=svc.value,keepSt=st.value;
+ const streamEl=document.querySelector('#strategyStream'),svc=document.querySelector('#strategyService'),st=document.querySelector('#strategyStatus');
+ const keepStream=streamEl?.value||'',keepSvc=svc.value,keepSt=st.value;
+ const streams=[...new Set(slots.map(s=>s.content_stream||'GENERAL'))].sort();
+ if(streamEl){
+   streamEl.innerHTML='<option value="">Ambas áreas</option>'+streams.map(k=>`<option value="${esc(k)}">${esc(k==='ESTETICA'?'Medicina estética':k==='CIRUGIA'?'Cirugía':'Transversal')}</option>`).join('');
+   streamEl.value=streams.includes(keepStream)?keepStream:'';
+ }
  const services=[...new Set(slots.map(s=>s.service_key||'MARCA'))].sort();
  svc.innerHTML='<option value="">Todos</option>'+services.map(k=>`<option value="${esc(k)}">${esc(k==='MARCA'?'Marca / equipo':names[k]||k)}</option>`).join('');
  const statuses=[...new Set(slots.map(s=>s.status))];
@@ -190,8 +196,12 @@ function compactCard(s){
 }
 function addDays(iso,n){const d=dval(iso);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
 function calendarColumns(cal){
- const byDate=new Map(slotsFor(cal).map(s=>[s.publish_date,s]));
- return Array.from({length:7},(_,i)=>{const date=addDays(cal.week_start,i),slot=byDate.get(date)||null;return{date,slot}})
+ const byDate=new Map();
+ for(const s of slotsFor(cal)){
+   if(!byDate.has(s.publish_date))byDate.set(s.publish_date,[]);
+   byDate.get(s.publish_date).push(s);
+ }
+ return Array.from({length:7},(_,i)=>{const date=addDays(cal.week_start,i);return{date,slots:byDate.get(date)||[]}})
 }
 function emptyDay(date,hadSlot=false){
  const d=dval(date),weekday=new Intl.DateTimeFormat('es-PE',{weekday:'short'}).format(d).replace('.','').toUpperCase();
@@ -300,10 +310,13 @@ function renderDetail(){
 }
 function render(){
  if(!calendars.length)return;
- const global=globalMatches(),week=currentMatches(),root=document.querySelector('#calendarApp'),cal=calendars[current],visibleIds=new Set(week.map(s=>s.id));
+ const global=globalMatches(),week=currentMatches(),root=document.querySelector('#calendarApp'),cal=calendars[current];
  document.querySelector('#strategyResultCount').textContent=`${global.length} resultado${global.length===1?'':'s'} · ${new Set(global.map(x=>x.calendario_id)).size} semana${new Set(global.map(x=>x.calendario_id)).size===1?'':'s'}`;
  renderWeekNav();renderStats(week);
- const cards=calendarColumns(cal).map(({date,slot})=>slot&&visibleIds.has(slot.id)?compactCard(slot):emptyDay(date,Boolean(slot))).join('');
+ const cards=calendarColumns(cal).map(({date,slots:daySlots})=>{
+   const visible=daySlots.filter(s=>matches(s));
+   return `<div class="day-stack">${visible.length?visible.map(compactCard).join(''):emptyDay(date,daySlots.length>0)}</div>`;
+ }).join('');
  root.innerHTML=`<div class="calendar-shell"><div class="day-grid">${cards}</div></div>`;
  root.querySelectorAll('[data-slot]').forEach(btn=>btn.addEventListener('click',()=>{openId=openId===btn.dataset.slot?null:btn.dataset.slot;render()}));
  renderDetail();
@@ -325,7 +338,7 @@ async function load(){
   calendars=cals;
   const ids=calendars.map(c=>c.id),planKeys=[...new Set(calendars.map(c=>c.bank_plan_key))];
   const [{data:ss,error:se},{data:plans,error:pe},{data:trans,error:te},{data:projects,error:pre},{data:pieces,error:pce}]=await Promise.all([
-   sb.from('content_calendario_publicacion_slots').select('id,calendario_id,negocio_id,publish_date,strategic_role,service_key,source_bank,editorial_key,transversal_id,content_id,match_status,rationale,expected_signal,execution_note,status,actual_publication_id,brief_status,production_brief').in('calendario_id',ids).order('publish_date'),
+   sb.from('content_calendario_publicacion_slots').select('id,calendario_id,negocio_id,publish_date,content_stream,strategic_role,service_key,source_bank,editorial_key,transversal_id,content_id,match_status,rationale,expected_signal,execution_note,status,actual_publication_id,brief_status,production_brief').in('calendario_id',ids).order('publish_date').order('content_stream'),
    sb.from('content_planes_editoriales').select('plan_key,document').eq('negocio_id',BUSINESS).in('plan_key',planKeys),
    sb.from('content_banco_transversal').select('id,negocio_id,editorial_key,title,question,strategic_role,objective,audience,motivation,format,status').eq('negocio_id',BUSINESS),
    sb.from('content_public_project_labels').select('content_id,project_display_number,project_created_at').eq('negocio_id',BUSINESS),
