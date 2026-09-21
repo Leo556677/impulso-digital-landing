@@ -34,7 +34,7 @@ body{overflow-x:hidden}
 .tele-config-section[hidden],.tele-config-drawer[hidden]{display:none!important}
 .tele-config-section .lbl{margin-bottom:7px}
 .speed-fine,.fontrow{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:8px;align-items:center}
-.highlight-settings{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(0,1.2fr);gap:9px;align-items:center}
+.highlight-settings{display:grid;grid-template-columns:1fr;gap:9px;align-items:center}
 .highlight-settings select{height:42px;border:1px solid #353b45;border-radius:11px;background:#191e26;color:#fff;padding:0 10px;font-weight:850;outline:none}
 .tele-countdown{position:fixed;inset:0;z-index:180;background:rgba(0,0,0,.86);display:grid;place-items:center;backdrop-filter:blur(8px)}
 .tele-countdown[hidden]{display:none!important}
