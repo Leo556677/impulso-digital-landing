@@ -293,8 +293,8 @@ body[data-portal-area="all"] .cal-project{
   height:100%;
   overflow:hidden;
 }
-body[data-portal-area="all"] .cal-project[data-stream="ESTETICA"]{grid-row:1}
-body[data-portal-area="all"] .cal-project[data-stream="CIRUGIA"]{grid-row:2}
+body[data-portal-area="all"] .cal-project[data-stream="ESTETICA"]{grid-row:1;order:1}
+body[data-portal-area="all"] .cal-project[data-stream="CIRUGIA"]{grid-row:2;order:2}
 body[data-portal-area="all"] .cal-project h3{
   display:-webkit-box;
   -webkit-box-orient:vertical;
