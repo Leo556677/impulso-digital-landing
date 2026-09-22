@@ -1,6 +1,6 @@
 (()=>{
   'use strict';
-  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'30'});
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'35'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   const TELE_HISTORY_KEY='__olanoTeleExitV24';
@@ -118,9 +118,14 @@
     planPromise=(async()=>{
       await waitForPortal();
       window.PortalTrace?.log('CAL_AFTER_WAIT',{production_items:P?.production_items?.length||0,calendar_items:P?.calendar_items?.length||0});
-      const rawCalendar=Array.isArray(P?.calendar_items)?P.calendar_items.slice():[];
+      const rawCalendarAll=Array.isArray(P?.calendar_items)?P.calendar_items.slice():[];
+      const rawCalendar=rawCalendarAll.filter(slot=>{
+        const slotStatus=String(slot?.slot_status||'').toUpperCase();
+        const briefStatus=String(slot?.brief_status||'').toUpperCase();
+        return slotStatus!=='SKIPPED'&&briefStatus!=='NOT_REQUIRED';
+      });
       const productionItems=Array.isArray(P?.production_items)?P.production_items.slice():[];
-      window.PortalTrace?.log('CAL_RAW_DATA',{rawCalendar:rawCalendar.length,productionItems:productionItems.length,sampleCalendar:rawCalendar.slice(0,2).map(x=>({date:x.publish_date,slot_status:x.slot_status,calendar:x.calendar_key,has_piece:Boolean(x.pieza)}))});
+      window.PortalTrace?.log('CAL_RAW_DATA',{rawCalendar:rawCalendar.length,rawCalendarAll:rawCalendarAll.length,hiddenNonOperational:rawCalendarAll.length-rawCalendar.length,productionItems:productionItems.length,sampleCalendar:rawCalendar.slice(0,2).map(x=>({date:x.publish_date,slot_status:x.slot_status,calendar:x.calendar_key,has_piece:Boolean(x.pieza)}))});
       const weekMap=new Map();
       for(const x of rawCalendar){
         const id=x?.calendario_id||x?.id;
@@ -133,7 +138,9 @@
 
       const rawSlots=Array.isArray(calendarData.slots)?calendarData.slots.slice():[];
       rawSlots.sort((a,b)=>String(a.publish_date).localeCompare(String(b.publish_date))||String(a.created_at||'').localeCompare(String(b.created_at||''))||String(a.id).localeCompare(String(b.id)));
-      const officialIds=new Set();
+      // Incluso un slot no operativo conserva su content_id como "oficial" para
+      // evitar que una pieza SKIPPED reaparezca como legado fuera del calendario.
+      const officialIds=new Set(rawCalendarAll.map(x=>x?.content_id).filter(Boolean));
       const scheduled=rawSlots.map((slot,i)=>{
         const sessionItem=slot.content_id?sessionMap.get(slot.content_id):null,piece=slot.pieza||sessionItem?.pieza||null;
         const isTest=Boolean(piece?.test_id||piece?.metadata?.test_id||piece?.metadata?.portal_test===true);
@@ -192,6 +199,32 @@
   }
   function filteredWeek(week){
     return {...week,rows:(week?.rows||[]).filter(matchesFilters)};
+  }
+  function pendingKind(item){
+    if(item?.recorded)return'RECORDED';
+    if(item?.kind==='capture')return'CAPTURE';
+    if(item?.kind==='placeholder')return'SCRIPT';
+    if(item?.content_id&&!item?.isTest)return'RECORD';
+    return'OTHER';
+  }
+  function currentWeekQueue(plan){
+    const week=plan?.weeks?.[selectedWeek]||null;
+    const rows=(week?.rows||[]).filter(x=>pendingKind(x)!=='RECORDED'&&pendingKind(x)!=='OTHER');
+    const counts={script:0,capture:0,record:0,total:rows.length};
+    rows.forEach(x=>{
+      const k=pendingKind(x);
+      if(k==='SCRIPT')counts.script++;
+      else if(k==='CAPTURE')counts.capture++;
+      else if(k==='RECORD')counts.record++;
+    });
+    return{week,rows,counts};
+  }
+  function queueLabel(counts){
+    const parts=[];
+    if(counts.script)parts.push(`${counts.script} sin guion`);
+    if(counts.capture)parts.push(`${counts.capture} captura${counts.capture===1?'':'s'} pendiente${counts.capture===1?'':'s'}`);
+    if(counts.record)parts.push(`${counts.record} por grabar`);
+    return parts.join(' · ')||'Sin pendientes';
   }
   function renderHeroFilters(plan){
     const mount=$('calendarHeroFilters');if(!mount)return;
@@ -322,15 +355,19 @@
   }
 
   function recordingStatus(plan){
-    const pending=(plan?.pending||[]).length;
-    if(pending)return `<div class="cal-recording-status"><button type="button" class="record-alert calendar-record-alert" data-show-pending aria-label="${pending} guiones pendientes de grabar"><span class="record-alert-dot">!</span><b>${pending}</b><span>por grabar</span></button></div>`;
+    const q=currentWeekQueue(plan),pending=q.counts.total;
+    if(pending){
+      const label=queueLabel(q.counts);
+      return `<div class="cal-recording-status"><button type="button" class="record-alert calendar-record-alert" data-show-pending aria-label="${esc(label)}"><span class="record-alert-dot">!</span><b>${pending}</b><span>${esc(label)}</span></button></div>`;
+    }
     return `<div class="cal-recording-status"><div class="record-alert all-done"><span class="record-alert-dot">✓</span><b>Estás al día</b></div></div>`;
   }
 
   function pendingPanel(plan){
+    const q=currentWeekQueue(plan),label=queueLabel(q.counts),rows=q.rows;
     return`<div class="pending-recordings">
-      <div class="card pending-hero"><div class="pending-alert-icon">!</div><div><span>PENDIENTES DE GRABACIÓN</span><h2>${plan.pending.length} ${plan.pending.length===1?'guion pendiente':'guiones pendientes'}</h2><p>Esta lista reúne únicamente piezas que todavía no han sido reportadas como grabadas. Los códigos A1, A2… se reservan para piezas fuera del calendario oficial.</p></div></div>
-      <div class="pending-grid">${plan.pending.length?plan.pending.map(x=>card(x,true)).join(''):'<div class="card pending-empty"><b>Todo grabado.</b><br>No quedan guiones pendientes.</div>'}</div>
+      <div class="card pending-hero"><div class="pending-alert-icon">!</div><div><span>PENDIENTES DE LA SEMANA</span><h2>${q.counts.total} ${q.counts.total===1?'pendiente':'pendientes'}</h2><p>${esc(label)}. Esta vista corresponde únicamente a la semana que estás viendo.</p></div></div>
+      <div class="pending-grid">${rows.length?rows.map(x=>card(x,true)).join(''):'<div class="card pending-empty"><b>Semana al día.</b><br>No quedan pendientes operativos en esta semana.</div>'}</div>
     </div>`;
   }
 
