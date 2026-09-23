@@ -228,17 +228,38 @@ function renderReview(){
 }
 
 function handleEdit(e){const b=e.currentTarget,kind=b.dataset.kind;
-  if(kind==='config'){scrollToEl($('configForm'));$('intervalo').focus();msg('Puedes editar tus reglas arriba y volver a guardarlas.',true);return}
-  if(kind==='resource'){const item=resources.find(x=>String(x.id)===String(b.dataset.id));if(!item)return;resourceEditId=item.id;$('resourceName').value=item.nombre||'';$('resourceType').value=item.tipo||'persona';$('saveResource').textContent='Guardar cambios';$('cancelResourceEdit').hidden=false;scrollToEl($('resourceForm'));$('resourceName').focus();msg('Edita el recurso y guarda los cambios.',true);return}
-  if(kind==='schedule'){const item=schedules.find(x=>String(x.id)===String(b.dataset.id));if(!item)return;scheduleEditId=item.id;$('scheduleResource').value=item.recurso_id;$('day').value=String(item.dia_semana);$('start').value=String(item.hora_inicio).slice(0,5);$('end').value=String(item.hora_fin).slice(0,5);$('saveSchedule').textContent='Guardar cambios';$('cancelScheduleEdit').hidden=false;scrollToEl($('scheduleForm'));$('scheduleResource').focus();msg('Edita el horario y guarda los cambios.',true);return}
-  if(kind==='link'){linkEditKey={servicio_id:b.dataset.servicio,recurso_id:b.dataset.recurso};$('assignResource').value=b.dataset.recurso;$('assignService').value=b.dataset.servicio;$('assignBtn').textContent='Guardar cambios';$('cancelAssignEdit').hidden=false;scrollToEl($('assignResource'));$('assignResource').focus();msg('Edita la asignación y guarda los cambios.',true);return}
+  if(kind==='config'){scrollToEl($('configForm'));$('intervalo').focus();msg('Edita las reglas y guarda los cambios.',true);return}
+  if(kind==='resource'){
+    const item=resources.find(x=>String(x.id)===String(b.dataset.id));if(!item)return;
+    resourceEditId=item.id;$('resourceName').value=item.nombre||'';$('resourceType').value=item.tipo||'persona';updateResourceTypeUI();
+    $('saveResource').textContent='Guardar cambios';$('cancelResourceEdit').hidden=false;scrollToEl($('resourceForm'));$('resourceName').focus();return
+  }
+  if(kind==='schedule'){
+    const resourceId=String(b.dataset.resource||''),day=Number(b.dataset.day);
+    const group=scheduleGroups().find(g=>String(g.recurso_id)===resourceId&&Number(g.dia_semana)===day);if(!group)return;
+    scheduleEditId={recurso_id:resourceId,dia_semana:day};
+    $('scheduleResource').value=resourceId;setScheduleDays([day]);$('start').value=group.start;$('end').value=group.end;
+    $('hasLunch').checked=group.hasLunch;syncLunchFields();
+    if(group.hasLunch){$('lunchStart').value=group.lunchStart;$('lunchEnd').value=group.lunchEnd}
+    $('saveSchedule').textContent='Guardar este día';$('copyScheduleBtn').hidden=false;$('cancelScheduleEdit').hidden=false;
+    $('scheduleModeHint').textContent=`Editando ${days[day]}. Al guardar se reemplazará el horario de ese día.`;
+    scrollToEl($('scheduleForm'));$('scheduleResource').focus();return
+  }
+  if(kind==='link'){linkEditKey={servicio_id:b.dataset.servicio,recurso_id:b.dataset.recurso};$('assignResource').value=b.dataset.recurso;$('assignService').value=b.dataset.servicio;$('assignBtn').textContent='Guardar cambios';$('cancelAssignEdit').hidden=false;scrollToEl($('assignResource'));$('assignResource').focus();return}
 }
 
 function handleDelete(e){const b=e.currentTarget,kind=b.dataset.kind;
-  if(kind==='config') return openConfirm('Eliminar reglas guardadas','Se quitará la configuración general de agenda de este negocio. Los recursos, horarios y servicios asignados no se borrarán.',async()=>{msg('Eliminando reglas…',true);const {error}=await sb.from('configuracion_agenda').delete().eq('negocio_id',negocioId);if(error)return msg('No pudimos eliminar las reglas.');msg('Reglas eliminadas.',true);await load();flashReview()});
-  if(kind==='resource') return openConfirm('Desactivar persona o recurso','Se desactivará la persona o recurso, se pausarán sus horarios activos y se quitarán sus asignaciones de servicios. ¿Deseas continuar?',async()=>{msg('Desactivando recurso…',true);const id=b.dataset.id;const a=await sb.from('recursos_agenda').update({activo:false}).eq('id',id).eq('negocio_id',negocioId);if(a.error)return msg('No pudimos desactivar el recurso.');const h=await sb.from('horarios_agenda').update({activo:false}).eq('recurso_id',id).eq('negocio_id',negocioId);if(h.error)return msg('El recurso se desactivó, pero no pudimos pausar sus horarios.');const l=await sb.from('servicios_recursos').delete().eq('recurso_id',id).eq('negocio_id',negocioId);if(l.error)return msg('El recurso se desactivó, pero no pudimos quitar sus asignaciones.');resetResourceForm();resetScheduleForm();resetAssignForm();msg('Recurso desactivado y relaciones actualizadas.',true);await load();flashReview()});
-  if(kind==='schedule') return openConfirm('Eliminar horario','Este horario dejará de estar disponible para reservas futuras. ¿Deseas continuar?',async()=>{msg('Eliminando horario…',true);const {error}=await sb.from('horarios_agenda').update({activo:false}).eq('id',b.dataset.id).eq('negocio_id',negocioId);if(error)return msg('No pudimos eliminar el horario.');resetScheduleForm();msg('Horario eliminado.',true);await load();flashReview()});
-  if(kind==='link') return openConfirm('Eliminar asignación','El servicio dejará de estar asignado a esta persona o recurso. ¿Deseas continuar?',async()=>{msg('Eliminando asignación…',true);const {error}=await sb.from('servicios_recursos').delete().eq('negocio_id',negocioId).eq('servicio_id',b.dataset.servicio).eq('recurso_id',b.dataset.recurso);if(error)return msg('No pudimos eliminar la asignación.');resetAssignForm();msg('Asignación eliminada.',true);await load();flashReview()});
+  if(kind==='config') return openConfirm('Eliminar reglas guardadas','Se quitarán las reglas generales de citas. Personas, horarios y servicios asignados se conservarán.',async()=>{msg('Eliminando reglas…',true);const {error}=await sb.from('configuracion_agenda').delete().eq('negocio_id',negocioId);if(error)return msg('No pudimos eliminar las reglas.');msg('Reglas eliminadas.',true);await load();flashReview()});
+  if(kind==='resource') return openConfirm('Desactivar','Se desactivará esta persona, espacio o equipo, junto con sus horarios y asignaciones.',async()=>{msg('Desactivando…',true);const id=b.dataset.id;const a=await sb.from('recursos_agenda').update({activo:false}).eq('id',id).eq('negocio_id',negocioId);if(a.error)return msg('No pudimos desactivarlo.');const h=await sb.from('horarios_agenda').update({activo:false}).eq('recurso_id',id).eq('negocio_id',negocioId);if(h.error)return msg('Se desactivó, pero no pudimos pausar sus horarios.');const l=await sb.from('servicios_recursos').delete().eq('recurso_id',id).eq('negocio_id',negocioId);if(l.error)return msg('Se desactivó, pero no pudimos quitar sus servicios.');resetResourceForm();resetScheduleForm();resetAssignForm();msg('Desactivado.',true);await load();flashReview()});
+  if(kind==='schedule'){
+    const resourceId=String(b.dataset.resource||''),day=Number(b.dataset.day);
+    if(!resourceId||!Number.isInteger(day))return;
+    return openConfirm(`${days[day]} sin atención`,`Se quitarán los horarios activos de ${days[day]} para ${resourceName(resourceId)}.`,async()=>{
+      msg('Actualizando día…',true);
+      try{await callAgendaSchedule({recurso_id:resourceId,dias:[day],cerrar:true});resetScheduleForm();msg(`${days[day]} quedó sin atención.`,true);await load();flashReview()}catch(err){msg(err.message||'No pudimos actualizar el día.')}
+    });
+  }
+  if(kind==='link') return openConfirm('Eliminar asignación','Este servicio dejará de estar asignado.',async()=>{msg('Eliminando asignación…',true);const {error}=await sb.from('servicios_recursos').delete().eq('negocio_id',negocioId).eq('servicio_id',b.dataset.servicio).eq('recurso_id',b.dataset.recurso);if(error)return msg('No pudimos eliminar la asignación.');resetAssignForm();msg('Asignación eliminada.',true);await load();flashReview()});
 }
 
 $('configForm').addEventListener('submit',async e=>{
