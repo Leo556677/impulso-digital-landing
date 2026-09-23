@@ -341,3 +341,88 @@ body[data-portal-area="all"] .cal-role{
 @media (max-width:820px), (max-width:1024px) and (pointer:coarse){
   .cal-general-strip{display:none}
 }
+
+
+/* Portal V40 · Dr. Olano full view uses two fixed, aligned operational lanes */
+.combined-calendar-shell{overflow-x:auto;padding:2px 0 6px}
+.combined-week-grid{
+  display:grid;
+  grid-template-columns:124px repeat(7,minmax(142px,1fr));
+  gap:8px;
+  min-width:1180px;
+  align-items:stretch;
+}
+.combined-corner,
+.combined-date-head,
+.combined-lane-label,
+.combined-area-cell{min-width:0}
+.combined-corner{
+  min-height:62px;
+  display:flex;align-items:flex-end;
+  padding:0 9px 9px;
+  color:#7B8796;font-size:8px;font-weight:950;letter-spacing:.10em
+}
+.combined-date-head{
+  min-height:62px;border:1px solid #DDE4EC;border-radius:13px;background:#fff;
+  padding:9px 10px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;align-items:start
+}
+.combined-date-head span{font-size:9px;font-weight:1000;color:#65758A;letter-spacing:.08em}
+.combined-date-head b{grid-column:1;grid-row:2;margin-top:3px;font-size:23px;line-height:1;color:#102A4F}
+.combined-date-head i{grid-column:2;grid-row:1/3;align-self:center;font-style:normal;font-size:7px;font-weight:950;background:#E8F5F8;color:#216A86;padding:4px 6px;border-radius:999px}
+.combined-date-head.today{border-color:#76A7C8;box-shadow:inset 0 3px 0 #2A6D99}
+.combined-lane-label{
+  min-height:292px;border:1px solid #DDE4EC;border-radius:16px;
+  padding:15px 12px;display:flex;flex-direction:column;justify-content:center;
+  background:#fff;position:relative;overflow:hidden
+}
+.combined-lane-label::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:#667281}
+.combined-lane-label[data-stream="ESTETICA"]{background:linear-gradient(180deg,#FFF8F3,#fff);border-color:#E8D8CC}
+.combined-lane-label[data-stream="ESTETICA"]::before{background:#A35F36}
+.combined-lane-label[data-stream="CIRUGIA"]{background:linear-gradient(180deg,#F3F8FA,#fff);border-color:#D4E2E8}
+.combined-lane-label[data-stream="CIRUGIA"]::before{background:#28566B}
+.combined-lane-label span{font-size:10px;font-weight:1000;line-height:1.2;letter-spacing:.04em;color:#1B2A3B}
+.combined-lane-label small{display:block;margin-top:7px;font-size:8px;line-height:1.35;color:#718092;font-weight:800}
+.combined-area-cell{min-height:292px}
+.combined-area-cell .cal-project{
+  height:100%;min-height:292px;
+  display:grid!important;
+  grid-template-rows:38px 54px 82px 34px 42px;
+  align-content:start;
+  padding:10px!important;
+  border-radius:16px!important;
+  overflow:hidden
+}
+.combined-area-cell .cal-project-top{height:38px;margin:0!important;align-self:start}
+.combined-area-cell .cal-service-row{height:54px;margin:0!important;align-content:start;align-items:flex-start}
+.combined-area-cell .cal-service-name{white-space:normal!important;line-height:1.2!important;max-height:34px!important}
+.combined-area-cell .cal-project h3{
+  height:82px;margin:0!important;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;
+  font-size:12px!important;line-height:1.22!important
+}
+.combined-area-cell .cal-role{
+  height:34px;margin:0!important;
+  display:flex;align-items:flex-start;
+  overflow:hidden;font-size:8px!important;line-height:1.25!important
+}
+.combined-area-cell .cal-project-status{
+  height:42px;min-height:42px;margin:0!important;
+  align-self:end;justify-content:flex-start;overflow:hidden
+}
+.combined-empty{
+  height:100%;min-height:292px;border:1px dashed #DDE4EC;border-radius:16px;background:#FAFBFC;
+  display:grid;place-items:center;color:#98A2B0;font-size:9px;font-weight:850;text-align:center
+}
+body[data-portal-area="all"] .cal-week-head{margin-top:2px}
+body[data-portal-area="all"] .cal-general-strip{margin-top:12px}
+.mobile-project-chip[data-stream="ESTETICA"]{box-shadow:inset 0 -3px 0 #A35F36}
+.mobile-project-chip[data-stream="CIRUGIA"]{box-shadow:inset 0 -3px 0 #28566B}
+
+@media(max-width:1180px) and (min-width:821px){
+  .combined-week-grid{grid-template-columns:112px repeat(7,minmax(136px,1fr));min-width:1115px}
+  .combined-lane-label{padding:13px 9px}
+}
+@media (max-width:820px), (max-width:1024px) and (pointer:coarse){
+  .combined-calendar-shell{display:none!important}
+  .combined-week .cal-general-strip{display:none!important}
+}
