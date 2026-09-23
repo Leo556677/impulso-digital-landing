@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#E6007E">
+  <title>Verificar número PROD · Impulso Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;--ok:#16794c;--warn:#9a6700;--danger:#C62828;--gradient:linear-gradient(135deg,var(--magenta),var(--coral) 52%,var(--orange));--shadow:0 18px 55px rgba(38,38,38,.10)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:26px;background:radial-gradient(circle at 12% 8%,rgba(230,0,126,.10),transparent 28%),radial-gradient(circle at 88% 92%,rgba(255,106,0,.10),transparent 30%),var(--gray);font-family:'Montserrat',system-ui,sans-serif;color:var(--charcoal)}
+    .wrap{width:min(850px,100%);margin:auto}.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:inherit;text-decoration:none}.brand img{width:54px;height:54px;border-radius:50%;object-fit:cover}.brand strong,h1,h2{font-family:'Anton',sans-serif;font-weight:400}.brand strong{font-size:1.4rem}.brand small{display:block;margin-top:4px;color:var(--magenta);font-weight:800;letter-spacing:.1em;font-size:11px}
+    h1{font-size:clamp(2rem,5vw,3rem);margin:.4rem 0}.lead{color:var(--muted);line-height:1.65}.tag{display:inline-block;padding:7px 11px;border-radius:999px;background:#fff3e8;color:#A94200;font-size:12px;font-weight:800;letter-spacing:.04em}.card{background:#fff;border:1px solid var(--gray2);border-radius:22px;padding:24px;margin:16px 0;box-shadow:var(--shadow)}.card::before{content:'';display:block;width:48px;height:4px;border-radius:999px;background:var(--gradient);margin-bottom:16px}
+    button,a.btn{display:inline-block;border:0;border-radius:12px;padding:12px 17px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;margin-right:8px;margin-top:8px}button{background:var(--gradient);color:#fff;box-shadow:0 10px 24px rgba(230,0,126,.18)}button.secondary{background:#fff;color:var(--charcoal);border:1px solid #dedee4;box-shadow:none}button:disabled{opacity:.5;cursor:not-allowed}.btn{background:#fff;border:1px solid #dedee4;color:var(--charcoal)}input{width:100%;padding:13px 14px;border:1px solid #d9d9e1;border-radius:12px;font:inherit}.ok{color:var(--ok);font-weight:800}.danger{color:var(--danger);font-weight:800}.warn{color:var(--warn);font-weight:800}pre{white-space:pre-wrap;word-break:break-word;background:#262626;color:#fff;border-radius:14px;padding:16px;min-height:120px}.notice{padding:14px;border-radius:14px;background:#fff8e5;border:1px solid #f2d89e;color:#765000;font-weight:600;line-height:1.5}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a class="brand" href="./"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><span><strong>IMPULSO DIGITAL</strong><small>WHATSAPP · PROD VERIFICACIÓN</small></span></a>
+  <span class="tag">PRODUCCIÓN · VERIFICAR PROPIEDAD · NO REGISTRA CLOUD API</span>
+  <h1>Verificar el número real</h1>
+  <p class="lead">Este paso solicita y valida el código de propiedad de <strong>+51 903 396 082</strong>. <strong>No ejecuta /register, no suscribe la app y no crea el canal PROD.</strong></p>
+
+  <section class="card">
+    <h2>1. Sesión</h2>
+    <p id="session">Validando sesión CRM…</p>
+    <a class="btn" href="./crm-login.html">Ir al login CRM</a>
+  </section>
+
+  <section class="card">
+    <h2>2. Solicitar código</h2>
+    <p class="notice">Elige SMS primero. Si no recibes el código, puedes usar llamada de voz.</p>
+    <button id="sms" type="button" disabled>Enviar código por SMS</button>
+    <button id="voice" class="secondary" type="button" disabled>Enviar código por llamada</button>
+  </section>
+
+  <section class="card">
+    <h2>3. Verificar código</h2>
+    <label for="code"><strong>Código recibido</strong></label>
+    <input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Ingresa el código aquí">
+    <button id="verify" type="button" disabled>Verificar código</button>
+    <p class="lead" style="font-size:13px">No compartas el código por chat. Escríbelo solo aquí.</p>
+  </section>
+
+  <section class="card">
+    <h2>4. Resultado seguro</h2>
+    <pre id="result">Esperando sesión…</pre>
+  </section>
+</main>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+const supabase=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const NEGOCIO_ID='c656a9ac-2739-451b-a93f-9e25fc9f4cbe';
+const sessionEl=document.getElementById('session'),sms=document.getElementById('sms'),voice=document.getElementById('voice'),verify=document.getElementById('verify'),code=document.getElementById('code'),result=document.getElementById('result');
+const setResult=v=>result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2);
+let ready=false;
+
+async function init(){
+  const {data:{session},error}=await supabase.auth.getSession();
+  if(error||!session?.user){sessionEl.innerHTML='<span class="danger">Sin sesión CRM activa.</span>';setResult('Inicia sesión y vuelve.');return}
+  const {data:m,error:me}=await supabase.from('usuarios_negocio').select('negocio_id,rol').eq('negocio_id',NEGOCIO_ID).eq('user_id',session.user.id).maybeSingle();
+  if(me||!m){sessionEl.innerHTML='<span class="danger">Sin acceso a IMPULSO DIGITAL.</span>';return}
+  if(m.rol!=='admin'){sessionEl.innerHTML='<span class="danger">Se requiere rol admin.</span>';return}
+  sessionEl.innerHTML='<span class="ok">Sesión válida · IMPULSO DIGITAL · admin.</span>';
+  sms.disabled=false;voice.disabled=false;ready=true;setResult('Listo. Solicita el código por SMS o llamada.');
+}
+async function call(body){
+  const {data,error}=await supabase.functions.invoke('whatsapp-prod-phone-verify',{body});
+  if(error){
+    let detail=null;
+    try{if(error.context&&typeof error.context.json==='function')detail=await error.context.json()}catch{}
+    return detail||{ok:false,error:error.message||'Error invocando backend'};
+  }
+  return data;
+}
+async function request(method){
+  if(!ready)return;sms.disabled=true;voice.disabled=true;verify.disabled=true;setResult('Solicitando código a Meta…');
+  const data=await call({action:'request_code',method});
+  setResult(data);
+  if(data?.ok===true){verify.disabled=false}
+  sms.disabled=false;voice.disabled=false;
+}
+sms.addEventListener('click',()=>request('SMS'));
+voice.addEventListener('click',()=>request('VOICE'));
+verify.addEventListener('click',async()=>{
+  const value=code.value.trim();
+  if(!/^[0-9]{4,8}$/.test(value)){setResult({ok:false,error:'Ingresa un código numérico válido.'});return}
+  verify.disabled=true;sms.disabled=true;voice.disabled=true;setResult('Verificando código con Meta…');
+  const data=await call({action:'verify_code',code:value});
+  setResult(data);
+  verify.disabled=false;sms.disabled=false;voice.disabled=false;
+});
+await init();
+</script>
+</body>
+</html>
