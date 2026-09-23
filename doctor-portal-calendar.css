@@ -460,3 +460,106 @@ body[data-portal-area="all"] .cal-general-strip{margin-top:12px}
 @media (max-width:820px), (max-width:1024px) and (pointer:coarse){
   .cal-mobile-selected .cal-project{display:block!important;height:auto!important;min-height:230px!important}
 }
+
+
+/* V41 · complete weekly cards: no clipped service labels, titles or recording buttons */
+@media(min-width:821px){
+  body[data-portal-area="estetica"] .cal-week-grid,
+  body[data-portal-area="novare"] .cal-week-grid{
+    grid-template-columns:repeat(7,minmax(132px,1fr));
+  }
+  body[data-portal-area="estetica"] .cal-week-day,
+  body[data-portal-area="novare"] .cal-week-day{min-width:0}
+  body[data-portal-area="estetica"] .cal-project,
+  body[data-portal-area="novare"] .cal-project{
+    min-width:0!important;
+    width:100%!important;
+    grid-template-rows:38px 66px 104px 38px 48px!important;
+    min-height:324px!important;
+  }
+  body[data-portal-area="estetica"] .cal-week-day,
+  body[data-portal-area="novare"] .cal-week-day{min-height:414px!important}
+}
+.cal-week-grid .cal-service-row{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr);
+  grid-template-rows:31px minmax(24px,auto);
+  gap:5px 6px!important;
+  align-content:start!important;
+  height:66px!important;
+}
+.cal-week-grid .cal-service-code{
+  grid-column:1;
+  grid-row:1;
+  min-width:31px;
+  max-width:100%;
+}
+.cal-week-grid .cal-service-name{
+  grid-column:1/-1;
+  grid-row:2;
+  min-width:0!important;
+  width:100%!important;
+  max-width:none!important;
+  min-height:24px!important;
+  height:auto!important;
+  max-height:none!important;
+  padding:5px 7px!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+  line-height:1.12!important;
+}
+.cal-week-grid .cal-project h3{
+  min-width:0!important;
+  width:100%!important;
+  height:104px!important;
+  -webkit-line-clamp:7!important;
+  overflow:hidden!important;
+  overflow-wrap:anywhere!important;
+}
+.cal-week-grid .cal-role{
+  min-width:0!important;
+  width:100%!important;
+  height:38px!important;
+  white-space:normal!important;
+  overflow:visible!important;
+}
+.cal-week-grid .cal-project-status{
+  min-width:0!important;
+  width:100%!important;
+  height:48px!important;
+  min-height:48px!important;
+  padding:7px 6px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  text-align:center!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+  line-height:1.12!important;
+}
+.cal-week-grid .cal-project-status .ico{
+  flex:0 0 13px!important;
+  width:13px!important;
+  height:13px!important;
+}
+@media(min-width:821px) and (max-width:980px) and (pointer:fine){
+  .cal-week-block{overflow-x:auto;padding-bottom:8px}
+  .cal-week-grid{min-width:980px}
+}
+@media (max-width:820px), (max-width:1024px) and (pointer:coarse){
+  .cal-mobile-selected .cal-service-name,
+  .cal-mobile-selected .cal-project-status{
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    width:100%!important;
+    max-width:none!important;
+  }
+}
