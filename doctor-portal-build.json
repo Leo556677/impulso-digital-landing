@@ -1,8 +1,8 @@
 {
-  "build": "20260922-portal-v43",
+  "build": "20260923-portal-v44",
   "portal": "doctor-portal",
   "calendar": 36,
   "core": 24,
   "projects": 53,
-  "ux": 13
+  "ux": 14
 }
