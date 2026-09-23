@@ -1,23 +1,17 @@
-/* Area shells: the service-specific accents remain untouched. */
-body[data-portal-area="estetica"]{
-  --p:#A35F36;--c:#C47A45;--o:#D5A15B;--b:#FBF7F2;--l:#E9DED3;--ok:#2F7557;
-}
-body[data-portal-area="cirugia"]{
-  --p:#28566B;--c:#3E7184;--o:#6F8FA0;--b:#F3F7F9;--l:#D8E3E8;--ok:#2F715E;
-}
-body[data-portal-area="estetica"] .hero{
-  background:radial-gradient(circle at 90% 0,rgba(163,95,54,.12),transparent 36%),radial-gradient(circle at 100% 100%,rgba(213,161,91,.09),transparent 33%),#fff;
-}
-body[data-portal-area="cirugia"] .hero{
-  background:radial-gradient(circle at 90% 0,rgba(40,86,107,.13),transparent 36%),radial-gradient(circle at 100% 100%,rgba(111,143,160,.10),transparent 33%),#fff;
-}
+/* Area shells: group tone is different from each service color. */
+body[data-portal-area="estetica"]{--p:#A35F36;--c:#C47A45;--o:#D5A15B;--b:#FBF7F2;--l:#E9DED3;--ok:#2F7557}
+body[data-portal-area="novare"]{--p:#28566B;--c:#3E7184;--o:#6F8FA0;--b:#F3F7F9;--l:#D8E3E8;--ok:#2F715E}
+body[data-portal-area="estetica"] .hero{background:radial-gradient(circle at 90% 0,rgba(163,95,54,.12),transparent 36%),radial-gradient(circle at 100% 100%,rgba(213,161,91,.09),transparent 33%),#fff}
+body[data-portal-area="novare"] .hero{background:radial-gradient(circle at 90% 0,rgba(40,86,107,.13),transparent 36%),radial-gradient(circle at 100% 100%,rgba(111,143,160,.10),transparent 33%),#fff}
 body[data-portal-area="estetica"] .vr{background:linear-gradient(90deg,#fff8f3,#fffaf6)}
-body[data-portal-area="cirugia"] .vr{background:linear-gradient(90deg,#f4f9fb,#f8fafc)}
+body[data-portal-area="novare"] .vr{background:linear-gradient(90deg,#f4f9fb,#f8fafc)}
 body[data-portal-area="estetica"] .say{background:#fff8f3}
-body[data-portal-area="cirugia"] .say{background:#f3f8fa}
+body[data-portal-area="novare"] .say{background:#f3f8fa}
 body[data-portal-area="estetica"] .top{box-shadow:0 1px 0 rgba(163,95,54,.08)}
-body[data-portal-area="cirugia"] .top{box-shadow:0 1px 0 rgba(40,86,107,.10)}
+body[data-portal-area="novare"] .top{box-shadow:0 1px 0 rgba(40,86,107,.10)}
+body[data-portal-area="all"] .app{max-width:1420px}
+body[data-portal-area="all"] .topin{width:min(1420px,100%)}
 @media(max-width:600px){
   body[data-portal-area="estetica"] .brand small,
-  body[data-portal-area="cirugia"] .brand small{max-width:230px;white-space:normal;line-height:1.2}
+  body[data-portal-area="novare"] .brand small{max-width:230px;white-space:normal;line-height:1.2}
 }
