@@ -426,3 +426,37 @@ body[data-portal-area="all"] .cal-general-strip{margin-top:12px}
   .combined-calendar-shell{display:none!important}
   .combined-week .cal-general-strip{display:none!important}
 }
+
+
+/* Portal V40 · every weekly card uses the same internal rhythm */
+.cal-week-grid .cal-week-day{min-height:390px}
+.cal-week-grid .cal-day-projects{min-height:0}
+.cal-week-grid .cal-project{
+  height:100%;
+  min-height:300px;
+  display:grid!important;
+  grid-template-rows:38px 54px 88px 34px 42px;
+  align-content:start;
+  padding:10px!important;
+  border-radius:14px!important;
+  overflow:hidden
+}
+.cal-week-grid .cal-project-top{height:38px;margin:0!important;align-self:start}
+.cal-week-grid .cal-service-row{height:54px;margin:0!important;align-content:start;align-items:flex-start}
+.cal-week-grid .cal-service-name{white-space:normal!important;line-height:1.2!important;max-height:34px!important}
+.cal-week-grid .cal-project h3{
+  height:88px;margin:0!important;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden;
+  font-size:12px!important;line-height:1.22!important
+}
+.cal-week-grid .cal-role{
+  height:34px;margin:0!important;
+  overflow:hidden;font-size:8px!important;line-height:1.25!important
+}
+.cal-week-grid .cal-project-status{
+  height:42px;min-height:42px;margin:0!important;
+  align-self:end;overflow:hidden
+}
+@media (max-width:820px), (max-width:1024px) and (pointer:coarse){
+  .cal-mobile-selected .cal-project{display:block!important;height:auto!important;min-height:230px!important}
+}
