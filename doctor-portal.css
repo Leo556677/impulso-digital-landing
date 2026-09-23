@@ -159,3 +159,50 @@ body{overflow-x:hidden}
 @media(max-width:600px){
   .tele-token.tele-rehook.rehook-start::before{font-size:.34em}
 }
+
+
+/* Teleprompter live diagnostics · user-visible trace */
+.tele-debug-btn{
+  position:fixed;right:12px;top:64px;z-index:122;
+  min-height:34px;border:1px solid #39414d;border-radius:999px;
+  background:rgba(15,18,24,.94);color:#d7dde6;padding:6px 10px;
+  display:flex;align-items:center;gap:7px;font:900 9px/1 system-ui;
+  letter-spacing:.06em;cursor:pointer;box-shadow:0 7px 22px rgba(0,0,0,.28)
+}
+.tele-debug-dot{width:8px;height:8px;border-radius:50%;background:#9aa4b1;box-shadow:0 0 0 3px rgba(154,164,177,.10)}
+.tele-debug-btn[data-state="good"] .tele-debug-dot{background:#36d17d;box-shadow:0 0 0 3px rgba(54,209,125,.13)}
+.tele-debug-btn[data-state="bad"]{border-color:#ff5a67;color:#fff}
+.tele-debug-btn[data-state="bad"] .tele-debug-dot{background:#ff5a67;box-shadow:0 0 0 4px rgba(255,90,103,.16)}
+.tele-diag-panel{
+  position:fixed;right:12px;top:106px;bottom:12px;z-index:123;
+  width:min(520px,calc(100% - 24px));border:1px solid #3a424e;border-radius:17px;
+  background:rgba(9,11,15,.97);color:#eef2f7;box-shadow:0 24px 70px rgba(0,0,0,.48);
+  padding:12px;display:flex;flex-direction:column;gap:9px;backdrop-filter:blur(14px)
+}
+.tele-diag-panel[hidden]{display:none!important}
+.tele-diag-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.tele-diag-head>div{min-width:0;display:grid;gap:3px}
+.tele-diag-head b{font-size:13px}
+.tele-diag-head span{font:850 10px/1.35 system-ui;color:#aab4c1}
+.tele-diag-head span[data-state="good"]{color:#52de8f}
+.tele-diag-head span[data-state="bad"]{color:#ff7180}
+.tele-diag-head button{
+  width:34px;height:34px;border:1px solid #343c47;border-radius:10px;
+  background:#171c23;color:#fff;font-size:20px;cursor:pointer
+}
+.tele-diag-actions{display:grid;grid-template-columns:1fr auto;gap:7px}
+.tele-diag-actions button{
+  min-height:38px;border:1px solid #343c47;border-radius:10px;background:#171c23;color:#fff;
+  font:900 10px/1 system-ui;cursor:pointer
+}
+.tele-diag-actions button:first-child{background:#edf3f8;color:#17202d;border-color:#edf3f8}
+.tele-diag-panel pre{
+  flex:1;min-height:0;margin:0;padding:10px;border:1px solid #2b323d;border-radius:11px;
+  background:#05070a;color:#cbd5e1;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;
+  font:600 10px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace
+}
+@media(max-width:600px){
+  .tele-debug-btn{right:8px;top:61px;min-height:31px;padding:5px 8px;font-size:8px}
+  .tele-diag-panel{left:8px;right:8px;top:98px;bottom:8px;width:auto;padding:10px}
+  .tele-diag-panel pre{font-size:9px}
+}
