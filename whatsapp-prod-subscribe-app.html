@@ -22,8 +22,8 @@
 <main class="wrap">
   <a class="brand" href="./"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><span><strong>IMPULSO DIGITAL</strong><small>WHATSAPP · PROD DIRECT SUBSCRIBE</small></span></a>
   <span class="tag">PRODUCCIÓN · OPERACIÓN CONTROLADA</span>
-  <h1>Suscribir la app al WABA real</h1>
-  <p class="lead">Este paso evita volver a abrir Embedded Signup. Solo suscribe la app IMPULSO DIGITAL al WABA real y crea el mapeo local PROD para recibir eventos. <strong>No registra el número, no solicita SMS, no ejecuta /register y no habilita envíos PROD.</strong></p>
+  <h1>Finalizar conexión segura del WABA real</h1>
+  <p class="lead">Este paso evita volver a abrir Embedded Signup. Si la app aún no está suscrita, la suscribe; si ya quedó suscrita, solo reconcilia el mapeo local PROD. <strong>No registra el número, no solicita SMS, no ejecuta /register y no habilita envíos PROD.</strong></p>
 
   <section class="card">
     <h2>Activo protegido</h2>
@@ -43,10 +43,10 @@
 
   <section class="card">
     <h2>2. Ejecutar una sola operación</h2>
-    <div class="notice"><strong>Lo que sí hará:</strong> POST al endpoint oficial <code>/subscribed_apps</code> del WABA y, si Meta lo confirma, crear el canal local PROD como <code>es_prueba=false</code>.</div>
+    <div class="notice"><strong>Lo que sí hará:</strong> comprobar <code>/subscribed_apps</code>; solo si falta nuestra app hará el POST oficial. Después, cuando Meta la confirme, crea el canal local PROD como <code>es_prueba=false</code>.</div>
     <p class="warnbox"><strong>Protección activa:</strong> el backend <code>whatsapp-send</code> sigue aceptando únicamente canales de prueba. Por eso este paso no puede empezar a enviar respuestas automáticas desde producción.</p>
-    <label class="confirm"><input id="confirm" type="checkbox" disabled><span>Confirmo que deseo suscribir la app IMPULSO DIGITAL al WABA real mostrado arriba.</span></label>
-    <button id="run" type="button" disabled>Suscribir app al WABA PROD</button>
+    <label class="confirm"><input id="confirm" type="checkbox" disabled><span>Confirmo que deseo finalizar la conexión segura de la app IMPULSO DIGITAL con el WABA real mostrado arriba.</span></label>
+    <button id="run" type="button" disabled>Finalizar conexión PROD</button>
     <a class="btn" href="./whatsapp-prod-preflight.html">Volver al preflight</a>
   </section>
 
@@ -100,17 +100,20 @@ async function init(){
     coexistence_ready:data?.classification?.coexistence_ready??null,
     app_already_subscribed:data?.meta?.impulso_app_already_subscribed??null,
     direct_subscription_candidate:data?.classification?.direct_subscription_candidate??null,
+    direct_local_mapping_candidate:data?.classification?.direct_local_mapping_candidate??null,
+    direct_reconciliation_candidate:data?.classification?.direct_reconciliation_candidate??null,
     next_step_mode:data?.next_step_mode??null
   });
   eligible=data?.ok===true &&
     data?.classification?.waba_owner_matches_provider_business===true &&
     data?.classification?.coexistence_ready===true &&
-    data?.next_step_mode==='DIRECT_APP_SUBSCRIPTION_CANDIDATE';
+    data?.classification?.direct_reconciliation_candidate===true &&
+    ['DIRECT_APP_SUBSCRIPTION_CANDIDATE','DIRECT_LOCAL_MAPPING_CANDIDATE'].includes(data?.next_step_mode);
   if(eligible){
-    sessionEl.innerHTML='<span class="ok">Preflight aprobado. La operación directa está habilitada.</span>';
+    sessionEl.innerHTML=data?.meta?.impulso_app_already_subscribed===true
+      ? '<span class="ok">La app ya aparece suscrita. Falta reconciliar el mapeo local PROD.</span>'
+      : '<span class="ok">Preflight aprobado. La operación directa está habilitada.</span>';
     confirmEl.disabled=false;
-  }else if(data?.meta?.impulso_app_already_subscribed===true){
-    sessionEl.innerHTML='<span class="ok">La app ya aparece suscrita. No es necesario repetir la operación.</span>';
   }else{
     sessionEl.innerHTML='<span class="danger">Preflight no habilitó la suscripción. No se hará ningún cambio.</span>';
   }
