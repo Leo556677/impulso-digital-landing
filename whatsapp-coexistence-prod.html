@@ -46,10 +46,11 @@
 
   <section class="card">
     <h2>2. Antes de iniciar</h2>
-    <div class="dangerbox"><strong>Este botón sí modifica PRODUCCIÓN en Meta.</strong> Intentará vincular el número que ya está en WhatsApp Business App con Cloud API mediante Coexistence. No se crea todavía el canal PROD en Supabase y no se suscribe todavía la app al WABA.</div>
+    <div class="dangerbox"><strong>PAUSADO por seguridad.</strong> Meta devolvió el error #1690130 al intentar compartir el WABA con el negocio proveedor. No vuelvas a lanzar Embedded Signup desde esta página mientras validamos la ruta directa del WABA ya conectado.</div>
     <p class="notice"><strong>Rollback:</strong> si el WhatsApp Business App presenta una anomalía después del onboarding, en el teléfono abre WhatsApp Business → Configuración → Cuenta → Plataforma empresarial / Business Platform → Desconectar. Nuestro backend aún no activará envíos PROD en esta fase.</p>
     <label class="confirm"><input id="confirm" type="checkbox" disabled><span>Confirmo que el número mostrado arriba es el número real de IMPULSO DIGITAL y quiero iniciar Coexistence PROD.</span></label>
-    <button id="start" type="button" disabled>Iniciar Coexistencia PROD</button>
+    <button id="start" type="button" disabled>Pausado · no iniciar</button>
+    <a class="btn" href="./whatsapp-prod-preflight.html">Volver al preflight seguro</a>
   </section>
 
   <section class="card">
@@ -171,8 +172,8 @@ async function init(){
     return;
   }
   sessionEl.innerHTML='<span class="ok">Sesión válida · IMPULSO DIGITAL · admin.</span>';
-  sessionReady=true;confirmEl.disabled=false;updateButton();
-  setResult({ok:true,estado:'LISTO_PARA_INICIAR',detalle:'El botón abrirá el Embedded Signup oficial de Meta en modo Coexistence.'});
+  sessionReady=false;confirmEl.checked=false;confirmEl.disabled=true;startBtn.disabled=true;
+  setResult({ok:false,estado:'PAUSADO_ERROR_META_1690130',detalle:'No relanzar Embedded Signup. Ejecuta el preflight seguro actualizado para confirmar propietario del WABA y ruta directa.'});
 }
 
 startBtn.addEventListener('click',()=>{
