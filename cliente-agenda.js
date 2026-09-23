@@ -321,11 +321,46 @@ $('scheduleForm').addEventListener('submit',async e=>{
     await load();flashReview()
   }catch(err){msg(err.message||'No pudimos guardar el horario.')}
 });
-$('assignBtn').addEventListener('click',async()=>{if(!canEdit)return;const wasEditing=Boolean(linkEditKey),recurso_id=$('assignResource').value,servicioSel=$('assignService').value;if(!recurso_id)return msg('Elige quién atenderá los servicios.');msg(linkEditKey?'Guardando cambios…':'Guardando asignación…',true);if(servicioSel==='__all__' && !linkEditKey){const rows=services.map(s=>({negocio_id:negocioId,servicio_id:s.id,recurso_id}));const {error}=await sb.from('servicios_recursos').upsert(rows,{onConflict:'negocio_id,servicio_id,recurso_id',ignoreDuplicates:true});if(error)return msg('No pudimos asignar los servicios.');resetAssignForm();msg('Servicios asignados.',true);await load();flashReview();return}
+$('assignBtn').addEventListener('click',async()=>{if(!canEdit)return;const wasEditing=Boolean(linkEditKey),recurso_id=$('assignResource').value,servicioSel=$('assignService').value;if(!recurso_id)return msg('Selecciona la persona, espacio o equipo.');msg(linkEditKey?'Guardando cambios…':'Guardando…',true);if(servicioSel==='__all__' && !linkEditKey){const rows=services.map(s=>({negocio_id:negocioId,servicio_id:s.id,recurso_id}));const {error}=await sb.from('servicios_recursos').upsert(rows,{onConflict:'negocio_id,servicio_id,recurso_id',ignoreDuplicates:true});if(error)return msg('No pudimos asignar los servicios.');resetAssignForm();msg('Servicios asignados.',true);await load();flashReview();return}
   const servicio_id=servicioSel==='__all__'&&linkEditKey?linkEditKey.servicio_id:servicioSel;
   if(!servicio_id)return msg('Elige un servicio.');
   if(linkEditKey && (String(linkEditKey.servicio_id)!==String(servicio_id) || String(linkEditKey.recurso_id)!==String(recurso_id))){const del=await sb.from('servicios_recursos').delete().eq('negocio_id',negocioId).eq('servicio_id',linkEditKey.servicio_id).eq('recurso_id',linkEditKey.recurso_id);if(del.error)return msg('No pudimos preparar la reasignación.');}
   const {error}=await sb.from('servicios_recursos').upsert([{negocio_id:negocioId,servicio_id,recurso_id}],{onConflict:'negocio_id,servicio_id,recurso_id',ignoreDuplicates:true});if(error)return msg('No pudimos guardar la asignación.');resetAssignForm();msg(wasEditing?'Asignación actualizada.':'Asignación guardada.',true);await load();flashReview()});
+
+$('resourceType').addEventListener('change',updateResourceTypeUI);
+$('hasLunch').addEventListener('change',syncLunchFields);
+$('daysWeekdays').addEventListener('click',()=>setScheduleDays([1,2,3,4,5]));
+$('daysMonSat').addEventListener('click',()=>setScheduleDays([1,2,3,4,5,6]));
+$('daysAll').addEventListener('click',()=>setScheduleDays([0,1,2,3,4,5,6]));
+$('daysClear').addEventListener('click',()=>setScheduleDays([]));
+
+$('copyScheduleBtn').addEventListener('click',()=>{
+  if(!scheduleEditId)return;
+  scheduleEditId=null;setScheduleDays([]);$('saveSchedule').textContent='Aplicar horario';$('copyScheduleBtn').hidden=true;
+  $('scheduleModeHint').textContent='Selecciona los días destino y pulsa Aplicar horario. Se copiarán también la pausa de almuerzo y las horas.';
+  msg('Horario listo para copiar. Elige los días destino.',true);
+});
+
+$('closeDaysBtn').addEventListener('click',()=>{
+  if(!canEdit)return;
+  const recurso_id=$('scheduleResource').value,dias=selectedScheduleDays();
+  if(!recurso_id)return msg('Selecciona la persona, espacio o equipo.');
+  if(!dias.length)return msg('Selecciona los días que no atenderá.');
+  const labels=dias.sort((a,b)=>a-b).map(d=>days[d]).join(', ');
+  openConfirm('Marcar días sin atención',`Se quitarán los horarios activos de: ${labels}. Las citas existentes no se borrarán.`,async()=>{
+    msg('Actualizando días…',true);
+    try{await callAgendaSchedule({recurso_id,dias,cerrar:true});resetScheduleForm();msg('Días actualizados.',true);await load();flashReview()}catch(err){msg(err.message||'No pudimos actualizar los días.')}
+  });
+});
+
+document.querySelectorAll('[data-variable]').forEach(button=>button.addEventListener('click',()=>insertReminderVariable(button.dataset.variable||'')));
+document.querySelectorAll('[data-reminder-minutes]').forEach(button=>button.addEventListener('click',()=>{
+  const value=Number(button.dataset.reminderMinutes),current=parseReminderMinutes($('recordatorios').value)||[],set=new Set(current);
+  if(set.has(value))set.delete(value);else set.add(value);
+  $('recordatorios').value=[...set].sort((a,b)=>b-a).join(', ');
+  syncReminderPresetState();
+}));
+$('recordatorios').addEventListener('input',syncReminderPresetState);
 
 $('cancelResourceEdit').addEventListener('click',()=>{resetResourceForm();msg('Edición cancelada.',true)});
 $('cancelScheduleEdit').addEventListener('click',()=>{resetScheduleForm();msg('Edición cancelada.',true)});
