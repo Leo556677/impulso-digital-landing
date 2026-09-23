@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#E6007E">
+  <title>WhatsApp PROD · Suscripción directa segura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;--ok:#16794c;--warn:#9a6700;--danger:#C62828;--gradient:linear-gradient(135deg,var(--magenta),var(--coral) 52%,var(--orange));--shadow:0 18px 55px rgba(38,38,38,.10)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:26px;background:radial-gradient(circle at 12% 8%,rgba(230,0,126,.10),transparent 28%),radial-gradient(circle at 88% 92%,rgba(255,106,0,.10),transparent 30%),var(--gray);font-family:'Montserrat',system-ui,sans-serif;color:var(--charcoal)}
+    .wrap{width:min(900px,100%);margin:auto}.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:inherit;text-decoration:none}.brand img{width:54px;height:54px;border-radius:50%;object-fit:cover}.brand strong,h1,h2{font-family:'Anton',sans-serif;font-weight:400}.brand strong{font-size:1.4rem}.brand small{display:block;margin-top:4px;color:var(--magenta);font-weight:800;letter-spacing:.1em;font-size:11px}
+    h1{font-size:clamp(2rem,5vw,3rem);margin:.4rem 0}.lead{color:var(--muted);line-height:1.65}.tag{display:inline-block;padding:7px 11px;border-radius:999px;background:#eefbf4;color:#146b45;font-size:12px;font-weight:800;letter-spacing:.04em}.card{background:#fff;border:1px solid var(--gray2);border-radius:22px;padding:24px;margin:16px 0;box-shadow:var(--shadow)}.card::before{content:'';display:block;width:48px;height:4px;border-radius:999px;background:var(--gradient);margin-bottom:16px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.item{padding:14px;border-radius:14px;background:var(--gray)}.item small{display:block;color:var(--muted);font-weight:700}.item strong{display:block;margin-top:5px;word-break:break-all}.notice{padding:14px;border-radius:14px;background:#eefbf4;border:1px solid #bae3cd;color:#155f41;font-weight:650;line-height:1.55}.warnbox{padding:14px;border-radius:14px;background:#fff8e5;border:1px solid #f2d89e;color:#765000;line-height:1.55}
+    label.confirm{display:flex;gap:10px;align-items:flex-start;margin:16px 0;font-weight:700}.confirm input{margin-top:4px}button,a.btn{display:inline-block;border:0;border-radius:12px;padding:12px 17px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;margin-right:8px;margin-top:8px}button{background:var(--gradient);color:#fff;box-shadow:0 10px 24px rgba(230,0,126,.18)}button:disabled{opacity:.45;cursor:not-allowed}.btn{background:#fff;border:1px solid #dedee4;color:var(--charcoal)}.ok{color:var(--ok);font-weight:800}.danger{color:var(--danger);font-weight:800}pre{white-space:pre-wrap;word-break:break-word;background:#262626;color:#fff;border-radius:14px;padding:16px;min-height:160px}@media(max-width:650px){body{padding:16px}.grid{grid-template-columns:1fr}.card{padding:20px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a class="brand" href="./"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><span><strong>IMPULSO DIGITAL</strong><small>WHATSAPP · PROD DIRECT SUBSCRIBE</small></span></a>
+  <span class="tag">PRODUCCIÓN · OPERACIÓN CONTROLADA</span>
+  <h1>Suscribir la app al WABA real</h1>
+  <p class="lead">Este paso evita volver a abrir Embedded Signup. Solo suscribe la app IMPULSO DIGITAL al WABA real y crea el mapeo local PROD para recibir eventos. <strong>No registra el número, no solicita SMS, no ejecuta /register y no habilita envíos PROD.</strong></p>
+
+  <section class="card">
+    <h2>Activo protegido</h2>
+    <div class="grid">
+      <div class="item"><small>WABA</small><strong>482578634949575</strong></div>
+      <div class="item"><small>Phone Number ID</small><strong>492828200591020</strong></div>
+      <div class="item"><small>Número</small><strong>+51 903 396 082</strong></div>
+      <div class="item"><small>Business Portfolio propietario</small><strong>886038977932226</strong></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>1. Validación automática</h2>
+    <p id="session">Validando sesión y preflight…</p>
+    <pre id="preflight">Esperando validación…</pre>
+  </section>
+
+  <section class="card">
+    <h2>2. Ejecutar una sola operación</h2>
+    <div class="notice"><strong>Lo que sí hará:</strong> POST al endpoint oficial <code>/subscribed_apps</code> del WABA y, si Meta lo confirma, crear el canal local PROD como <code>es_prueba=false</code>.</div>
+    <p class="warnbox"><strong>Protección activa:</strong> el backend <code>whatsapp-send</code> sigue aceptando únicamente canales de prueba. Por eso este paso no puede empezar a enviar respuestas automáticas desde producción.</p>
+    <label class="confirm"><input id="confirm" type="checkbox" disabled><span>Confirmo que deseo suscribir la app IMPULSO DIGITAL al WABA real mostrado arriba.</span></label>
+    <button id="run" type="button" disabled>Suscribir app al WABA PROD</button>
+    <a class="btn" href="./whatsapp-prod-preflight.html">Volver al preflight</a>
+  </section>
+
+  <section class="card">
+    <h2>3. Resultado</h2>
+    <pre id="result">Aún no se ejecutó ninguna mutación.</pre>
+  </section>
+</main>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+const supabase=createClient(
+  'https://xnlzsgulskqyecfgzhwa.supabase.co',
+  'sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',
+  {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}
+);
+const NEGOCIO_ID='c656a9ac-2739-451b-a93f-9e25fc9f4cbe';
+const sessionEl=document.getElementById('session');
+const preflightEl=document.getElementById('preflight');
+const confirmEl=document.getElementById('confirm');
+const runBtn=document.getElementById('run');
+const resultEl=document.getElementById('result');
+let eligible=false,running=false;
+const pretty=v=>typeof v==='string'?v:JSON.stringify(v,null,2);
+function update(){runBtn.disabled=!(eligible&&confirmEl.checked&&!running)}
+confirmEl.addEventListener('change',update);
+
+async function init(){
+  const {data:{session},error}=await supabase.auth.getSession();
+  if(error||!session?.user){
+    sessionEl.innerHTML='<span class="danger">Sin sesión CRM activa.</span>';
+    preflightEl.textContent='Inicia sesión en el CRM antes de continuar.';
+    return;
+  }
+  const {data:m,error:me}=await supabase.from('usuarios_negocio').select('negocio_id,rol').eq('negocio_id',NEGOCIO_ID).eq('user_id',session.user.id).maybeSingle();
+  if(me||!m||m.rol!=='admin'){
+    sessionEl.innerHTML='<span class="danger">Se requiere rol admin de IMPULSO DIGITAL.</span>';
+    return;
+  }
+  sessionEl.innerHTML='<span class="ok">Sesión válida · ejecutando preflight actualizado…</span>';
+  const {data,error:pfErr}=await supabase.functions.invoke('whatsapp-prod-preflight',{body:{negocio_id:NEGOCIO_ID}});
+  if(pfErr){
+    let detail=null;try{if(pfErr.context&&typeof pfErr.context.json==='function')detail=await pfErr.context.json()}catch{}
+    preflightEl.textContent=pretty(detail||{ok:false,error:pfErr.message});
+    return;
+  }
+  preflightEl.textContent=pretty({
+    ok:data?.ok??false,
+    waba_owner_business_id:data?.meta?.waba_owner_business_id??null,
+    waba_owner_matches_provider_business:data?.classification?.waba_owner_matches_provider_business??null,
+    coexistence_ready:data?.classification?.coexistence_ready??null,
+    app_already_subscribed:data?.meta?.impulso_app_already_subscribed??null,
+    direct_subscription_candidate:data?.classification?.direct_subscription_candidate??null,
+    next_step_mode:data?.next_step_mode??null
+  });
+  eligible=data?.ok===true &&
+    data?.classification?.waba_owner_matches_provider_business===true &&
+    data?.classification?.coexistence_ready===true &&
+    data?.next_step_mode==='DIRECT_APP_SUBSCRIPTION_CANDIDATE';
+  if(eligible){
+    sessionEl.innerHTML='<span class="ok">Preflight aprobado. La operación directa está habilitada.</span>';
+    confirmEl.disabled=false;
+  }else if(data?.meta?.impulso_app_already_subscribed===true){
+    sessionEl.innerHTML='<span class="ok">La app ya aparece suscrita. No es necesario repetir la operación.</span>';
+  }else{
+    sessionEl.innerHTML='<span class="danger">Preflight no habilitó la suscripción. No se hará ningún cambio.</span>';
+  }
+  update();
+}
+
+runBtn.addEventListener('click',async()=>{
+  if(!eligible||!confirmEl.checked||running)return;
+  running=true;update();
+  resultEl.textContent='Ejecutando validaciones finales y suscripción directa…';
+  try{
+    const {data,error}=await supabase.functions.invoke('whatsapp-prod-subscribe-app',{
+      body:{negocio_id:NEGOCIO_ID,confirmacion:'SUSCRIBIR_APP_WABA_PROD'}
+    });
+    if(error){
+      let detail=null;try{if(error.context&&typeof error.context.json==='function')detail=await error.context.json()}catch{}
+      resultEl.textContent=pretty(detail||{ok:false,error:error.message||'Falló la operación controlada'});
+      return;
+    }
+    resultEl.textContent=pretty(data);
+    if(data?.ok===true){
+      eligible=false;confirmEl.checked=false;confirmEl.disabled=true;runBtn.disabled=true;
+      sessionEl.innerHTML='<span class="ok">Suscripción confirmada. No vuelvas a pulsar el botón.</span>';
+    }
+  }catch(e){
+    resultEl.textContent=pretty({ok:false,error:e?.message||'No se pudo completar la operación controlada'});
+  }finally{
+    running=false;update();
+  }
+});
+
+await init();
+</script>
+</body>
+</html>
