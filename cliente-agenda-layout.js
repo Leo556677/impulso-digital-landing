@@ -1,8 +1,8 @@
 const setupDefs = [
-  { key: 'rules', title: 'Reglas de reserva', subtitle: 'Cómo recibes las citas', icon: '1' },
-  { key: 'resources', title: 'Quién atiende', subtitle: 'Personas y recursos', icon: '2' },
-  { key: 'schedules', title: 'Horarios registrados', subtitle: 'Días y horas disponibles', icon: '3' },
-  { key: 'links', title: 'Servicios asignados', subtitle: 'Quién realiza cada servicio', icon: '4' }
+  { key: 'rules', title: 'Reglas de citas', subtitle: 'Reservas y recordatorios', icon: '1' },
+  { key: 'resources', title: 'Quién atiende', subtitle: 'Personas, espacios o equipos', icon: '2' },
+  { key: 'schedules', title: 'Días y horarios', subtitle: 'Atención y almuerzo', icon: '3' },
+  { key: 'links', title: 'Servicios asignados', subtitle: 'Qué puede atender cada uno', icon: '4' }
 ];
 
 const setupGrid = document.querySelector('main.wrap > .grid');
