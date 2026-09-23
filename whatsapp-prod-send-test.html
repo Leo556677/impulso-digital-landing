@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#E6007E">
+  <title>WhatsApp PROD · Envío de prueba controlado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;--ok:#16794c;--warn:#9a6700;--danger:#C62828;--gradient:linear-gradient(135deg,var(--magenta),var(--coral) 52%,var(--orange));--shadow:0 18px 55px rgba(38,38,38,.10)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:26px;background:radial-gradient(circle at 12% 8%,rgba(230,0,126,.10),transparent 28%),radial-gradient(circle at 88% 92%,rgba(255,106,0,.10),transparent 30%),var(--gray);font-family:'Montserrat',system-ui,sans-serif;color:var(--charcoal)}
+    .wrap{width:min(900px,100%);margin:auto}.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:inherit;text-decoration:none}.brand img{width:54px;height:54px;border-radius:50%;object-fit:cover}.brand strong,h1,h2{font-family:'Anton',sans-serif;font-weight:400}.brand strong{font-size:1.4rem}.brand small{display:block;margin-top:4px;color:var(--magenta);font-weight:800;letter-spacing:.1em;font-size:11px}
+    h1{font-size:clamp(2rem,5vw,3rem);margin:.4rem 0}.lead{color:var(--muted);line-height:1.65}.tag{display:inline-block;padding:7px 11px;border-radius:999px;background:#fff3e8;color:#A94200;font-size:12px;font-weight:800;letter-spacing:.04em}.card{background:#fff;border:1px solid var(--gray2);border-radius:22px;padding:24px;margin:16px 0;box-shadow:var(--shadow)}.card::before{content:'';display:block;width:48px;height:4px;border-radius:999px;background:var(--gradient);margin-bottom:16px}
+    .notice{padding:14px;border-radius:14px;background:#eefbf4;border:1px solid #bae3cd;color:#155f41;font-weight:650;line-height:1.55}.warnbox{padding:14px;border-radius:14px;background:#fff8e5;border:1px solid #f2d89e;color:#765000;line-height:1.55}.dangerbox{padding:14px;border-radius:14px;background:#fff1f1;border:1px solid #f0caca;color:#8a1f1f;line-height:1.55}
+    label.confirm{display:flex;gap:10px;align-items:flex-start;margin:16px 0;font-weight:700}.confirm input{margin-top:4px}button,a.btn{display:inline-block;border:0;border-radius:12px;padding:12px 17px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;margin-right:8px;margin-top:8px}button{background:var(--gradient);color:#fff;box-shadow:0 10px 24px rgba(230,0,126,.18)}button:disabled{opacity:.45;cursor:not-allowed}.btn{background:#fff;border:1px solid #dedee4;color:var(--charcoal)}.ok{color:var(--ok);font-weight:800}.warn{color:var(--warn);font-weight:800}.danger{color:var(--danger);font-weight:800}pre{white-space:pre-wrap;word-break:break-word;background:#262626;color:#fff;border-radius:14px;padding:16px;min-height:160px}@media(max-width:650px){body{padding:16px}.card{padding:20px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a class="brand" href="./"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><span><strong>IMPULSO DIGITAL</strong><small>WHATSAPP · PROD ONE-SHOT SEND</small></span></a>
+  <span class="tag">PRODUCCIÓN · UN SOLO ENVÍO DE PRUEBA</span>
+  <h1>Probar salida sin habilitar producción</h1>
+  <p class="lead">Esta página permite exactamente un envío de prueba asociado al mensaje entrante ya validado. <strong>No modifica <code>whatsapp-send</code> y no habilita respuestas PROD generales.</strong></p>
+
+  <section class="card">
+    <h2>1. Validación previa</h2>
+    <p id="session">Validando sesión y recepción PROD…</p>
+    <pre id="precheck">Esperando validación…</pre>
+  </section>
+
+  <section class="card">
+    <h2>2. Único envío autorizado</h2>
+    <div class="notice"><strong>Destino:</strong> el mismo número que envió <code>PRUEBA PROD 2309</code>. Mensaje exacto: <code>PRUEBA PROD OK 2309</code>.</div>
+    <p class="warnbox"><strong>Control:</strong> si ya existe un intento para ese mensaje entrante, el backend no vuelve a enviarlo.</p>
+    <p class="dangerbox"><strong>Importante:</strong> esta prueba usa una función separada. El envío normal del CRM sigue bloqueado para canales PROD.</p>
+    <label class="confirm"><input id="confirm" type="checkbox" disabled><span>Confirmo el envío de una sola respuesta de prueba al número que envió el mensaje de prueba PROD.</span></label>
+    <button id="send" type="button" disabled>Enviar UNA prueba PROD</button>
+    <button id="status" type="button" disabled>Verificar entrega</button>
+    <a class="btn" href="./whatsapp-prod-receive-test.html">Volver a recepción</a>
+  </section>
+
+  <section class="card">
+    <h2>3. Resultado</h2>
+    <pre id="result">Todavía no se ha enviado nada desde esta página.</pre>
+  </section>
+</main>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+const supabase=createClient(
+  'https://xnlzsgulskqyecfgzhwa.supabase.co',
+  'sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',
+  {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}
+);
+const NEGOCIO_ID='c656a9ac-2739-451b-a93f-9e25fc9f4cbe';
+const sessionEl=document.getElementById('session');
+const precheckEl=document.getElementById('precheck');
+const confirmEl=document.getElementById('confirm');
+const sendBtn=document.getElementById('send');
+const statusBtn=document.getElementById('status');
+const resultEl=document.getElementById('result');
+const pretty=v=>typeof v==='string'?v:JSON.stringify(v,null,2);
+let eligible=false,running=false;
+function update(){
+  sendBtn.disabled=!(eligible&&confirmEl.checked&&!running);
+  statusBtn.disabled=!eligible||running;
+}
+confirmEl.addEventListener('change',update);
+
+async function call(name,body){
+  const {data,error}=await supabase.functions.invoke(name,{body});
+  if(error){
+    let detail=null;try{if(error.context&&typeof error.context.json==='function')detail=await error.context.json()}catch{}
+    throw detail||{ok:false,error:error.message||'Falló la operación'};
+  }
+  return data;
+}
+
+async function init(){
+  const {data:{session},error}=await supabase.auth.getSession();
+  if(error||!session?.user){
+    sessionEl.innerHTML='<span class="danger">Sin sesión CRM activa.</span>';
+    return;
+  }
+  const {data:m,error:me}=await supabase.from('usuarios_negocio').select('negocio_id,rol').eq('negocio_id',NEGOCIO_ID).eq('user_id',session.user.id).maybeSingle();
+  if(me||!m||m.rol!=='admin'){
+    sessionEl.innerHTML='<span class="danger">Se requiere rol admin de IMPULSO DIGITAL.</span>';
+    return;
+  }
+  sessionEl.innerHTML='<span class="ok">Sesión válida · comprobando recepción PROD…</span>';
+  try{
+    const check=await call('whatsapp-prod-receive-check',{negocio_id:NEGOCIO_ID});
+    precheckEl.textContent=pretty({
+      ok:check?.ok??false,
+      recepcion_confirmada:check?.recepcion_confirmada??false,
+      events_since_channel_created:check?.events_since_channel_created??null,
+      incoming_messages_since_channel_created:check?.incoming_messages_since_channel_created??null,
+      outbound_prod_enabled:check?.outbound_prod_enabled??null
+    });
+    eligible=check?.ok===true&&check?.recepcion_confirmada===true&&check?.outbound_prod_enabled===false;
+    if(eligible){
+      sessionEl.innerHTML='<span class="ok">Recepción PROD confirmada. El único envío de prueba puede ejecutarse.</span>';
+      confirmEl.disabled=false;
+      statusBtn.disabled=false;
+    }else{
+      sessionEl.innerHTML='<span class="danger">La recepción PROD no está confirmada. No se permite enviar.</span>';
+    }
+  }catch(e){
+    precheckEl.textContent=pretty(e);
+    sessionEl.innerHTML='<span class="danger">No se pudo validar la recepción PROD.</span>';
+  }
+  update();
+}
+
+sendBtn.addEventListener('click',async()=>{
+  if(!eligible||!confirmEl.checked||running)return;
+  running=true;update();
+  resultEl.textContent='Ejecutando el único envío controlado…';
+  try{
+    const data=await call('whatsapp-prod-send-test',{
+      negocio_id:NEGOCIO_ID,
+      confirmacion:'ENVIAR_UN_MENSAJE_PRUEBA_PROD_2309'
+    });
+    resultEl.textContent=pretty(data);
+    if(data?.ok===true){
+      confirmEl.checked=false;confirmEl.disabled=true;sendBtn.disabled=true;
+      sessionEl.innerHTML='<span class="ok">Meta aceptó la prueba. No vuelvas a pulsar Enviar.</span>';
+    }
+  }catch(e){
+    resultEl.textContent=pretty(e);
+  }finally{
+    running=false;update();
+  }
+});
+
+statusBtn.addEventListener('click',async()=>{
+  if(!eligible||running)return;
+  running=true;update();
+  resultEl.textContent='Consultando el estado de la prueba…';
+  try{
+    const data=await call('whatsapp-prod-send-test-status',{negocio_id:NEGOCIO_ID});
+    resultEl.textContent=pretty(data);
+    if(data?.delivered_or_read===true){
+      sessionEl.innerHTML='<span class="ok">Entrega PROD confirmada. El envío general sigue bloqueado.</span>';
+    }
+  }catch(e){
+    resultEl.textContent=pretty(e);
+  }finally{
+    running=false;update();
+  }
+});
+
+await init();
+</script>
+</body>
+</html>
