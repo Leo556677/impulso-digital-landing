@@ -31,6 +31,20 @@
           <div><label for="anticipacion">Anticipación mínima (min)</label><input id="anticipacion" type="number" min="0" max="525600" required placeholder="Ej. 120"></div>
           <div><label for="horizonte">Días hacia adelante</label><input id="horizonte" type="number" min="1" max="365" required placeholder="Ej. 30"></div>
         </div>
+        <div class="inline" style="margin-top:8px;grid-template-columns:1fr 1fr">
+          <div><label for="capacidad">Citas máximas por hora</label><input id="capacidad" type="number" min="1" max="100" required placeholder="Ej. 1"></div>
+          <div><label for="cooldown">Espera entre reservas repetidas (min)</label><input id="cooldown" type="number" min="0" max="10080" required placeholder="Ej. 60"></div>
+        </div>
+        <div class="reminder-box">
+          <div class="step">RECORDATORIOS POR WHATSAPP</div>
+          <p class="copy">Puedes programar varios avisos antes de cada cita. Solo se enviarán cuando el cliente haya aceptado recibir recordatorios por WhatsApp.</p>
+          <label for="recordatorios">Minutos antes de la cita</label>
+          <input id="recordatorios" inputmode="numeric" placeholder="Ej. 1440, 60">
+          <div class="field-help">Ejemplo: <strong>1440, 60</strong> = 24 horas y 1 hora antes. Déjalo vacío para no programar recordatorios.</div>
+          <label for="plantillaRecordatorio">Mensaje del recordatorio</label>
+          <textarea id="plantillaRecordatorio" rows="4" maxlength="1200" placeholder="Hola, te recordamos tu cita de {{servicio}} para {{fecha}} a las {{hora}}."></textarea>
+          <div class="field-help">Variables disponibles: <code>{{servicio}}</code>, <code>{{fecha}}</code>, <code>{{hora}}</code> y <code>{{anticipacion_min}}</code>.</div>
+        </div>
         <label class="check"><input id="activa" type="checkbox"> Activar agenda cuando la configuración esté completa</label>
         <div class="form-actions"><button id="saveConfig" class="btn" type="submit">Guardar reglas</button><button id="clearConfigEdit" class="btn secondary" type="button">Ir al resumen</button></div>
       </form>
