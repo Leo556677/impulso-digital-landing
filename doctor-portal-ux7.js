@@ -187,7 +187,7 @@
     const matched=typeof markTeleRehooks==='function'?markTeleRehooks(emphasis):0;
     if(typeof teleEmphasisSeen!=='undefined')teleEmphasisSeen=new Set();
     if(typeof teleEmphasisHoldUntil!=='undefined')teleEmphasisHoldUntil=0;
-    if(hint)hint.textContent=emphasis.length?`${matched}/${emphasis.length} énfasis · verde antes · rojo al llegar · pausa automática`:'Teleprompter por escenas · sin énfasis marcados en este guion';
+    if(hint)hint.textContent=emphasis.length?`${matched}/${emphasis.length} énfasis · verde antes · rojo al llegar · pausa ${typeof emphasisPauseSeconds!=='undefined'?emphasisPauseSeconds:1}s`:'Teleprompter por escenas · sin énfasis marcados en este guion';
     document.querySelectorAll('[data-v7scene]').forEach(btn=>btn.onclick=()=>{const g=sceneGuides[Number(btn.dataset.v7scene)];if(g)openPlayer(g.title,g.text);});
     try{fs=Number(localStorage.getItem('do_tele_font'))||(innerWidth<600?34:44);const saved=Number(localStorage.getItem('do_tele_speed')||120);sr.value=String(saved<60?120:saved)}catch{fs=innerWidth<600?34:44;sr.value='120'}
     applyF();speedL();play=false;countdownActive=false;playI();syncTeleSettings();tele.classList.add('on');document.body.style.overflow='hidden';scr.scrollTop=0;
