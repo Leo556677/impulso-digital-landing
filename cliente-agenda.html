@@ -22,74 +22,120 @@
   <div id="notice" class="notice" hidden></div>
   <div class="grid" style="margin-top:14px">
     <section class="card">
-      <div class="step">1 · REGLAS DE RESERVA</div>
-      <h2>Cómo quieres recibir citas</h2>
-      <p class="copy">Estos valores controlan cada cuánto puede empezar una cita, con cuánta anticipación pueden reservar y hasta cuántos días mostrar.</p>
+      <div class="step">1 · REGLAS DE CITAS</div>
+      <h2>Define cómo se reciben las citas</h2>
       <form id="configForm">
         <div class="inline">
-          <div><label for="intervalo">Inicio cada (min)</label><input id="intervalo" type="number" min="5" max="240" required placeholder="Ej. 30"></div>
-          <div><label for="anticipacion">Anticipación mínima (min)</label><input id="anticipacion" type="number" min="0" max="525600" required placeholder="Ej. 120"></div>
-          <div><label for="horizonte">Días hacia adelante</label><input id="horizonte" type="number" min="1" max="365" required placeholder="Ej. 30"></div>
+          <div><label for="intervalo">Cada cuántos minutos puede empezar una cita</label><input id="intervalo" type="number" min="5" max="240" required placeholder="30"></div>
+          <div><label for="anticipacion">Reserva con mínimo de anticipación (min)</label><input id="anticipacion" type="number" min="0" max="525600" required placeholder="120"></div>
+          <div><label for="horizonte">Mostrar disponibilidad hasta (días)</label><input id="horizonte" type="number" min="1" max="365" required placeholder="90"></div>
         </div>
         <div class="inline" style="margin-top:8px;grid-template-columns:1fr 1fr">
-          <div><label for="capacidad">Citas máximas por hora</label><input id="capacidad" type="number" min="1" max="100" required placeholder="Ej. 1"></div>
-          <div><label for="cooldown">Espera entre reservas repetidas (min)</label><input id="cooldown" type="number" min="0" max="10080" required placeholder="Ej. 60"></div>
+          <div><label for="capacidad">Citas máximas por hora</label><input id="capacidad" type="number" min="1" max="100" required placeholder="1"></div>
+          <div><label for="cooldown">Tiempo mínimo antes de volver a reservar (min)</label><input id="cooldown" type="number" min="0" max="10080" required placeholder="60"></div>
         </div>
+
         <div class="reminder-box">
           <div class="step">RECORDATORIOS POR WHATSAPP</div>
-          <p class="copy">Puedes programar varios avisos antes de cada cita. Solo se enviarán cuando el cliente haya aceptado recibir recordatorios por WhatsApp.</p>
-          <label for="recordatorios">Minutos antes de la cita</label>
-          <input id="recordatorios" inputmode="numeric" placeholder="Ej. 1440, 60">
-          <div class="field-help">Ejemplo: <strong>1440, 60</strong> = 24 horas y 1 hora antes. Déjalo vacío para no programar recordatorios.</div>
+          <label for="recordatorios">Avisar antes de la cita</label>
+          <div class="preset-row" id="reminderPresets" aria-label="Atajos de anticipación">
+            <button type="button" class="preset-chip" data-reminder-minutes="1440">24 h</button>
+            <button type="button" class="preset-chip" data-reminder-minutes="720">12 h</button>
+            <button type="button" class="preset-chip" data-reminder-minutes="120">2 h</button>
+            <button type="button" class="preset-chip" data-reminder-minutes="60">1 h</button>
+            <button type="button" class="preset-chip" data-reminder-minutes="30">30 min</button>
+          </div>
+          <input id="recordatorios" inputmode="numeric" placeholder="También puedes escribir minutos, ej. 1440, 60">
+          <div class="field-help">Puedes elegir varios avisos. Solo se enviarán si el cliente acepta recordatorios por WhatsApp.</div>
+
           <label for="plantillaRecordatorio">Mensaje del recordatorio</label>
           <textarea id="plantillaRecordatorio" rows="4" maxlength="1200" placeholder="Hola, te recordamos tu cita de {{servicio}} para {{fecha}} a las {{hora}}."></textarea>
-          <div class="field-help">Variables disponibles: <code>{{servicio}}</code>, <code>{{fecha}}</code>, <code>{{hora}}</code> y <code>{{anticipacion_min}}</code>.</div>
+          <div class="variable-row" id="variableChips" aria-label="Insertar datos en el mensaje">
+            <button type="button" class="variable-chip" data-variable="{{servicio}}">+ Servicio</button>
+            <button type="button" class="variable-chip" data-variable="{{fecha}}">+ Fecha</button>
+            <button type="button" class="variable-chip" data-variable="{{hora}}">+ Hora</button>
+            <button type="button" class="variable-chip" data-variable="{{anticipacion_min}}">+ Anticipación</button>
+          </div>
         </div>
-        <label class="check"><input id="activa" type="checkbox"> Activar agenda cuando la configuración esté completa</label>
-        <div class="form-actions"><button id="saveConfig" class="btn" type="submit">Guardar reglas</button><button id="clearConfigEdit" class="btn secondary" type="button">Ir al resumen</button></div>
+
+        <label class="check"><input id="activa" type="checkbox"> Agenda activa</label>
+        <div class="form-actions"><button id="saveConfig" class="btn" type="submit">Guardar reglas</button><button id="clearConfigEdit" class="btn secondary" type="button">Ver resumen</button></div>
       </form>
       <div id="configSummary" class="summary">Sin configuración guardada.</div>
     </section>
 
     <section class="card">
       <div class="step">2 · QUIÉN ATIENDE</div>
-      <h2>Agrega una persona o recurso</h2>
-      <p class="copy">Puede ser una persona, una cabina, una sala u otro recurso que tenga horarios propios.</p>
+      <h2>Agrega quién o qué recibe la cita</h2>
       <form id="resourceForm">
-        <label for="resourceName">Nombre</label><input id="resourceName" required maxlength="120" placeholder="Ej. María / Consultorio 1">
-        <label for="resourceType">Tipo</label>
-        <select id="resourceType"><option value="persona">Persona</option><option value="recurso">Recurso</option></select>
+        <label for="resourceType">¿Qué vas a agregar?</label>
+        <select id="resourceType">
+          <option value="persona">Persona que atiende</option>
+          <option value="recurso">Espacio o equipo que se reserva</option>
+        </select>
+        <div id="resourceTypeHelp" class="choice-help">Una persona tiene sus propios horarios y puede atender servicios.</div>
+        <label id="resourceNameLabel" for="resourceName">Nombre de la persona</label>
+        <input id="resourceName" required maxlength="120" placeholder="Ej. María">
         <div class="form-actions"><button id="saveResource" class="btn" type="submit">Agregar</button><button id="cancelResourceEdit" class="btn secondary" type="button" hidden>Cancelar edición</button></div>
       </form>
-      <div id="resourceSummary" class="summary">Aún no hay recursos.</div>
+      <div id="resourceSummary" class="summary">Aún no agregaste quién atiende.</div>
     </section>
 
     <section class="card">
       <div class="step">3 · DÍAS Y HORAS</div>
-      <h2>Agrega un horario</h2>
-      <p class="copy">Puedes agregar varios rangos para la misma persona o recurso.</p>
+      <h2>Define el horario semanal</h2>
       <form id="scheduleForm">
-        <label for="scheduleResource">Quién atiende</label>
-        <select id="scheduleResource" required><option value="">Elige una opción</option></select>
-        <label for="day">Día</label>
-        <select id="day" required>
-          <option value="">Elige un día</option><option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option><option value="4">Jueves</option><option value="5">Viernes</option><option value="6">Sábado</option><option value="0">Domingo</option>
-        </select>
-        <div class="inline" style="grid-template-columns:1fr 1fr"><div><label for="start">Desde</label><input id="start" type="time" required></div><div><label for="end">Hasta</label><input id="end" type="time" required></div></div>
-        <div class="form-actions"><button id="saveSchedule" class="btn" type="submit">Agregar horario</button><button id="cancelScheduleEdit" class="btn secondary" type="button" hidden>Cancelar edición</button></div>
+        <label for="scheduleResource">Persona, espacio o equipo</label>
+        <select id="scheduleResource" required><option value="">Selecciona quién atiende</option></select>
+
+        <label>Días de atención</label>
+        <div id="scheduleDays" class="day-picker">
+          <label class="day-chip"><input type="checkbox" name="scheduleDay" value="1"><span>Lun</span></label>
+          <label class="day-chip"><input type="checkbox" name="scheduleDay" value="2"><span>Mar</span></label>
+          <label class="day-chip"><input type="checkbox" name="scheduleDay" value="3"><span>Mié</span></label>
+          <label class="day-chip"><input type="checkbox" name="scheduleDay" value="4"><span>Jue</span></label>
+          <label class="day-chip"><input type="checkbox" name="scheduleDay" value="5"><span>Vie</span></label>
+          <label class="day-chip"><input type="checkbox" name="scheduleDay" value="6"><span>Sáb</span></label>
+          <label class="day-chip"><input type="checkbox" name="scheduleDay" value="0"><span>Dom</span></label>
+        </div>
+        <div class="preset-row compact" aria-label="Atajos de días">
+          <button id="daysWeekdays" type="button" class="preset-chip">Lun–Vie</button>
+          <button id="daysMonSat" type="button" class="preset-chip">Lun–Sáb</button>
+          <button id="daysAll" type="button" class="preset-chip">Todos</button>
+          <button id="daysClear" type="button" class="preset-chip secondary-chip">Limpiar</button>
+        </div>
+
+        <div class="inline hours-grid" style="grid-template-columns:1fr 1fr">
+          <div><label for="start">Abre / empieza</label><input id="start" type="time" required></div>
+          <div><label for="end">Cierra / termina</label><input id="end" type="time" required></div>
+        </div>
+
+        <label class="check lunch-toggle"><input id="hasLunch" type="checkbox"> Tiene pausa de almuerzo</label>
+        <div id="lunchFields" class="lunch-fields" hidden>
+          <div class="inline" style="grid-template-columns:1fr 1fr">
+            <div><label for="lunchStart">Almuerzo desde</label><input id="lunchStart" type="time"></div>
+            <div><label for="lunchEnd">Almuerzo hasta</label><input id="lunchEnd" type="time"></div>
+          </div>
+        </div>
+
+        <div id="scheduleModeHint" class="choice-help">El mismo horario se aplicará a todos los días seleccionados.</div>
+        <div class="form-actions">
+          <button id="saveSchedule" class="btn" type="submit">Aplicar horario</button>
+          <button id="closeDaysBtn" class="btn secondary" type="button">No atiende estos días</button>
+          <button id="cancelScheduleEdit" class="btn secondary" type="button" hidden>Cancelar edición</button>
+        </div>
       </form>
       <div id="scheduleSummary" class="summary">Aún no hay horarios.</div>
     </section>
 
     <section class="card">
       <div class="step">4 · SERVICIOS</div>
-      <h2>Relaciona tus servicios</h2>
-      <p class="copy">Para ofrecer horarios, cada servicio necesita al menos una persona o recurso que pueda realizarlo.</p>
-      <label for="assignResource">Asignar servicios a</label>
-      <select id="assignResource"><option value="">Elige una opción</option></select>
+      <h2>Indica qué servicios puede atender</h2>
+      <label for="assignResource">Persona, espacio o equipo</label>
+      <select id="assignResource"><option value="">Selecciona</option></select>
       <label for="assignService">Servicio</label>
-      <select id="assignService"><option value="__all__">Todos mis servicios activos</option></select>
-      <div class="form-actions"><button id="assignBtn" class="btn" type="button">Guardar asignación</button><button id="cancelAssignEdit" class="btn secondary" type="button" hidden>Cancelar edición</button></div>
+      <select id="assignService"><option value="__all__">Todos los servicios activos</option></select>
+      <div class="form-actions"><button id="assignBtn" class="btn" type="button">Guardar</button><button id="cancelAssignEdit" class="btn secondary" type="button" hidden>Cancelar edición</button></div>
       <div id="assignSummary" class="summary">Revisando servicios…</div>
     </section>
   </div>
