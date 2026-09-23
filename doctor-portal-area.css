@@ -15,3 +15,14 @@ body[data-portal-area="all"] .topin{width:min(1420px,100%)}
   body[data-portal-area="estetica"] .brand small,
   body[data-portal-area="novare"] .brand small{max-width:230px;white-space:normal;line-height:1.2}
 }
+
+
+/* V41 · give each operational portal enough desktop width for seven complete day cards */
+body[data-portal-area="estetica"] .app,
+body[data-portal-area="novare"] .app{max-width:1320px}
+body[data-portal-area="estetica"] .topin,
+body[data-portal-area="novare"] .topin{width:100%}
+@media(max-width:820px){
+  body[data-portal-area="estetica"] .app,
+  body[data-portal-area="novare"] .app{max-width:920px}
+}
