@@ -175,12 +175,15 @@ function render(){
     $('cooldown').value='60';
     $('configSummary').textContent='Sin configuración guardada.';
   }
-  const opts=resources.map(r=>`<option value="${esc(r.id)}">${esc(r.nombre)}</option>`).join('');
-  $('scheduleResource').innerHTML='<option value="">Elige una opción</option>'+opts;
-  $('assignResource').innerHTML='<option value="">Elige una opción</option>'+opts;
-  $('assignService').innerHTML='<option value="__all__">Todos mis servicios activos</option>'+services.map(s=>`<option value="${esc(s.id)}">${esc(s.nombre)}</option>`).join('');
-  $('resourceSummary').textContent=resources.length?`${resources.length} recurso(s) activo(s): ${resources.map(r=>r.nombre).join(', ')}.`:'Aún no hay recursos.';
-  $('scheduleSummary').textContent=schedules.length?`${schedules.length} horario(s): ${schedules.slice(0,8).map(h=>`${days[h.dia_semana]} ${String(h.hora_inicio).slice(0,5)}–${String(h.hora_fin).slice(0,5)} · ${resourceName(h.recurso_id)}`).join(' · ')}${schedules.length>8?'…':''}`:'Aún no hay horarios.';
+  syncReminderPresetState();
+  updateResourceTypeUI();
+  const opts=resources.map(r=>`<option value="${esc(r.id)}">${esc(resourceOptionLabel(r))}</option>`).join('');
+  $('scheduleResource').innerHTML='<option value="">Selecciona quién atiende</option>'+opts;
+  $('assignResource').innerHTML='<option value="">Selecciona</option>'+opts;
+  $('assignService').innerHTML='<option value="__all__">Todos los servicios activos</option>'+services.map(s=>`<option value="${esc(s.id)}">${esc(s.nombre)}</option>`).join('');
+  $('resourceSummary').textContent=resources.length?`${resources.length} activo(s): ${resources.map(r=>`${r.nombre} · ${resourceTypeLabel(r.tipo)}`).join(', ')}.`:'Aún no agregaste quién atiende.';
+  const groups=scheduleGroups();
+  $('scheduleSummary').textContent=groups.length?`${groups.length} día(s) configurado(s): ${groups.slice(0,8).map(g=>`${days[g.dia_semana]} ${g.start}–${g.end}${g.hasLunch?` · almuerzo ${g.lunchStart}–${g.lunchEnd}`:''} · ${resourceName(g.recurso_id)}`).join(' · ')}${groups.length>8?'…':''}`:'Aún no hay horarios.';
   const assigned=new Set(links.map(x=>x.servicio_id));
   $('assignSummary').textContent=services.length?`${assigned.size} de ${services.length} servicio(s) activos tienen al menos una asignación registrada.`:'No hay servicios activos. Agrégalos antes de completar la agenda.';
   $('assignBtn').disabled=!canEdit||!resources.length||!services.length;
@@ -191,14 +194,21 @@ function render(){
 
 function reviewData(){
   const rulesRows=config?[[statePill(config.activa?'ACTIVA':'INACTIVA',Boolean(config.activa)),`${esc(config.intervalo_inicio_min)} min`,`${esc(config.anticipacion_min)} min`,`${esc(config.horizonte_dias)} días`,`${esc(config.capacidad_por_hora??1)}/h`,esc(reminderLabel(config.recordatorios_anticipacion_min)),actionButtons('config',{})]]:[];
-  const resourceRows=resources.map(r=>[esc(r.nombre),esc(r.tipo==='persona'?'Persona':'Recurso'),statePill(r.activo?'ACTIVO':'INACTIVO',Boolean(r.activo)),actionButtons('resource',{id:r.id})]);
-  const scheduleRows=schedules.map(h=>[esc(resourceName(h.recurso_id)),esc(days[h.dia_semana]),esc(String(h.hora_inicio).slice(0,5)),esc(String(h.hora_fin).slice(0,5)),actionButtons('schedule',{id:h.id})]);
+  const resourceRows=resources.map(r=>[esc(r.nombre),esc(resourceTypeLabel(r.tipo)),statePill(r.activo?'ACTIVO':'INACTIVO',Boolean(r.activo)),actionButtons('resource',{id:r.id})]);
+  const groups=scheduleGroups();
+  const scheduleRows=groups.map(g=>[
+    esc(resourceName(g.recurso_id)),
+    esc(days[g.dia_semana]),
+    esc(`${g.start}–${g.end}`),
+    esc(g.hasLunch?`${g.lunchStart}–${g.lunchEnd}`:'Sin pausa'),
+    scheduleActionButtons(g)
+  ]);
   const linkRows=links.map(l=>[esc(serviceName(l.servicio_id)),esc(resourceName(l.recurso_id)),statePill('ASIGNADO',true),actionButtons('link',{servicio:l.servicio_id,recurso:l.recurso_id})]);
   return {
-    rules:{title:'Reglas de reserva',copy:'Disponibilidad, capacidad y recordatorios configurables.',headers:['Estado','Inicio cada','Anticipación','Horizonte','Capacidad','Recordatorios','Acciones'],rows:rulesRows,empty:'Todavía no guardaste reglas de reserva.',count:config?1:0},
-    resources:{title:'Quién atiende',copy:'Personas o recursos activos de tu agenda.',headers:['Nombre','Tipo','Estado','Acciones'],rows:resourceRows,empty:'Aún no hay personas o recursos activos.',count:resources.length},
-    schedules:{title:'Horarios registrados',copy:'Días y rangos disponibles para cada persona o recurso.',headers:['Quién atiende','Día','Desde','Hasta','Acciones'],rows:scheduleRows,empty:'Aún no hay horarios registrados.',count:schedules.length},
-    links:{title:'Servicios asignados',copy:'Qué servicio puede realizar cada persona o recurso.',headers:['Servicio','Quién atiende','Estado','Acciones'],rows:linkRows,empty:'Todavía no hay servicios asignados.',count:links.length}
+    rules:{title:'Reglas de citas',copy:'Reservas y recordatorios.',headers:['Estado','Inicio cada','Anticipación','Horizonte','Capacidad','Recordatorios','Acciones'],rows:rulesRows,empty:'Todavía no guardaste reglas de citas.',count:config?1:0},
+    resources:{title:'Quién atiende',copy:'Personas, espacios o equipos activos.',headers:['Nombre','Tipo','Estado','Acciones'],rows:resourceRows,empty:'Aún no agregaste quién atiende.',count:resources.length},
+    schedules:{title:'Días y horarios',copy:'Horario de atención y pausa de almuerzo.',headers:['Quién','Día','Atención','Almuerzo','Acciones'],rows:scheduleRows,empty:'Aún no hay días configurados.',count:groups.length},
+    links:{title:'Servicios asignados',copy:'Qué servicio puede atender cada persona, espacio o equipo.',headers:['Servicio','Quién','Estado','Acciones'],rows:linkRows,empty:'Todavía no hay servicios asignados.',count:links.length}
   };
 }
 function renderReview(){
