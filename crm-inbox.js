@@ -17,7 +17,7 @@ async function tenant(){
   const{data:{session}}=await sb.auth.getSession();
   if(!session?.user){location.replace('./crm-login.html');return null}
   S.session=session;S.uid=session.user.id;
-  const{data:m,error}=await sb.from('usuarios_negocio').select('negocio_id,rol,created_at').order('created_at');
+  const{data:m,error}=await sb.from('usuarios_negocio').select('negocio_id,rol,created_at').eq('user_id',session.user.id).order('created_at');
   if(error)throw error;
   if(!m?.length)throw new Error('Tu usuario no tiene una empresa autorizada.');
   S.memberships=m;
