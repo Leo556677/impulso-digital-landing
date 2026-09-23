@@ -51,8 +51,9 @@ function txt(x){let a=(x.tomas||[]).filter(t=>t.que_se_dice).map(t=>t.que_se_dic
 function rehookPhrases(x){return(Array.isArray(x?.pieza?.rehooks)?x.pieza.rehooks:[]).map(r=>String(r?.frase||r?.phrase||r?.texto||r?.text||'').trim()).filter(Boolean)}
 function emphasisPhrases(x){
   const base=rehookPhrases(x);
+  const hook=String(x?.pieza?.hook_verbal||'').trim();
   const extra=Array.isArray(x?.pieza?.metadata?.teleprompter_emphasis_v1)?x.pieza.metadata.teleprompter_emphasis_v1:[];
-  const all=[...base,...extra.map(r=>String(r?.phrase||r?.frase||r?.text||r?.texto||'').trim()).filter(Boolean)];
+  const all=[hook,...base,...extra.map(r=>String(r?.phrase||r?.frase||r?.text||r?.texto||'').trim()).filter(Boolean)].filter(Boolean);
   const seen=new Set();
   return all.filter(p=>{const k=teleWordKey(p);if(!k||seen.has(k))return false;seen.add(k);return true})
 }
