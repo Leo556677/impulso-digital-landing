@@ -23,7 +23,7 @@
   <span class="tag">PRODUCCIÓN · VERIFICAR PROPIEDAD · NO REGISTRA CLOUD API</span>
   <h1>Verificar el número real</h1>
   <p class="lead">Este paso solicita y valida el código de propiedad de <strong>+51 903 396 082</strong>. <strong>No ejecuta /register, no suscribe la app y no crea el canal PROD.</strong></p>
-  <p class="notice"><strong>PAUSADO TEMPORALMENTE:</strong> Meta devolvió error 136024 al solicitar el código. No reintentes SMS ni llamada hasta terminar el diagnóstico.</p>
+  <p class="notice"><strong>INTENTO CONTROLADO ÚNICO:</strong> CORE autorizó exactamente 1 solicitud por SMS para capturar el diagnóstico completo de Meta. El backend bloqueará cualquier segundo intento.</p>
 
   <section class="card">
     <h2>1. Sesión</h2>
@@ -32,10 +32,9 @@
   </section>
 
   <section class="card">
-    <h2>2. Solicitar código</h2>
-    <p class="notice">Elige SMS primero. Si no recibes el código, puedes usar llamada de voz.</p>
-    <button id="sms" type="button" disabled>Enviar código por SMS</button>
-    <button id="voice" class="secondary" type="button" disabled>Enviar código por llamada</button>
+    <h2>2. Intento controlado</h2>
+    <p class="notice">Pulsa una sola vez. No hay opción de llamada y el servidor consume la autorización antes de contactar a Meta.</p>
+    <button id="sms" type="button" disabled>Ejecutar 1 intento controlado por SMS</button>
   </section>
 
   <section class="card">
@@ -56,7 +55,7 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
 const supabase=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const NEGOCIO_ID='c656a9ac-2739-451b-a93f-9e25fc9f4cbe';
-const sessionEl=document.getElementById('session'),sms=document.getElementById('sms'),voice=document.getElementById('voice'),verify=document.getElementById('verify'),code=document.getElementById('code'),result=document.getElementById('result');
+const sessionEl=document.getElementById('session'),sms=document.getElementById('sms'),verify=document.getElementById('verify'),code=document.getElementById('code'),result=document.getElementById('result');
 const setResult=v=>result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2);
 let ready=false;
 
@@ -67,9 +66,9 @@ async function init(){
   if(me||!m){sessionEl.innerHTML='<span class="danger">Sin acceso a IMPULSO DIGITAL.</span>';return}
   if(m.rol!=='admin'){sessionEl.innerHTML='<span class="danger">Se requiere rol admin.</span>';return}
   sessionEl.innerHTML='<span class="ok">Sesión válida · IMPULSO DIGITAL · admin.</span>';
-  ready=false;
-  sms.disabled=true;voice.disabled=true;verify.disabled=true;
-  setResult({ok:false,estado:'PAUSADO_POR_ERROR_136024',detalle:'No reintentar SMS/VOICE hasta diagnóstico CORE.'});
+  ready=true;
+  sms.disabled=false;verify.disabled=true;
+  setResult({ok:true,estado:'UN_INTENTO_CONTROLADO_AUTORIZADO',detalle:'Pulsa una sola vez. El backend bloqueará cualquier segundo request_code.'});
 }
 async function call(body){
   const {data,error}=await supabase.functions.invoke('whatsapp-prod-phone-verify',{body});
@@ -81,21 +80,23 @@ async function call(body){
   return data;
 }
 async function request(method){
-  if(!ready)return;sms.disabled=true;voice.disabled=true;verify.disabled=true;setResult('Solicitando código a Meta…');
+  if(!ready)return;
+  ready=false;
+  sms.disabled=true;verify.disabled=true;
+  setResult('Ejecutando el único intento autorizado y capturando diagnóstico completo de Meta…');
   const data=await call({action:'request_code',method});
   setResult(data);
   if(data?.ok===true){verify.disabled=false}
-  sms.disabled=false;voice.disabled=false;
+  sms.disabled=true;
 }
 sms.addEventListener('click',()=>request('SMS'));
-voice.addEventListener('click',()=>request('VOICE'));
 verify.addEventListener('click',async()=>{
   const value=code.value.trim();
   if(!/^[0-9]{4,8}$/.test(value)){setResult({ok:false,error:'Ingresa un código numérico válido.'});return}
-  verify.disabled=true;sms.disabled=true;voice.disabled=true;setResult('Verificando código con Meta…');
+  verify.disabled=true;sms.disabled=true;setResult('Verificando código con Meta…');
   const data=await call({action:'verify_code',code:value});
   setResult(data);
-  verify.disabled=false;sms.disabled=false;voice.disabled=false;
+  verify.disabled=false;sms.disabled=true;
 });
 await init();
 </script>
