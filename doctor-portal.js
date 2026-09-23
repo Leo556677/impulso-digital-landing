@@ -40,7 +40,7 @@ function dk(iso){if(!iso)return'';let a=new Intl.DateTimeFormat('en-US',{timeZon
 function renderCal(){let a=gp();if(!selDate&&a.length){selDate=a[0].date;calCur=new Date(+selDate.slice(0,4),+selDate.slice(5,7)-1,1)}let y=calCur.getFullYear(),m=calCur.getMonth(),f=new Date(y,m,1),l=new Date(y,m+1,0),off=f.getDay(),cells='';for(let i=0;i<off;i++)cells+='<div class="day"></div>';for(let d=1;d<=l.getDate();d++){let k=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,ps=a.filter(x=>x.date===k),pls=[...new Set(ps.flatMap(x=>x.plats))];cells+=`<div class="day ${selDate===k?'sel':''}"><button data-d="${k}"><span class="dn">${d}</span><span class="dots">${pls.map(p=>`<i class="dot ${pcl(p)}"></i>`).join('')}</span></button></div>`}$('calbox').innerHTML=`<div class="card cal"><div class="ctop"><button id="cp">${ic('left')}</button><b>${new Intl.DateTimeFormat('es-PE',{month:'long',year:'numeric'}).format(f)}</b><button id="cn">${ic('right')}</button></div><div class="cg">${['D','L','M','M','J','V','S'].map(x=>`<div class="dow">${x}</div>`).join('')}${cells}</div></div><div id="pdet"></div>`;$('cp').onclick=()=>{calCur=new Date(y,m-1,1);selDate='';renderCal()};$('cn').onclick=()=>{calCur=new Date(y,m+1,1);selDate='';renderCal()};D.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{selDate=b.dataset.d;renderCal()});renderPdet()}function renderPdet(){let a=gp().filter(x=>x.date===selDate);$('pdet').innerHTML=a.length?a.map(x=>`<article class="card pub"><div class="date">${esc(new Intl.DateTimeFormat('es-PE',{weekday:'long',day:'2-digit',month:'long'}).format(new Date(x.date+'T12:00:00')))}</div><h3>${esc(x.title)}</h3><div class="plats">${ph(x.plats)}</div></article>`).join(''):'<div class="card empty" style="margin-top:9px">Toca un día con indicadores.</div>'}
 function renderHist(){let a=done();$('hsessions').innerHTML=a.length?a.map(s=>`<article class="card hist"><div class="row"><div><div class="date">${esc(fd(s.fecha))}</div><h3>${esc(st(s))}</h3><div class="sub">${ic('cam')}${s.total} videos grabados</div></div><span class="pill ok">${ic('check')} Completada</span></div><button class="cta hopen" data-id="${s.id}">Ver contenido</button></article>`).join(''):'<div class="card empty">Todavía no hay sesiones completadas.</div>';D.querySelectorAll('.hopen').forEach(b=>b.onclick=()=>openSession(b.dataset.id,'history'));let p=gp().slice(0,8);$('hpubs').innerHTML=p.length?p.map(x=>`<article class="card hist"><div class="date">${esc(fd(x.date))}</div><h3>${esc(x.title)}</h3><div class="plats">${ph(x.plats)}</div></article>`).join(''):'<div class="card empty">Todavía no hay publicaciones registradas.</div>'}
 const tele=$('tele'),scr=$('scroll'),lines=$('lines'),sr=$('srange'),fr=$('frange'),telePanel=$('telePanel'),teleDragHandle=$('teleDragHandle');
-let highlightMode='word',wordFactor=1,countdownSeconds=3,countdownActive=false,countdownRun=0,activeConfig='';
+let highlightMode='word',wordFactor=1,countdownSeconds=3,emphasisPauseSeconds=1,countdownActive=false,countdownRun=0,activeConfig='';
 let teleTokens=[],teleWordIndex=0,teleWordElapsed=0,telePxPerSec=0,teleScrollTarget=0,teleDragging=false,teleDragStart=null;
 let teleEmphasisSeen=new Set(),teleEmphasisHoldUntil=0;
 let teleDiagRows=[],teleDiagTimer=0,teleDiagLastTickAt=0,teleDiagLastMoveAt=0,teleDiagLastScroll=0,teleDiagStartedAt=0,teleDiagStallKey='',teleDiagOpen=false;
@@ -48,6 +48,7 @@ try{
   highlightMode=localStorage.getItem('do_tele_highlight')||'word';
   wordFactor=Math.max(.75,Math.min(1.25,Number(localStorage.getItem('do_tele_wordrate')||1)));
   countdownSeconds=Math.max(0,Math.min(5,Number(localStorage.getItem('do_tele_countdown')??3)));
+  emphasisPauseSeconds=Math.max(1,Math.min(5,Number(localStorage.getItem('do_tele_emphasis_pause')??1)));
 }catch{}
 function teleDiagRound(v,d=1){const n=Number(v);return Number.isFinite(n)?Number(n.toFixed(d)):null}
 function teleDiagSnapshot(reason='snapshot'){
@@ -76,6 +77,7 @@ function teleDiagSnapshot(reason='snapshot'){
     focus_y:teleDiagRound(focusY(),1),
     token_delta:teleDiagRound(center==null?0:center-focusY(),1),
     emphasis_hold_ms:Math.max(0,Math.round(teleEmphasisHoldUntil-now)),
+    emphasis_pause_seconds:emphasisPauseSeconds,
     last_tick_age_ms:teleDiagLastTickAt?Math.round(now-teleDiagLastTickAt):null,
     last_move_age_ms:teleDiagLastMoveAt?Math.round(now-teleDiagLastMoveAt):null,
     raf_id:raf||0
@@ -260,7 +262,7 @@ function openTele(x){
   lines.innerHTML=txt(x).map((t,i)=>`<p class="line" data-i="${i}">${teleTextCore(t)}</p>`).join('');
   const matched=markTeleRehooks(emphasis),hint=D.querySelector('.ttitle small');
   teleEmphasisSeen=new Set();teleEmphasisHoldUntil=0;
-  if(hint)hint.textContent=emphasis.length?`${matched}/${emphasis.length} énfasis · verde antes · rojo al llegar · pausa automática`:'Este guion no tiene énfasis marcados';
+  if(hint)hint.textContent=emphasis.length?`${matched}/${emphasis.length} énfasis · verde antes · rojo al llegar · pausa ${emphasisPauseSeconds}s`:'Este guion no tiene énfasis marcados';
   try{
     fs=Number(localStorage.getItem('do_tele_font'))||(innerWidth<600?34:44);
     const savedSpeed=Number(localStorage.getItem('do_tele_speed')||120);sr.value=String(savedSpeed<60?120:savedSpeed)
@@ -308,7 +310,7 @@ async function startCountdown(){
   if(run!==countdownRun)return;if(o)o.hidden=true;teleDiagPush('COUNTDOWN_END',{});startAuto()
 }
 function emphasisHoldMs(){
-  return Math.max(450,Math.min(900,(60000/effectiveWpm())*1.25));
+  return Math.max(1,Math.min(5,Number(emphasisPauseSeconds)||1))*1000;
 }
 function maybeHoldEmphasis(t){
   if(t<teleEmphasisHoldUntil)return true;
@@ -375,14 +377,16 @@ function openTeleConfig(name){
   D.querySelectorAll('.tele-toolbar-one button[data-setting]').forEach(b=>b.classList.toggle('active-setting',b.dataset.setting===activeConfig))
 }
 function syncTeleSettings(){
-  const hm=$('highlightMode'),wr=$('wordRate'),cv=$('countdownSeconds');
+  const hm=$('highlightMode'),wr=$('wordRate'),cv=$('countdownSeconds'),ep=$('emphasisPauseSeconds');
   if(hm)hm.value=highlightMode;if(wr)wr.value=String(Math.round(wordFactor*100));if($('wordRateVal'))$('wordRateVal').textContent=wordFactor.toFixed(2)+'×';
   if(cv)cv.value=String(countdownSeconds);if($('countdownVal'))$('countdownVal').textContent=countdownSeconds+' s';if($('teleCountdownBtn'))$('teleCountdownBtn').textContent=String(countdownSeconds);
+  if(ep)ep.value=String(emphasisPauseSeconds);if($('emphasisPauseVal'))$('emphasisPauseVal').textContent=emphasisPauseSeconds+' s';if($('teleEmphasisPauseBtn'))$('teleEmphasisPauseBtn').textContent=emphasisPauseSeconds+'s';
   speedL()
 }
-[['teleFontBtn','font'],['teleSpeedBtn','speed'],['teleHighlightBtn','highlight'],['teleCountdownBtn','countdown']].forEach(([id,name])=>{const b=$(id);if(b){b.dataset.setting=name;b.onclick=()=>openTeleConfig(name)}});
+[['teleFontBtn','font'],['teleSpeedBtn','speed'],['teleHighlightBtn','highlight'],['teleEmphasisPauseBtn','emphasisPause'],['teleCountdownBtn','countdown']].forEach(([id,name])=>{const b=$(id);if(b){b.dataset.setting=name;b.onclick=()=>openTeleConfig(name)}});
 if($('highlightMode'))$('highlightMode').onchange=e=>{highlightMode=['word','line','flow'].includes(e.target.value)?e.target.value:'word';try{localStorage.setItem('do_tele_highlight',highlightMode)}catch{};paintCurrentWord()};
 if($('wordRate'))$('wordRate').oninput=e=>{wordFactor=Math.max(.75,Math.min(1.25,(+e.target.value||100)/100));if($('wordRateVal'))$('wordRateVal').textContent=wordFactor.toFixed(2)+'×';try{localStorage.setItem('do_tele_wordrate',String(wordFactor))}catch{};speedL()};
+if($('emphasisPauseSeconds'))$('emphasisPauseSeconds').oninput=e=>{emphasisPauseSeconds=Math.max(1,Math.min(5,+e.target.value||1));if($('emphasisPauseVal'))$('emphasisPauseVal').textContent=emphasisPauseSeconds+' s';if($('teleEmphasisPauseBtn'))$('teleEmphasisPauseBtn').textContent=emphasisPauseSeconds+'s';try{localStorage.setItem('do_tele_emphasis_pause',String(emphasisPauseSeconds))}catch{};teleDiagPush('EMPHASIS_PAUSE_CHANGED',{seconds:emphasisPauseSeconds})};
 if($('countdownSeconds'))$('countdownSeconds').oninput=e=>{countdownSeconds=Math.max(0,Math.min(5,+e.target.value||0));if($('countdownVal'))$('countdownVal').textContent=countdownSeconds+' s';if($('teleCountdownBtn'))$('teleCountdownBtn').textContent=String(countdownSeconds);try{localStorage.setItem('do_tele_countdown',String(countdownSeconds))}catch{}};
 function dragEnabled(){return Boolean(document.fullscreenElement)&&((matchMedia?.('(pointer:coarse)')?.matches)||innerWidth<=1024)}
 function dragBounds(){
