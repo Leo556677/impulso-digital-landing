@@ -172,8 +172,8 @@
   };
 
   openTele=function(x){
-    const p=x?.pieza||{},v=approvedView(p),raw=Array.isArray(x?.tomas)?x.tomas:[];
-    $('ttitle').textContent=[projectLabel(p),pt(p)].filter(Boolean).join(' · ');const hint=$('ttitle')?.nextElementSibling;if(hint)hint.textContent='Teleprompter por escenas · cada escena conserva su guía y botón Play';
+    const p=x?.pieza||{},v=approvedView(p),raw=Array.isArray(x?.tomas)?x.tomas:[],emphasis=typeof emphasisPhrases==='function'?emphasisPhrases(x):[];
+    $('ttitle').textContent=[projectLabel(p),pt(p)].filter(Boolean).join(' · ');const hint=$('ttitle')?.nextElementSibling;
     let sceneGuides=[];
     if(v){
       const scenes=v.scenes.filter(s=>s.scene_kind==='PRINCIPAL'&&(s.spoken_segment_ids||[]).length);
@@ -184,7 +184,17 @@
       sceneGuides=scenes.map(({shot,idx})=>({title:`Toma ${idx+1}`,text:legacyGuide(shot,idx)}));
       lines.innerHTML=scenes.length?scenes.map(({shot,idx},si)=>`<section class="tele-scene"><div class="tele-scene-head"><div class="tele-scene-id"><span class="tele-scene-num">${idx+1}</span><div><b>Toma ${idx+1}</b><small>DETENTE · CAMBIA DE TOMA</small></div></div><button class="tele-scene-audio" type="button" data-v7scene="${si}" aria-label="Reproducir guía de la toma ${idx+1}">${svg('playi','voice-ico')}<span>Play guía</span></button></div><p class="line" data-i="${si}">${teleText(shot.que_se_dice)}</p></section>`).join(''):String(p.master_script||'').split(/\n+/).filter(Boolean).map((t,i)=>`<section class="tele-scene"><div class="tele-scene-head"><div class="tele-scene-id"><span class="tele-scene-num">${i+1}</span><div><b>Escena ${i+1}</b><small>DETENTE · CAMBIA DE ESCENA</small></div></div></div><p class="line" data-i="${i}">${teleText(t)}</p></section>`).join('');
     }
+    const matched=typeof markTeleRehooks==='function'?markTeleRehooks(emphasis):0;
+    if(typeof teleEmphasisSeen!=='undefined')teleEmphasisSeen=new Set();
+    if(typeof teleEmphasisHoldUntil!=='undefined')teleEmphasisHoldUntil=0;
+    if(hint)hint.textContent=emphasis.length?`${matched}/${emphasis.length} énfasis · verde antes · rojo al llegar · pausa automática`:'Teleprompter por escenas · sin énfasis marcados en este guion';
     document.querySelectorAll('[data-v7scene]').forEach(btn=>btn.onclick=()=>{const g=sceneGuides[Number(btn.dataset.v7scene)];if(g)openPlayer(g.title,g.text);});
-    try{fs=Number(localStorage.getItem('do_tele_font'))||(innerWidth<600?34:44);const saved=Number(localStorage.getItem('do_tele_speed')||120);sr.value=String(saved<60?120:saved)}catch{fs=innerWidth<600?34:44;sr.value='120'}applyF();speedL();play=false;countdownActive=false;playI();syncTeleSettings();tele.classList.add('on');document.body.style.overflow='hidden';scr.scrollTop=0;prepareTeleTrack(true);setTimeout(()=>{prepareTeleTrack(true);focus()},60);
+    try{fs=Number(localStorage.getItem('do_tele_font'))||(innerWidth<600?34:44);const saved=Number(localStorage.getItem('do_tele_speed')||120);sr.value=String(saved<60?120:saved)}catch{fs=innerWidth<600?34:44;sr.value='120'}
+    applyF();speedL();play=false;countdownActive=false;playI();syncTeleSettings();tele.classList.add('on');document.body.style.overflow='hidden';scr.scrollTop=0;
+    if(typeof teleScrollTarget!=='undefined')teleScrollTarget=0;
+    prepareTeleTrack(true);
+    if(typeof teleDiagStart==='function')teleDiagStart();
+    if(typeof teleDiagPush==='function')teleDiagPush('UX7_OPEN',{emphasis_total:emphasis.length,emphasis_matched:matched,scenes:sceneGuides.length});
+    setTimeout(()=>{prepareTeleTrack(true);if(typeof teleScrollTarget!=='undefined')teleScrollTarget=scr.scrollTop;focus();if(typeof teleDiagPush==='function')teleDiagPush('UX7_READY',typeof teleDiagSnapshot==='function'?teleDiagSnapshot('ux7-ready'):{})},90);
   };
 })();
