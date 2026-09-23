@@ -25,6 +25,50 @@ function reminderLabel(mins){
   if(!arr.length)return 'Desactivados';
   return arr.map(v=>v%1440===0?`${v/1440} d`:v%60===0?`${v/60} h`:`${v} min`).join(', ');
 }
+function resourceTypeLabel(tipo){return tipo==='persona'?'Persona':'Espacio/equipo'}
+function resourceOptionLabel(r){return `${r.nombre} · ${resourceTypeLabel(r.tipo)}`}
+function selectedScheduleDays(){return [...document.querySelectorAll('input[name="scheduleDay"]:checked')].map(x=>Number(x.value)).filter(x=>Number.isInteger(x))}
+function setScheduleDays(values=[]){const set=new Set(values.map(Number));document.querySelectorAll('input[name="scheduleDay"]').forEach(x=>{x.checked=set.has(Number(x.value))})}
+function syncLunchFields(){const on=$('hasLunch').checked;$('lunchFields').hidden=!on;if(!on){$('lunchStart').value='';$('lunchEnd').value=''}}
+function updateResourceTypeUI(){
+  const isPerson=$('resourceType').value==='persona';
+  $('resourceNameLabel').textContent=isPerson?'Nombre de la persona':'Nombre del espacio o equipo';
+  $('resourceName').placeholder=isPerson?'Ej. María':'Ej. Consultorio 1 / Láser 1';
+  $('resourceTypeHelp').textContent=isPerson?'Una persona tiene sus propios horarios y puede atender servicios.':'Un espacio o equipo se reserva para evitar dos citas al mismo tiempo.';
+}
+function syncReminderPresetState(){
+  const current=new Set(parseReminderMinutes($('recordatorios').value)||[]);
+  document.querySelectorAll('[data-reminder-minutes]').forEach(b=>b.classList.toggle('active',current.has(Number(b.dataset.reminderMinutes))));
+}
+function insertReminderVariable(token){
+  const ta=$('plantillaRecordatorio'),start=ta.selectionStart??ta.value.length,end=ta.selectionEnd??ta.value.length;
+  ta.value=ta.value.slice(0,start)+token+ta.value.slice(end);
+  const pos=start+token.length;ta.focus();ta.setSelectionRange(pos,pos);
+}
+function scheduleGroups(){
+  const map=new Map();
+  for(const h of schedules){
+    const key=`${h.recurso_id}|${h.dia_semana}`;
+    if(!map.has(key))map.set(key,{recurso_id:h.recurso_id,dia_semana:Number(h.dia_semana),rows:[]});
+    map.get(key).rows.push(h);
+  }
+  return [...map.values()].map(g=>{
+    g.rows.sort((a,b)=>String(a.hora_inicio).localeCompare(String(b.hora_inicio)));
+    g.start=String(g.rows[0]?.hora_inicio||'').slice(0,5);
+    g.end=String(g.rows[g.rows.length-1]?.hora_fin||'').slice(0,5);
+    g.lunchStart=g.rows.length===2?String(g.rows[0].hora_fin).slice(0,5):'';
+    g.lunchEnd=g.rows.length===2?String(g.rows[1].hora_inicio).slice(0,5):'';
+    g.hasLunch=Boolean(g.lunchStart&&g.lunchEnd&&g.lunchStart<g.lunchEnd);
+    return g;
+  }).sort((a,b)=>String(a.recurso_id).localeCompare(String(b.recurso_id))||a.dia_semana-b.dia_semana);
+}
+function scheduleActionButtons(g){return `<div class="row-actions"><button class="btn secondary mini js-edit" data-kind="schedule" data-resource="${esc(g.recurso_id)}" data-day="${esc(g.dia_semana)}">Editar</button><button class="btn danger mini js-delete" data-kind="schedule" data-resource="${esc(g.recurso_id)}" data-day="${esc(g.dia_semana)}">No atiende</button></div>`}
+async function callAgendaSchedule(body){
+  const {data,error}=await sb.functions.invoke('agenda-horario-semanal',{body:{negocio_id:negocioId,...body}});
+  if(error){let d=null;try{if(error.context?.json)d=await error.context.json()}catch{}throw new Error(d?.error||error.message||'No pudimos guardar el horario.')}
+  if(data?.ok===false)throw new Error(data.error||'No pudimos guardar el horario.');
+  return data;
+}
 function fmtAppointmentDate(value){
   if(!value)return '—';
   try{return new Intl.DateTimeFormat('es-PE',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value))}catch{return String(value)}
@@ -78,9 +122,9 @@ async function changeAppointmentState(id,state){
   await load();
   scrollToEl($('appointmentsReview'));
 }
-function resetResourceForm(){resourceEditId=null;$('resourceForm').reset();$('resourceType').value='persona';$('saveResource').textContent='Agregar';$('cancelResourceEdit').hidden=true}
-function resetScheduleForm(){scheduleEditId=null;$('scheduleForm').reset();$('saveSchedule').textContent='Agregar horario';$('cancelScheduleEdit').hidden=true}
-function resetAssignForm(){linkEditKey=null;$('assignResource').value='';$('assignService').value='__all__';$('assignBtn').textContent='Guardar asignación';$('cancelAssignEdit').hidden=true}
+function resetResourceForm(){resourceEditId=null;$('resourceForm').reset();$('resourceType').value='persona';updateResourceTypeUI();$('saveResource').textContent='Agregar';$('cancelResourceEdit').hidden=true}
+function resetScheduleForm(){scheduleEditId=null;$('scheduleForm').reset();setScheduleDays([]);$('hasLunch').checked=false;syncLunchFields();$('saveSchedule').textContent='Aplicar horario';$('copyScheduleBtn').hidden=true;$('cancelScheduleEdit').hidden=true;$('scheduleModeHint').textContent='El mismo horario se aplicará a todos los días seleccionados.'}
+function resetAssignForm(){linkEditKey=null;$('assignResource').value='';$('assignService').value='__all__';$('assignBtn').textContent='Guardar';$('cancelAssignEdit').hidden=true}
 function openConfirm(title,text,fn){pendingConfirm=fn;$('confirmTitle').textContent=title;$('confirmText').textContent=text;$('confirmModal').classList.add('show');$('confirmModal').setAttribute('aria-hidden','false');document.body.classList.add('modal-open')}
 function closeConfirm(){$('confirmModal').classList.remove('show');$('confirmModal').setAttribute('aria-hidden','true');document.body.classList.remove('modal-open');pendingConfirm=null}
 $('confirmCancel').addEventListener('click',closeConfirm);
