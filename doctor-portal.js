@@ -109,8 +109,8 @@ function teleDiagRender(){
   status.textContent=`${state} · ${s.wpm} ppm · ${s.px_per_sec??0}px/s`;
   status.dataset.state=state.includes('BLOQUEO')?'bad':state.includes('MOVIENDO')?'good':'idle';
   btn.dataset.state=status.dataset.state;
-  pre.textContent=teleDiagExport();
-  panel.hidden=!teleDiagOpen
+  panel.hidden=!teleDiagOpen;
+  if(teleDiagOpen)pre.textContent=teleDiagExport()
 }
 function ensureTeleDiagnostics(){
   if(!$('teleDebugBtn')){
