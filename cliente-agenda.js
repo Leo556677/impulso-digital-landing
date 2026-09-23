@@ -1,7 +1,7 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
 const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const $=id=>document.getElementById(id);
-let negocioId=null,canEdit=false,config=null,resources=[],schedules=[],services=[],links=[];
+let negocioId=null,canEdit=false,config=null,resources=[],schedules=[],services=[],links=[],appointments=[],appointmentContacts=new Map(),remindersByAppointment=new Map();
 let resourceEditId=null,scheduleEditId=null,linkEditKey=null,pendingConfirm=null,activeReviewTab='rules';
 const days=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const esc=v=>String(v??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]));
@@ -25,6 +25,59 @@ function reminderLabel(mins){
   if(!arr.length)return 'Desactivados';
   return arr.map(v=>v%1440===0?`${v/1440} d`:v%60===0?`${v/60} h`:`${v} min`).join(', ');
 }
+function fmtAppointmentDate(value){
+  if(!value)return '—';
+  try{return new Intl.DateTimeFormat('es-PE',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value))}catch{return String(value)}
+}
+function appointmentState(value){
+  const map={pendiente:'PENDIENTE',confirmada:'CONFIRMADA',cancelada:'CANCELADA',completada:'COMPLETADA',no_asistio:'NO ASISTIÓ'};
+  return map[value]||String(value||'—').toUpperCase();
+}
+function appointmentActions(a){
+  if(!canEdit)return '—';
+  const future=new Date(a.inicio).getTime()>Date.now();
+  if(!future)return '—';
+  const parts=[];
+  if(a.estado==='pendiente')parts.push(`<button class="btn secondary mini js-appt-confirm" data-id="${esc(a.id)}">Confirmar</button>`);
+  if(['pendiente','confirmada'].includes(a.estado))parts.push(`<button class="btn danger mini js-appt-cancel" data-id="${esc(a.id)}">Cancelar</button>`);
+  return parts.length?`<div class="row-actions">${parts.join('')}</div>`:'—';
+}
+function renderAppointments(){
+  const total=appointments.length;
+  const future=appointments.filter(a=>new Date(a.inicio).getTime()>Date.now()&&['pendiente','confirmada'].includes(a.estado)).length;
+  $('appointmentsCount').textContent=`${total} cita${total===1?'':'s'}`;
+  $('appointmentsSummary').textContent=total?`${future} cita(s) futura(s) activa(s). Los recordatorios solo se programan cuando el cliente acepta recibirlos por WhatsApp.`:'Todavía no hay citas registradas.';
+  const rows=appointments.map(a=>{
+    const contact=appointmentContacts.get(String(a.contacto_id));
+    const reminders=remindersByAppointment.get(String(a.id))||[];
+    const reminderStatus=a.whatsapp_recordatorios_opt_in===true
+      ? `Aceptados · ${reminders.length} programado(s)`
+      : (a.whatsapp_recordatorios_opt_in_origen? 'Rechazados':'Sin consentimiento');
+    return [
+      esc(fmtAppointmentDate(a.inicio)),
+      esc(contact?.nombre||contact?.telefono_e164||'Sin identificar'),
+      esc(serviceName(a.servicio_id)),
+      statePill(appointmentState(a.estado),a.estado==='confirmada'),
+      esc(reminderStatus),
+      appointmentActions(a)
+    ];
+  });
+  $('appointmentsTable').innerHTML=table(['Fecha','Cliente','Servicio','Estado','Recordatorios','Acciones'],rows,'Todavía no hay citas registradas.');
+  document.querySelectorAll('.js-appt-confirm').forEach(b=>b.addEventListener('click',()=>changeAppointmentState(b.dataset.id,'confirmada')));
+  document.querySelectorAll('.js-appt-cancel').forEach(b=>b.addEventListener('click',()=>openConfirm('Cancelar cita','La cita dejará de estar activa y sus recordatorios pendientes se cancelarán. ¿Deseas continuar?',()=>changeAppointmentState(b.dataset.id,'cancelada'))));
+}
+async function changeAppointmentState(id,state){
+  if(!canEdit)return;
+  const current=appointments.find(a=>String(a.id)===String(id));
+  if(!current)return msg('No encontramos esa cita.');
+  if(new Date(current.inicio).getTime()<=Date.now())return msg('No se puede cambiar una cita cuyo horario ya pasó.');
+  msg(state==='confirmada'?'Confirmando cita…':'Cancelando cita…',true);
+  const {error}=await sb.from('citas').update({estado:state}).eq('id',id).eq('negocio_id',negocioId);
+  if(error)return msg('No pudimos actualizar la cita.');
+  msg(state==='confirmada'?'Cita confirmada.':'Cita cancelada.',true);
+  await load();
+  scrollToEl($('appointmentsReview'));
+}
 function resetResourceForm(){resourceEditId=null;$('resourceForm').reset();$('resourceType').value='persona';$('saveResource').textContent='Agregar';$('cancelResourceEdit').hidden=true}
 function resetScheduleForm(){scheduleEditId=null;$('scheduleForm').reset();$('saveSchedule').textContent='Agregar horario';$('cancelScheduleEdit').hidden=true}
 function resetAssignForm(){linkEditKey=null;$('assignResource').value='';$('assignService').value='__all__';$('assignBtn').textContent='Guardar asignación';$('cancelAssignEdit').hidden=true}
@@ -36,15 +89,30 @@ $('confirmModal').addEventListener('click',e=>{if(e.target.classList.contains('m
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('confirmModal').classList.contains('show'))closeConfirm()});
 
 async function resolve(){const{data:{session}}=await sb.auth.getSession();if(!session){location.replace('./cliente-acceso.html');return false}const{data:m,error}=await sb.from('usuarios_negocio').select('negocio_id,rol,created_at').order('created_at');if(error||!m?.length)throw new Error('No pudimos identificar una empresa autorizada.');const params=new URLSearchParams(location.search),requested=params.get('negocio'),saved=localStorage.getItem('impulso_negocio_activo'),pick=id=>m.find(x=>String(x.negocio_id)===String(id)),membership=pick(requested)||pick(saved)||m[0];negocioId=membership.negocio_id;canEdit=['admin','propietario'].includes(membership.rol);localStorage.setItem('impulso_negocio_activo',String(negocioId));history.replaceState({},'',`${location.pathname}?negocio=${encodeURIComponent(negocioId)}`);return true}
-async function load(){const [cfg,res,hrs,srv,lnk]=await Promise.all([
+async function load(){const [cfg,res,hrs,srv,lnk,apt,rem]=await Promise.all([
   sb.from('configuracion_agenda').select('*').eq('negocio_id',negocioId).maybeSingle(),
   sb.from('recursos_agenda').select('id,nombre,tipo,activo').eq('negocio_id',negocioId).eq('activo',true).order('created_at'),
   sb.from('horarios_agenda').select('id,recurso_id,dia_semana,hora_inicio,hora_fin,activo').eq('negocio_id',negocioId).eq('activo',true).order('dia_semana').order('hora_inicio'),
   sb.from('servicios').select('id,nombre,activo').eq('negocio_id',negocioId).eq('activo',true).order('created_at'),
-  sb.from('servicios_recursos').select('servicio_id,recurso_id').eq('negocio_id',negocioId)
+  sb.from('servicios_recursos').select('servicio_id,recurso_id').eq('negocio_id',negocioId),
+  sb.from('citas').select('id,contacto_id,servicio_id,recurso_id,conversacion_id,inicio,fin,estado,origen,whatsapp_recordatorios_opt_in,whatsapp_recordatorios_opt_in_at,whatsapp_recordatorios_opt_in_origen').eq('negocio_id',negocioId).order('inicio',{ascending:false}).limit(100),
+  sb.from('recordatorios_citas').select('id,cita_id,anticipacion_min,programado_at,estado,error').eq('negocio_id',negocioId).order('programado_at',{ascending:true})
 ]);
-for(const q of [cfg,res,hrs,srv,lnk]) if(q.error) throw q.error;
-config=cfg.data;resources=res.data||[];schedules=hrs.data||[];services=srv.data||[];links=lnk.data||[];render()}
+for(const q of [cfg,res,hrs,srv,lnk,apt,rem]) if(q.error) throw q.error;
+config=cfg.data;resources=res.data||[];schedules=hrs.data||[];services=srv.data||[];links=lnk.data||[];appointments=apt.data||[];
+const contactIds=[...new Set(appointments.map(x=>x.contacto_id).filter(Boolean))];
+appointmentContacts=new Map();
+if(contactIds.length){
+  const {data:contacts,error:contactError}=await sb.from('contactos').select('id,nombre,telefono_e164').eq('negocio_id',negocioId).in('id',contactIds);
+  if(contactError)throw contactError;
+  appointmentContacts=new Map((contacts||[]).map(x=>[String(x.id),x]));
+}
+remindersByAppointment=new Map();
+for(const row of rem.data||[]){
+  const key=String(row.cita_id),arr=remindersByAppointment.get(key)||[];
+  arr.push(row);remindersByAppointment.set(key,arr);
+}
+render()}
 
 function render(){
   if(config){
@@ -73,6 +141,7 @@ function render(){
   $('assignSummary').textContent=services.length?`${assigned.size} de ${services.length} servicio(s) activos tienen al menos una asignación registrada.`:'No hay servicios activos. Agrégalos antes de completar la agenda.';
   $('assignBtn').disabled=!canEdit||!resources.length||!services.length;
   if(!services.length){$('notice').hidden=false;$('notice').innerHTML=`Antes de terminar la agenda necesitas al menos un servicio activo. <a href="./cliente-servicios.html?negocio=${encodeURIComponent(negocioId)}" style="color:inherit;font-weight:800">Agregar servicios</a>`} else $('notice').hidden=true;
+  renderAppointments();
   renderReview();
 }
 
