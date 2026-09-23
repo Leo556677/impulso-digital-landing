@@ -23,6 +23,7 @@
   <span class="tag">PRODUCCIÓN · VERIFICAR PROPIEDAD · NO REGISTRA CLOUD API</span>
   <h1>Verificar el número real</h1>
   <p class="lead">Este paso solicita y valida el código de propiedad de <strong>+51 903 396 082</strong>. <strong>No ejecuta /register, no suscribe la app y no crea el canal PROD.</strong></p>
+  <p class="notice"><strong>PAUSADO TEMPORALMENTE:</strong> Meta devolvió error 136024 al solicitar el código. No reintentes SMS ni llamada hasta terminar el diagnóstico.</p>
 
   <section class="card">
     <h2>1. Sesión</h2>
@@ -66,7 +67,9 @@ async function init(){
   if(me||!m){sessionEl.innerHTML='<span class="danger">Sin acceso a IMPULSO DIGITAL.</span>';return}
   if(m.rol!=='admin'){sessionEl.innerHTML='<span class="danger">Se requiere rol admin.</span>';return}
   sessionEl.innerHTML='<span class="ok">Sesión válida · IMPULSO DIGITAL · admin.</span>';
-  sms.disabled=false;voice.disabled=false;ready=true;setResult('Listo. Solicita el código por SMS o llamada.');
+  ready=false;
+  sms.disabled=true;voice.disabled=true;verify.disabled=true;
+  setResult({ok:false,estado:'PAUSADO_POR_ERROR_136024',detalle:'No reintentar SMS/VOICE hasta diagnóstico CORE.'});
 }
 async function call(body){
   const {data,error}=await supabase.functions.invoke('whatsapp-prod-phone-verify',{body});
