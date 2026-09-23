@@ -23,7 +23,7 @@
   <span class="tag">PRODUCCIÓN · VERIFICAR PROPIEDAD · NO REGISTRA CLOUD API</span>
   <h1>Verificar el número real</h1>
   <p class="lead">Este paso solicita y valida el código de propiedad de <strong>+51 903 396 082</strong>. <strong>No ejecuta /register, no suscribe la app y no crea el canal PROD.</strong></p>
-  <p class="notice"><strong>INTENTO CONTROLADO ÚNICO:</strong> CORE autorizó exactamente 1 solicitud por SMS para capturar el diagnóstico completo de Meta. El backend bloqueará cualquier segundo intento.</p>
+  <p class="notice"><strong>PAUSADO:</strong> la investigación indica que primero debemos clasificar si este número usa WhatsApp Business App / Coexistence. No solicites SMS ni llamada desde esta página.</p>
 
   <section class="card">
     <h2>1. Sesión</h2>
@@ -66,9 +66,9 @@ async function init(){
   if(me||!m){sessionEl.innerHTML='<span class="danger">Sin acceso a IMPULSO DIGITAL.</span>';return}
   if(m.rol!=='admin'){sessionEl.innerHTML='<span class="danger">Se requiere rol admin.</span>';return}
   sessionEl.innerHTML='<span class="ok">Sesión válida · IMPULSO DIGITAL · admin.</span>';
-  ready=true;
-  sms.disabled=false;verify.disabled=true;
-  setResult({ok:true,estado:'UN_INTENTO_CONTROLADO_AUTORIZADO',detalle:'Pulsa una sola vez. El backend bloqueará cualquier segundo request_code.'});
+  ready=false;
+  sms.disabled=true;verify.disabled=true;
+  setResult({ok:false,estado:'PAUSADO_POR_CLASIFICACION_DE_MODO',detalle:'Usa whatsapp-prod-preflight.html. No solicitar verification code hasta clasificar is_on_biz_app/platform_type.'});
 }
 async function call(body){
   const {data,error}=await supabase.functions.invoke('whatsapp-prod-phone-verify',{body});
