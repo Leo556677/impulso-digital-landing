@@ -292,8 +292,35 @@ $('configForm').addEventListener('submit',async e=>{
   await load();
   flashReview();
 });
-$('resourceForm').addEventListener('submit',async e=>{e.preventDefault();if(!canEdit)return;const wasEditing=Boolean(resourceEditId),nombre=$('resourceName').value.trim();if(!nombre)return msg('Escribe el nombre de la persona o recurso.');const payload={negocio_id:negocioId,nombre,tipo:$('resourceType').value,activo:true};msg(resourceEditId?'Guardando cambios…':'Agregando recurso…',true);let q=resourceEditId?await sb.from('recursos_agenda').update({nombre:payload.nombre,tipo:payload.tipo}).eq('id',resourceEditId).eq('negocio_id',negocioId):await sb.from('recursos_agenda').insert(payload);if(q.error)return msg(resourceEditId?'No pudimos guardar los cambios del recurso.':'No pudimos agregar el recurso.');resetResourceForm();msg(wasEditing?'Recurso actualizado.':'Recurso agregado.',true);await load();flashReview()});
-$('scheduleForm').addEventListener('submit',async e=>{e.preventDefault();if(!canEdit)return;const wasEditing=Boolean(scheduleEditId),recurso_id=$('scheduleResource').value,start=$('start').value,end=$('end').value,dayRaw=$('day').value;if(!recurso_id)return msg('Elige quién atenderá este horario.');if(dayRaw==='')return msg('Elige un día válido.');const dia=Number(dayRaw);if(!Number.isFinite(dia))return msg('Elige un día válido.');if(!start||!end)return msg('Completa la hora de inicio y fin.');if(end<=start)return msg('La hora de fin debe ser posterior a la hora de inicio.');const payload={negocio_id:negocioId,recurso_id,dia_semana:dia,hora_inicio:start,hora_fin:end,activo:true};msg(scheduleEditId?'Guardando cambios…':'Agregando horario…',true);let q=scheduleEditId?await sb.from('horarios_agenda').update({recurso_id:payload.recurso_id,dia_semana:payload.dia_semana,hora_inicio:payload.hora_inicio,hora_fin:payload.hora_fin}).eq('id',scheduleEditId).eq('negocio_id',negocioId):await sb.from('horarios_agenda').insert(payload);if(q.error)return msg(scheduleEditId?'No pudimos guardar los cambios del horario.':'No pudimos agregar el horario.');resetScheduleForm();msg(wasEditing?'Horario actualizado.':'Horario agregado.',true);await load();flashReview()});
+$('resourceForm').addEventListener('submit',async e=>{
+  e.preventDefault();if(!canEdit)return;
+  const wasEditing=Boolean(resourceEditId),nombre=$('resourceName').value.trim(),tipo=$('resourceType').value;
+  if(!nombre)return msg(tipo==='persona'?'Escribe el nombre de la persona.':'Escribe el nombre del espacio o equipo.');
+  const payload={negocio_id:negocioId,nombre,tipo,activo:true};
+  msg(resourceEditId?'Guardando cambios…':'Agregando…',true);
+  const q=resourceEditId
+    ?await sb.from('recursos_agenda').update({nombre:payload.nombre,tipo:payload.tipo}).eq('id',resourceEditId).eq('negocio_id',negocioId)
+    :await sb.from('recursos_agenda').insert(payload);
+  if(q.error)return msg('No pudimos guardar los cambios.');
+  resetResourceForm();msg(wasEditing?'Actualizado.':'Agregado.',true);await load();flashReview()
+});
+$('scheduleForm').addEventListener('submit',async e=>{
+  e.preventDefault();if(!canEdit)return;
+  const wasEditing=Boolean(scheduleEditId),recurso_id=$('scheduleResource').value,dias=selectedScheduleDays(),start=$('start').value,end=$('end').value,hasLunch=$('hasLunch').checked,lunchStart=$('lunchStart').value,lunchEnd=$('lunchEnd').value;
+  if(!recurso_id)return msg('Selecciona la persona, espacio o equipo.');
+  if(!dias.length)return msg('Selecciona al menos un día.');
+  if(!start||!end)return msg('Completa la hora de apertura y cierre.');
+  if(end<=start)return msg('La hora de cierre debe ser posterior a la apertura.');
+  if(hasLunch&&(!lunchStart||!lunchEnd))return msg('Completa el inicio y fin del almuerzo.');
+  if(hasLunch&&(lunchEnd<=lunchStart||lunchStart<=start||lunchEnd>=end))return msg('El almuerzo debe quedar dentro del horario de atención.');
+  msg(wasEditing?'Guardando horario…':'Aplicando horario…',true);
+  try{
+    const data=await callAgendaSchedule({recurso_id,dias,hora_inicio:start,hora_fin:end,almuerzo:hasLunch,almuerzo_inicio:hasLunch?lunchStart:null,almuerzo_fin:hasLunch?lunchEnd:null,cerrar:false});
+    resetScheduleForm();
+    msg(`Horario aplicado a ${data.dias_aplicados||dias.length} día(s).`,true);
+    await load();flashReview()
+  }catch(err){msg(err.message||'No pudimos guardar el horario.')}
+});
 $('assignBtn').addEventListener('click',async()=>{if(!canEdit)return;const wasEditing=Boolean(linkEditKey),recurso_id=$('assignResource').value,servicioSel=$('assignService').value;if(!recurso_id)return msg('Elige quién atenderá los servicios.');msg(linkEditKey?'Guardando cambios…':'Guardando asignación…',true);if(servicioSel==='__all__' && !linkEditKey){const rows=services.map(s=>({negocio_id:negocioId,servicio_id:s.id,recurso_id}));const {error}=await sb.from('servicios_recursos').upsert(rows,{onConflict:'negocio_id,servicio_id,recurso_id',ignoreDuplicates:true});if(error)return msg('No pudimos asignar los servicios.');resetAssignForm();msg('Servicios asignados.',true);await load();flashReview();return}
   const servicio_id=servicioSel==='__all__'&&linkEditKey?linkEditKey.servicio_id:servicioSel;
   if(!servicio_id)return msg('Elige un servicio.');
