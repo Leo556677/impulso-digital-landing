@@ -56,9 +56,16 @@ function scheduleGroups(){
     g.rows.sort((a,b)=>String(a.hora_inicio).localeCompare(String(b.hora_inicio)));
     g.start=String(g.rows[0]?.hora_inicio||'').slice(0,5);
     g.end=String(g.rows[g.rows.length-1]?.hora_fin||'').slice(0,5);
-    g.lunchStart=g.rows.length===2?String(g.rows[0].hora_fin).slice(0,5):'';
-    g.lunchEnd=g.rows.length===2?String(g.rows[1].hora_inicio).slice(0,5):'';
-    g.hasLunch=Boolean(g.lunchStart&&g.lunchEnd&&g.lunchStart<g.lunchEnd);
+    g.intervalText=g.rows.map(r=>`${String(r.hora_inicio).slice(0,5)}–${String(r.hora_fin).slice(0,5)}`).join(' / ');
+    g.gaps=[];
+    for(let i=0;i<g.rows.length-1;i++){
+      const gapStart=String(g.rows[i].hora_fin).slice(0,5),gapEnd=String(g.rows[i+1].hora_inicio).slice(0,5);
+      if(gapStart<gapEnd)g.gaps.push({start:gapStart,end:gapEnd});
+    }
+    g.breakText=g.gaps.length?g.gaps.map(x=>`${x.start}–${x.end}`).join(' / '):'Sin pausa';
+    g.lunchStart=g.gaps.length===1?g.gaps[0].start:'';
+    g.lunchEnd=g.gaps.length===1?g.gaps[0].end:'';
+    g.hasLunch=Boolean(g.rows.length===2&&g.gaps.length===1);
     return g;
   }).sort((a,b)=>String(a.recurso_id).localeCompare(String(b.recurso_id))||a.dia_semana-b.dia_semana);
 }
@@ -183,7 +190,7 @@ function render(){
   $('assignService').innerHTML='<option value="__all__">Todos los servicios activos</option>'+services.map(s=>`<option value="${esc(s.id)}">${esc(s.nombre)}</option>`).join('');
   $('resourceSummary').textContent=resources.length?`${resources.length} activo(s): ${resources.map(r=>`${r.nombre} · ${resourceTypeLabel(r.tipo)}`).join(', ')}.`:'Aún no agregaste quién atiende.';
   const groups=scheduleGroups();
-  $('scheduleSummary').textContent=groups.length?`${groups.length} día(s) configurado(s): ${groups.slice(0,8).map(g=>`${days[g.dia_semana]} ${g.start}–${g.end}${g.hasLunch?` · almuerzo ${g.lunchStart}–${g.lunchEnd}`:''} · ${resourceName(g.recurso_id)}`).join(' · ')}${groups.length>8?'…':''}`:'Aún no hay horarios.';
+  $('scheduleSummary').textContent=groups.length?`${groups.length} día(s) configurado(s): ${groups.slice(0,8).map(g=>`${days[g.dia_semana]} ${g.intervalText}${g.gaps.length?` · pausa ${g.breakText}`:''} · ${resourceName(g.recurso_id)}`).join(' · ')}${groups.length>8?'…':''}`:'Aún no hay horarios.';
   const assigned=new Set(links.map(x=>x.servicio_id));
   $('assignSummary').textContent=services.length?`${assigned.size} de ${services.length} servicio(s) activos tienen al menos una asignación registrada.`:'No hay servicios activos. Agrégalos antes de completar la agenda.';
   $('assignBtn').disabled=!canEdit||!resources.length||!services.length;
@@ -199,8 +206,8 @@ function reviewData(){
   const scheduleRows=groups.map(g=>[
     esc(resourceName(g.recurso_id)),
     esc(days[g.dia_semana]),
-    esc(`${g.start}–${g.end}`),
-    esc(g.hasLunch?`${g.lunchStart}–${g.lunchEnd}`:'Sin pausa'),
+    esc(g.intervalText),
+    esc(g.breakText),
     scheduleActionButtons(g)
   ]);
   const linkRows=links.map(l=>[esc(serviceName(l.servicio_id)),esc(resourceName(l.recurso_id)),statePill('ASIGNADO',true),actionButtons('link',{servicio:l.servicio_id,recurso:l.recurso_id})]);
@@ -241,8 +248,10 @@ function handleEdit(e){const b=e.currentTarget,kind=b.dataset.kind;
     $('scheduleResource').value=resourceId;setScheduleDays([day]);$('start').value=group.start;$('end').value=group.end;
     $('hasLunch').checked=group.hasLunch;syncLunchFields();
     if(group.hasLunch){$('lunchStart').value=group.lunchStart;$('lunchEnd').value=group.lunchEnd}
-    $('saveSchedule').textContent='Guardar este día';$('copyScheduleBtn').hidden=false;$('cancelScheduleEdit').hidden=false;
-    $('scheduleModeHint').textContent=`Editando ${days[day]}. Al guardar se reemplazará el horario de ese día.`;
+    $('saveSchedule').textContent='Guardar este día';$('copyScheduleBtn').hidden=group.rows.length>2;$('cancelScheduleEdit').hidden=false;
+    $('scheduleModeHint').textContent=group.rows.length>2
+      ?`Este día tiene varios tramos. Al guardar se reemplazarán por el horario que definas.`
+      :`Editando ${days[day]}. Al guardar se reemplazará el horario de ese día.`;
     scrollToEl($('scheduleForm'));$('scheduleResource').focus();return
   }
   if(kind==='link'){linkEditKey={servicio_id:b.dataset.servicio,recurso_id:b.dataset.recurso};$('assignResource').value=b.dataset.recurso;$('assignService').value=b.dataset.servicio;$('assignBtn').textContent='Guardar cambios';$('cancelAssignEdit').hidden=false;scrollToEl($('assignResource'));$('assignResource').focus();return}
