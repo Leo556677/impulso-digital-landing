@@ -41,13 +41,114 @@ function renderCal(){let a=gp();if(!selDate&&a.length){selDate=a[0].date;calCur=
 function renderHist(){let a=done();$('hsessions').innerHTML=a.length?a.map(s=>`<article class="card hist"><div class="row"><div><div class="date">${esc(fd(s.fecha))}</div><h3>${esc(st(s))}</h3><div class="sub">${ic('cam')}${s.total} videos grabados</div></div><span class="pill ok">${ic('check')} Completada</span></div><button class="cta hopen" data-id="${s.id}">Ver contenido</button></article>`).join(''):'<div class="card empty">Todavía no hay sesiones completadas.</div>';D.querySelectorAll('.hopen').forEach(b=>b.onclick=()=>openSession(b.dataset.id,'history'));let p=gp().slice(0,8);$('hpubs').innerHTML=p.length?p.map(x=>`<article class="card hist"><div class="date">${esc(fd(x.date))}</div><h3>${esc(x.title)}</h3><div class="plats">${ph(x.plats)}</div></article>`).join(''):'<div class="card empty">Todavía no hay publicaciones registradas.</div>'}
 const tele=$('tele'),scr=$('scroll'),lines=$('lines'),sr=$('srange'),fr=$('frange'),telePanel=$('telePanel'),teleDragHandle=$('teleDragHandle');
 let highlightMode='word',wordFactor=1,countdownSeconds=3,countdownActive=false,countdownRun=0,activeConfig='';
-let teleTokens=[],teleWordIndex=0,teleWordElapsed=0,telePxPerSec=0,teleDragging=false,teleDragStart=null;
+let teleTokens=[],teleWordIndex=0,teleWordElapsed=0,telePxPerSec=0,teleScrollTarget=0,teleDragging=false,teleDragStart=null;
 let teleEmphasisSeen=new Set(),teleEmphasisHoldUntil=0;
+let teleDiagRows=[],teleDiagTimer=0,teleDiagLastTickAt=0,teleDiagLastMoveAt=0,teleDiagLastScroll=0,teleDiagStartedAt=0,teleDiagStallKey='',teleDiagOpen=false;
 try{
   highlightMode=localStorage.getItem('do_tele_highlight')||'word';
   wordFactor=Math.max(.75,Math.min(1.25,Number(localStorage.getItem('do_tele_wordrate')||1)));
   countdownSeconds=Math.max(0,Math.min(5,Number(localStorage.getItem('do_tele_countdown')??3)));
 }catch{}
+function teleDiagRound(v,d=1){const n=Number(v);return Number.isFinite(n)?Number(n.toFixed(d)):null}
+function teleDiagSnapshot(reason='snapshot'){
+  const now=performance.now(),max=scr?Math.max(0,scr.scrollHeight-scr.clientHeight):0,token=currentToken(),r=token?.getBoundingClientRect?.(),center=r?(r.top+r.bottom)/2:null;
+  return{
+    reason,
+    build:window.__PORTAL_BUILD__||'',
+    layer:window.DoctorPortalAccess?.layer||'',
+    play:Boolean(play),
+    countdown:Boolean(countdownActive),
+    visibility:document.visibilityState,
+    fullscreen:Boolean(document.fullscreenElement),
+    highlight:highlightMode,
+    wpm:Math.round(effectiveWpm()),
+    px_per_sec:teleDiagRound(telePxPerSec,2),
+    scroll_top:teleDiagRound(scr?.scrollTop||0,2),
+    scroll_target:teleDiagRound(teleScrollTarget,2),
+    max_scroll:teleDiagRound(max,2),
+    scroll_height:scr?.scrollHeight||0,
+    client_height:scr?.clientHeight||0,
+    overflow_y:scr?getComputedStyle(scr).overflowY:'',
+    tokens:teleTokens.length,
+    token_index:teleWordIndex,
+    token_text:String(token?.textContent||'').slice(0,80),
+    token_center_y:teleDiagRound(center,1),
+    focus_y:teleDiagRound(focusY(),1),
+    token_delta:teleDiagRound(center==null?0:center-focusY(),1),
+    emphasis_hold_ms:Math.max(0,Math.round(teleEmphasisHoldUntil-now)),
+    last_tick_age_ms:teleDiagLastTickAt?Math.round(now-teleDiagLastTickAt):null,
+    last_move_age_ms:teleDiagLastMoveAt?Math.round(now-teleDiagLastMoveAt):null,
+    raf_id:raf||0
+  }
+}
+function teleDiagPush(stage,data={}){
+  const row={at:new Date().toISOString(),stage,data};
+  teleDiagRows.push(row);teleDiagRows=teleDiagRows.slice(-70);
+  window.PortalTrace?.log?.('TELE_DIAG_'+stage,data);
+  teleDiagRender()
+}
+function teleDiagExport(){
+  const snap=teleDiagSnapshot('export');
+  const rows=teleDiagRows.slice(-45).map(x=>`[${x.at}] ${x.stage} ${JSON.stringify(x.data)}`).join('\n');
+  const global=window.PortalTrace?.plain?.()||'';
+  return[
+    '=== TELEPROMPTER DIAGNOSTICO ===',
+    JSON.stringify(snap,null,2),
+    '',
+    '=== EVENTOS TELE ===',
+    rows||'(sin eventos)',
+    '',
+    '=== TRAZA PORTAL ===',
+    global||'(sin traza global)'
+  ].join('\n')
+}
+function teleDiagRender(){
+  const panel=$('teleDiagPanel'),status=$('teleDiagStatus'),pre=$('teleDiagPre'),btn=$('teleDebugBtn');if(!panel||!status||!pre||!btn)return;
+  const s=teleDiagSnapshot('render'),moving=s.play&&s.last_move_age_ms!=null&&s.last_move_age_ms<1200,held=s.emphasis_hold_ms>0;
+  const state=!s.play?(countdownActive?'CUENTA':'PAUSA'):(held?'PAUSA ÉNFASIS':moving?'MOVIENDO':'POSIBLE BLOQUEO');
+  status.textContent=`${state} · ${s.wpm} ppm · ${s.px_per_sec??0}px/s`;
+  status.dataset.state=state.includes('BLOQUEO')?'bad':state.includes('MOVIENDO')?'good':'idle';
+  btn.dataset.state=status.dataset.state;
+  panel.hidden=!teleDiagOpen;
+  if(teleDiagOpen)pre.textContent=teleDiagExport()
+}
+function ensureTeleDiagnostics(){
+  if(!$('teleDebugBtn')){
+    const b=document.createElement('button');b.id='teleDebugBtn';b.type='button';b.className='tele-debug-btn';b.innerHTML='<span class="tele-debug-dot"></span><b>TRAZA</b>';
+    b.onclick=()=>{teleDiagOpen=!teleDiagOpen;teleDiagPush('PANEL_TOGGLE',{open:teleDiagOpen});teleDiagRender()};
+    tele.appendChild(b);
+  }
+  if(!$('teleDiagPanel')){
+    const p=document.createElement('section');p.id='teleDiagPanel';p.className='tele-diag-panel';p.hidden=true;
+    p.innerHTML=`<div class="tele-diag-head"><div><b>Diagnóstico en vivo</b><span id="teleDiagStatus">Preparando…</span></div><button type="button" id="teleDiagClose">×</button></div>
+      <div class="tele-diag-actions"><button type="button" id="teleDiagCopy">Copiar traza</button><button type="button" id="teleDiagClear">Limpiar</button></div>
+      <pre id="teleDiagPre"></pre>`;
+    tele.appendChild(p);
+    p.querySelector('#teleDiagClose').onclick=()=>{teleDiagOpen=false;teleDiagRender()};
+    p.querySelector('#teleDiagClear').onclick=()=>{teleDiagRows=[];teleDiagStallKey='';teleDiagPush('TRACE_CLEARED',{})};
+    p.querySelector('#teleDiagCopy').onclick=async e=>{const text=teleDiagExport();try{await navigator.clipboard.writeText(text);e.currentTarget.textContent='Copiado';setTimeout(()=>e.currentTarget.textContent='Copiar traza',1300)}catch{e.currentTarget.textContent='No se pudo copiar';setTimeout(()=>e.currentTarget.textContent='Copiar traza',1600)}};
+  }
+}
+function teleDiagStart(){
+  ensureTeleDiagnostics();clearInterval(teleDiagTimer);
+  teleDiagRows=[];teleDiagStartedAt=performance.now();teleDiagLastTickAt=0;teleDiagLastMoveAt=teleDiagStartedAt;teleDiagLastScroll=scr?.scrollTop||0;teleDiagStallKey='';
+  teleDiagPush('OPEN',teleDiagSnapshot('open'));
+  teleDiagTimer=setInterval(()=>{
+    const now=performance.now(),top=scr?.scrollTop||0,max=scr?Math.max(0,scr.scrollHeight-scr.clientHeight):0,held=now<teleEmphasisHoldUntil;
+    if(Math.abs(top-teleDiagLastScroll)>=.5){teleDiagLastMoveAt=now;teleDiagLastScroll=top;teleDiagStallKey=''}
+    if(play&&!held){
+      let key='';
+      if(max<=0)key='NO_SCROLL_RANGE';
+      else if(telePxPerSec<=0)key='ZERO_VELOCITY';
+      else if(teleDiagLastTickAt&&now-teleDiagLastTickAt>1200)key='RAF_NOT_TICKING';
+      else if(now-teleDiagLastMoveAt>1600&&top<max-1)key='SCROLL_NOT_MOVING';
+      if(key&&key!==teleDiagStallKey){teleDiagStallKey=key;teleDiagOpen=true;teleDiagPush('STALL_'+key,teleDiagSnapshot(key))}
+    }
+    teleDiagRender()
+  },500)
+}
+function teleDiagStop(reason='close'){if(teleDiagTimer){clearInterval(teleDiagTimer);teleDiagTimer=0}teleDiagPush('STOP',{reason,...teleDiagSnapshot(reason)})}
+
 function txt(x){let a=(x.tomas||[]).filter(t=>t.que_se_dice).map(t=>t.que_se_dice);return a.length?a:String(x.pieza?.master_script||'').split(/\n+/).filter(Boolean)}
 function rehookPhrases(x){return(Array.isArray(x?.pieza?.rehooks)?x.pieza.rehooks:[]).map(r=>String(r?.frase||r?.phrase||r?.texto||r?.text||'').trim()).filter(Boolean)}
 function emphasisPhrases(x){
@@ -164,12 +265,12 @@ function openTele(x){
     fs=Number(localStorage.getItem('do_tele_font'))||(innerWidth<600?34:44);
     const savedSpeed=Number(localStorage.getItem('do_tele_speed')||120);sr.value=String(savedSpeed<60?120:savedSpeed)
   }catch{fs=innerWidth<600?34:44;sr.value='120'}
-  applyF();speedL();play=false;countdownActive=false;playI();syncTeleSettings();tele.classList.add('on');document.body.style.overflow='hidden';scr.scrollTop=0;
-  prepareTeleTrack(true);setTimeout(()=>{prepareTeleTrack(true);focus()},60)
+  applyF();speedL();play=false;countdownActive=false;playI();syncTeleSettings();tele.classList.add('on');document.body.style.overflow='hidden';scr.scrollTop=0;teleScrollTarget=0;
+  prepareTeleTrack(true);teleScrollTarget=scr.scrollTop;teleDiagStart();setTimeout(()=>{prepareTeleTrack(true);teleScrollTarget=scr.scrollTop;focus();teleDiagPush('READY',teleDiagSnapshot('ready'))},90)
 }
 function stopCountdown(){countdownRun++;countdownActive=false;const o=$('teleCountdown');if(o)o.hidden=true;playI()}
 async function closeTele(){
-  play=false;stopCountdown();cancelAnimationFrame(raf);
+  play=false;stopCountdown();cancelAnimationFrame(raf);teleDiagStop('close');
   try{if(document.fullscreenElement)await document.exitFullscreen()}catch{}
   tele.classList.remove('on');document.body.style.overflow='';resetTelePanelPosition()
 }
@@ -190,16 +291,21 @@ sr.oninput=speedL;
 if($('speeddown'))$('speeddown').onclick=()=>{sr.value=String(Math.max(+sr.min,+sr.value-1));speedL()};
 if($('speedup'))$('speedup').onclick=()=>{sr.value=String(Math.min(+sr.max,+sr.value+1));speedL()};
 function playI(){const running=play||countdownActive;$('playb').innerHTML=running?ic('pause'):ic('playi');$('playb').setAttribute('aria-label',running?'Pausar':'Reproducir')}
-function pauseAuto(){play=false;last=0;cancelAnimationFrame(raf);playI()}
-function startAuto(){countdownActive=false;play=true;last=0;teleWordElapsed=0;teleWordIndex=nearestTokenToFocus();refreshTeleVelocity();playI();raf=requestAnimationFrame(tick)}
+function pauseAuto(reason='manual'){play=false;last=0;cancelAnimationFrame(raf);playI();teleDiagPush('PAUSE',{reason,...teleDiagSnapshot(reason)})}
+function startAuto(){
+  countdownActive=false;play=true;last=0;teleWordElapsed=0;teleWordIndex=nearestTokenToFocus();refreshTeleVelocity();teleScrollTarget=scr.scrollTop;
+  teleDiagLastTickAt=performance.now();teleDiagLastMoveAt=teleDiagLastTickAt;teleDiagLastScroll=scr.scrollTop;teleDiagStallKey='';
+  playI();teleDiagPush('START',{...teleDiagSnapshot('start')});raf=requestAnimationFrame(tick)
+}
 function delay(ms){return new Promise(r=>setTimeout(r,ms))}
 async function startCountdown(){
   const seconds=Math.max(0,Math.min(5,Number(countdownSeconds)||0));
+  teleDiagPush('COUNTDOWN_START',{seconds});
   if(seconds===0){startAuto();return}
   const run=++countdownRun,o=$('teleCountdown'),v=$('teleCountdownValue');
   countdownActive=true;playI();if(o)o.hidden=false;
   for(let n=seconds;n>=1;n--){if(run!==countdownRun)return;if(v)v.textContent=String(n);await delay(1000)}
-  if(run!==countdownRun)return;if(o)o.hidden=true;startAuto()
+  if(run!==countdownRun)return;if(o)o.hidden=true;teleDiagPush('COUNTDOWN_END',{});startAuto()
 }
 function emphasisHoldMs(){
   return Math.max(450,Math.min(900,(60000/effectiveWpm())*1.25));
@@ -224,26 +330,31 @@ function maybeHoldEmphasis(t){
 function advanceWord(dt){
   if(!teleTokens.length||!scr)return;
   const step=Math.max(0,telePxPerSec)*dt,max=Math.max(0,scr.scrollHeight-scr.clientHeight);
-  scr.scrollTop=Math.min(max,scr.scrollTop+step);
+  teleScrollTarget=Math.min(max,Math.max(scr.scrollTop,teleScrollTarget)+step);
+  scr.scrollTop=teleScrollTarget;
   teleWordIndex=nearestTokenToFocus();teleWordElapsed=0;
 }
 function tick(t){
   if(!play)return;
+  teleDiagLastTickAt=performance.now();
   if(!last)last=t;
   const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;
   const held=maybeHoldEmphasis(t);
   if(!held)advanceWord(dt);
   paintCurrentWord();
+  const top=scr?.scrollTop||0;
+  if(Math.abs(top-teleDiagLastScroll)>=.5){teleDiagLastMoveAt=performance.now();teleDiagLastScroll=top;teleDiagStallKey=''}
   const end=teleTokens[teleTokens.length-1];
-  if(end&&end.getBoundingClientRect().bottom<=focusY()){pauseAuto();return}
+  if(end&&end.getBoundingClientRect().bottom<=focusY()){pauseAuto('end-reached');return}
   raf=requestAnimationFrame(tick)
 }
 $('playb').onclick=()=>{
-  if(countdownActive){stopCountdown();return}
-  if(play){pauseAuto();return}
+  teleDiagPush('PLAY_CLICK',{play,countdownActive,...teleDiagSnapshot('play-click')});
+  if(countdownActive){stopCountdown();teleDiagPush('COUNTDOWN_CANCEL',{});return}
+  if(play){pauseAuto('user-pause');return}
   startCountdown()
 };
-if($('resetb'))$('resetb').onclick=()=>{pauseAuto();stopCountdown();teleWordIndex=0;teleWordElapsed=0;teleEmphasisSeen=new Set();teleEmphasisHoldUntil=0;paintCurrentWord();followCurrentWord(0,true)};
+if($('resetb'))$('resetb').onclick=()=>{pauseAuto('reset');stopCountdown();teleWordIndex=0;teleWordElapsed=0;teleEmphasisSeen=new Set();teleEmphasisHoldUntil=0;paintCurrentWord();followCurrentWord(0,true);teleScrollTarget=scr.scrollTop;teleDiagPush('RESET',teleDiagSnapshot('reset'))};
 function focus(){
   if(!teleTokens.length)prepareTeleTrack(false);
   if(!play){teleWordIndex=nearestTokenToFocus();teleWordElapsed=0}
