@@ -1,32 +1,33 @@
 const API='https://xnlzsgulskqyecfgzhwa.supabase.co/functions/v1/content-recording-session',
   KEY='sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',
   q=new URLSearchParams(location.search),
-  ACCESS_KEY='do_portal_access_v1',
-  initialToken=q.get('token')||localStorage.getItem(ACCESS_KEY)||'',
   deep=q.get('session')||'',
   D=document,
   $=x=>D.getElementById(x),
   ic=id=>`<svg class="ico"><use href="#${id}"/></svg>`,
   esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let token=initialToken,authJwt='',authClient=null;
+let token='',authJwt='',authClient=null;
 let P=null,S=null,Item=null,backTab='record',calCur=new Date(),selDate='',play=false,last=0,raf=0,fs=44,ai=0;
-window.__PORTAL_HAS_ACCESS__=token?true:null;
-async function api(action,extra={}){window.PortalTrace?.log('API_START',{action,mode:token?'portal-token':authJwt?'user-session':'none'});let r,d;const headers={'Content-Type':'application/json','apikey':KEY};if(authJwt)headers['Authorization']='Bearer '+authJwt;try{r=await fetch(API,{method:'POST',headers,body:JSON.stringify({action,token,business_slug:'dr-olano',...extra})});d=await r.json().catch(()=>({}));window.PortalTrace?.log('API_RESPONSE',{action,http:r.status,http_ok:r.ok,body_ok:d?.ok===true,error:d?.error||'',message:d?.message||''});}catch(e){window.PortalTrace?.error('API_FETCH_ERROR',{action,message:e?.message||String(e),stack:e?.stack||''});throw e}if(!r.ok||!d.ok){const e=new Error(d.message||'No pudimos cargar tu contenido.');window.PortalTrace?.error('API_FAIL',{action,http:r.status,error:d?.error||'',message:e.message,body_keys:Object.keys(d||{})});throw e}return d}async function resolvePortalAccess(){
-  if(token){window.__PORTAL_HAS_ACCESS__=true;window.PortalTrace?.log('ACCESS_MODE',{mode:'portal-token'});return true;}
-  try{
-    const mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm');
-    authClient=mod.createClient('https://xnlzsgulskqyecfgzhwa.supabase.co',KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-    const {data:{session},error}=await authClient.auth.getSession();
-    if(error)throw error;
-    if(session?.access_token){
-      authJwt=session.access_token;
-      window.__PORTAL_HAS_ACCESS__=true;
-      window.PortalTrace?.log('ACCESS_MODE',{mode:'supabase-session',user:Boolean(session.user)});
-      return true;
-    }
-  }catch(e){window.PortalTrace?.warn('AUTH_SESSION_LOOKUP_FAIL',{message:e?.message||String(e)});}
+window.__PORTAL_HAS_ACCESS__=null;
+async function api(action,extra={}){
+  const layerToken=window.DoctorPortalAccess?.token||'';
+  window.PortalTrace?.log('API_START',{action,mode:layerToken?'layer-session':'none',layer:window.DoctorPortalAccess?.layer||''});
+  let r,d;const headers={'Content-Type':'application/json','apikey':KEY};
+  try{r=await fetch(API,{method:'POST',headers,body:JSON.stringify({action,layer_token:layerToken,business_slug:'dr-olano',...extra})});d=await r.json().catch(()=>({}));window.PortalTrace?.log('API_RESPONSE',{action,http:r.status,http_ok:r.ok,body_ok:d?.ok===true,error:d?.error||'',message:d?.message||''});}
+  catch(e){window.PortalTrace?.error('API_FETCH_ERROR',{action,message:e?.message||String(e),stack:e?.stack||''});throw e}
+  if(!r.ok||!d.ok){const e=new Error(d.message||'No pudimos cargar tu contenido.');window.PortalTrace?.error('API_FAIL',{action,http:r.status,error:d?.error||'',message:e.message,body_keys:Object.keys(d||{})});throw e}
+  return d
+}
+async function resolvePortalAccess(){
+  try{await window.__PORTAL_LAYER_READY__}catch{}
+  const a=window.DoctorPortalAccess;
+  if(a?.ready&&a?.token&&a?.layer){
+    window.DoctorPortalArea?.setLayer?.(a.layer);
+    window.__PORTAL_HAS_ACCESS__=true;
+    window.PortalTrace?.log('ACCESS_MODE',{mode:'layer-session',layer:a.layer});
+    return true;
+  }
   window.__PORTAL_HAS_ACCESS__=false;
-  window.PortalTrace?.warn('ACCESS_MODE',{mode:'none'});
   return false;
 }
 function fd(v){return v?new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'long',year:'numeric'}).format(new Date(String(v).slice(0,10)+'T12:00:00')):'Fecha por definir'}function pt(p){return p?.titulo||p?.tema||p?.servicio||'Video para grabar'}function st(s){return s?.nombre||`Grabación · ${fd(s?.fecha)}`}function tab(t){D.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));D.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));$(t).classList.add('on');scrollTo(0,0)}D.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{resetViews();tab(b.dataset.tab)});function resetViews(){$('rhome').style.display='block';$('sdetail').style.display='none';$('vdetail').style.display='none'}function err(m,login=false){$('err').style.display='block';const next=encodeURIComponent((location.pathname.split('/').pop()||'doctor-portal.html'));$('err').innerHTML=`<b>No pudimos abrir tu portal</b><div style="margin-top:6px;color:var(--m);font-size:11px">${esc(m)}</div><div style="margin-top:10px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap">${login?'<a href="./cliente-acceso.html?next='+next+'" style="text-decoration:none;border:0;border-radius:10px;background:var(--g);color:#fff;padding:9px 12px;font:900 10px system-ui">Iniciar sesión</a>':''}<small style="color:#8a93a0">Build ${esc(window.__PORTAL_BUILD__||'sin identificar')}</small></div>`}
@@ -345,4 +346,12 @@ if($('teleCenterPanel'))$('teleCenterPanel').onclick=e=>{e.preventDefault();e.st
 document.addEventListener('fullscreenchange',()=>setTimeout(()=>{syncTelePanelDrag();if(dragEnabled())requestAnimationFrame(()=>centerTelePanel(false))},100));
 visualViewport?.addEventListener('resize',()=>{if(dragEnabled()){const r=telePanel.getBoundingClientRect();setPanelPosition(r.left,r.top,false)}});
 syncTeleSettings();
-async function refresh(){window.PortalTrace?.log('REFRESH_START');P=await api('portal_get');P=window.DoctorPortalArea?.filterPortalData?.(P)||P;window.DoctorPortalArea?.decorate?.();window.PortalTrace?.log('REFRESH_DATA',{sessions:P?.sessions?.length||0,production_items:P?.production_items?.length||0,calendar_items:P?.calendar_items?.length||0,publications:P?.publications?.length||0});if(D.querySelector('.tab[data-tab="record"]')){renderRecord();window.PortalTrace?.log('REFRESH_RENDER_RECORD_OK')}else window.PortalTrace?.log('REFRESH_RENDER_RECORD_SKIPPED','Panel Para grabar eliminado');renderCal();window.PortalTrace?.log('REFRESH_RENDER_CAL_CALLED');renderHist();window.PortalTrace?.log('REFRESH_RENDER_HIST_OK')}async function init(){try{if(q.get('token'))localStorage.setItem(ACCESS_KEY,q.get('token'));}catch{}window.PortalTrace?.log('INIT_START',{has_token:Boolean(token),deep:Boolean(deep)});window.__PORTAL_ACCESS_READY__=resolvePortalAccess();const access=await window.__PORTAL_ACCESS_READY__;if(!access){window.PortalTrace?.error('INIT_NO_ACCESS','Este navegador no tiene token ni sesión iniciada.');const cal=$('calendar'),tabs=D.querySelector('.tabs');if(cal)cal.style.display='none';if(tabs)tabs.style.display='none';return err('Inicia sesión en este navegador para acceder al calendario.',true)}try{$('err').style.display='none';await refresh();if(deep)await openSession(deep,'record');window.PortalTrace?.log('INIT_OK')}catch(e){window.PortalTrace?.error('INIT_FAIL',{message:e?.message||String(e),stack:e?.stack||''});if(e?.message?.includes('sesión')||e?.message?.includes('acceso'))err(e.message,true);else err(e.message)}}init();
+async function refresh(){window.PortalTrace?.log('REFRESH_START');P=await api('portal_get');P=window.DoctorPortalArea?.filterPortalData?.(P)||P;window.DoctorPortalArea?.decorate?.();window.PortalTrace?.log('REFRESH_DATA',{sessions:P?.sessions?.length||0,production_items:P?.production_items?.length||0,calendar_items:P?.calendar_items?.length||0,publications:P?.publications?.length||0});if(D.querySelector('.tab[data-tab="record"]')){renderRecord();window.PortalTrace?.log('REFRESH_RENDER_RECORD_OK')}else window.PortalTrace?.log('REFRESH_RENDER_RECORD_SKIPPED','Panel Para grabar eliminado');renderCal();window.PortalTrace?.log('REFRESH_RENDER_CAL_CALLED');renderHist();window.PortalTrace?.log('REFRESH_RENDER_HIST_OK')}
+async function init(){
+  window.PortalTrace?.log('INIT_START',{deep:Boolean(deep)});
+  window.__PORTAL_ACCESS_READY__=resolvePortalAccess();const access=await window.__PORTAL_ACCESS_READY__;
+  if(!access)return;
+  try{$('err').style.display='none';await refresh();if(deep)await openSession(deep,'record');window.PortalTrace?.log('INIT_OK')}
+  catch(e){window.PortalTrace?.error('INIT_FAIL',{message:e?.message||String(e),stack:e?.stack||''});err(e.message||'No pudimos abrir tu portal.')}
+}
+init();
