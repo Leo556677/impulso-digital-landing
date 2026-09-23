@@ -41,6 +41,7 @@ function renderHist(){let a=done();$('hsessions').innerHTML=a.length?a.map(s=>`<
 const tele=$('tele'),scr=$('scroll'),lines=$('lines'),sr=$('srange'),fr=$('frange'),telePanel=$('telePanel'),teleDragHandle=$('teleDragHandle');
 let highlightMode='word',wordFactor=1,countdownSeconds=3,countdownActive=false,countdownRun=0,activeConfig='';
 let teleTokens=[],teleWordIndex=0,teleWordElapsed=0,telePxPerSec=0,teleDragging=false,teleDragStart=null;
+let teleEmphasisSeen=new Set(),teleEmphasisHoldUntil=0;
 try{
   highlightMode=localStorage.getItem('do_tele_highlight')||'word';
   wordFactor=Math.max(.75,Math.min(1.25,Number(localStorage.getItem('do_tele_wordrate')||1)));
@@ -48,6 +49,13 @@ try{
 }catch{}
 function txt(x){let a=(x.tomas||[]).filter(t=>t.que_se_dice).map(t=>t.que_se_dice);return a.length?a:String(x.pieza?.master_script||'').split(/\n+/).filter(Boolean)}
 function rehookPhrases(x){return(Array.isArray(x?.pieza?.rehooks)?x.pieza.rehooks:[]).map(r=>String(r?.frase||r?.phrase||r?.texto||r?.text||'').trim()).filter(Boolean)}
+function emphasisPhrases(x){
+  const base=rehookPhrases(x);
+  const extra=Array.isArray(x?.pieza?.metadata?.teleprompter_emphasis_v1)?x.pieza.metadata.teleprompter_emphasis_v1:[];
+  const all=[...base,...extra.map(r=>String(r?.phrase||r?.frase||r?.text||r?.texto||'').trim()).filter(Boolean)];
+  const seen=new Set();
+  return all.filter(p=>{const k=teleWordKey(p);if(!k||seen.has(k))return false;seen.add(k);return true})
+}
 function teleWordKey(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
 function teleTextCore(v){return String(v??'').trim().split(/\s+/).filter(Boolean).map(w=>`<span class="tele-token">${esc(w)}</span>`).join(' ')}
 function markTeleRehooks(phrases=[]){
@@ -110,7 +118,7 @@ function paintRehookState(){
   const fy=focusY(),groups=new Map();
   D.querySelectorAll('.tele-rehook').forEach(t=>{const id=t.dataset.rehook||'0';if(!groups.has(id))groups.set(id,[]);groups.get(id).push(t)});
   groups.forEach(tokens=>{
-    const last=tokens[tokens.length-1],passed=last.getBoundingClientRect().bottom<fy;
+    const first=tokens[0],r=first.getBoundingClientRect(),passed=((r.top+r.bottom)/2)<=fy;
     tokens.forEach(t=>t.classList.toggle('rehook-passed',passed));
   });
   D.querySelectorAll('.line.rehook-line').forEach(line=>{
@@ -145,10 +153,11 @@ function nearestTokenToFocus(){
 }
 function openTele(x){
   $('ttitle').textContent=pt(x.pieza);
-  const rehooks=rehookPhrases(x);
+  const emphasis=emphasisPhrases(x);
   lines.innerHTML=txt(x).map((t,i)=>`<p class="line" data-i="${i}">${teleTextCore(t)}</p>`).join('');
-  const matched=markTeleRehooks(rehooks),hint=D.querySelector('.ttitle small');
-  if(hint)hint.textContent=rehooks.length?`${matched}/${rehooks.length} rehooks · verde antes de la línea · rojo después`:'Este guion no tiene rehooks marcados';
+  const matched=markTeleRehooks(emphasis),hint=D.querySelector('.ttitle small');
+  teleEmphasisSeen=new Set();teleEmphasisHoldUntil=0;
+  if(hint)hint.textContent=emphasis.length?`${matched}/${emphasis.length} énfasis · verde antes · rojo al llegar · pausa automática`:'Este guion no tiene énfasis marcados';
   try{
     fs=Number(localStorage.getItem('do_tele_font'))||(innerWidth<600?34:44);
     const savedSpeed=Number(localStorage.getItem('do_tele_speed')||120);sr.value=String(savedSpeed<60?120:savedSpeed)
@@ -190,6 +199,26 @@ async function startCountdown(){
   for(let n=seconds;n>=1;n--){if(run!==countdownRun)return;if(v)v.textContent=String(n);await delay(1000)}
   if(run!==countdownRun)return;if(o)o.hidden=true;startAuto()
 }
+function emphasisHoldMs(){
+  return Math.max(450,Math.min(900,(60000/effectiveWpm())*1.25));
+}
+function maybeHoldEmphasis(t){
+  if(t<teleEmphasisHoldUntil)return true;
+  const fy=focusY();
+  const starts=[...D.querySelectorAll('.tele-rehook.rehook-start')];
+  for(const token of starts){
+    const id=token.dataset.rehook||String(token.dataset.teleIndex||'');
+    if(!id||teleEmphasisSeen.has(id))continue;
+    const r=token.getBoundingClientRect(),center=(r.top+r.bottom)/2;
+    if(center<=fy&&center>=fy-32){
+      teleEmphasisSeen.add(id);
+      teleEmphasisHoldUntil=t+emphasisHoldMs();
+      paintRehookState();
+      return true;
+    }
+  }
+  return false;
+}
 function advanceWord(dt){
   if(!teleTokens.length||!scr)return;
   const step=Math.max(0,telePxPerSec)*dt,max=Math.max(0,scr.scrollHeight-scr.clientHeight);
@@ -200,7 +229,9 @@ function tick(t){
   if(!play)return;
   if(!last)last=t;
   const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;
-  advanceWord(dt);paintCurrentWord();
+  const held=maybeHoldEmphasis(t);
+  if(!held)advanceWord(dt);
+  paintCurrentWord();
   const end=teleTokens[teleTokens.length-1];
   if(end&&end.getBoundingClientRect().bottom<=focusY()){pauseAuto();return}
   raf=requestAnimationFrame(tick)
@@ -210,7 +241,7 @@ $('playb').onclick=()=>{
   if(play){pauseAuto();return}
   startCountdown()
 };
-if($('resetb'))$('resetb').onclick=()=>{pauseAuto();stopCountdown();teleWordIndex=0;teleWordElapsed=0;paintCurrentWord();followCurrentWord(0,true)};
+if($('resetb'))$('resetb').onclick=()=>{pauseAuto();stopCountdown();teleWordIndex=0;teleWordElapsed=0;teleEmphasisSeen=new Set();teleEmphasisHoldUntil=0;paintCurrentWord();followCurrentWord(0,true)};
 function focus(){
   if(!teleTokens.length)prepareTeleTrack(false);
   if(!play){teleWordIndex=nearestTokenToFocus();teleWordElapsed=0}
