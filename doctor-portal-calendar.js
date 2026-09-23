@@ -1,6 +1,6 @@
 (()=>{
   'use strict';
-  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'35'});
+  window.PortalTrace?.log('CAL_SCRIPT_START',{version:'36'});
 
   const VIEW_KEY='do_portal_calendar_view_v5';
   const TELE_HISTORY_KEY='__olanoTeleExitV24';
@@ -219,6 +219,16 @@
     });
     return{week,rows,counts};
   }
+  function totalRecordingQueue(plan){
+    const unique=new Map();
+    for(const item of plan?.pending||[]){
+      const id=item?.content_id||item?.piece?.id||item?.pieza?.id;
+      if(!id||item?.recorded||item?.isTest)continue;
+      if(!unique.has(id))unique.set(id,item);
+    }
+    const rows=[...unique.values()].sort((a,b)=>String(a.date||'9999-12-31').localeCompare(String(b.date||'9999-12-31'))||String(a.code||'').localeCompare(String(b.code||'')));
+    return{rows,counts:{record:rows.length,total:rows.length,script:0,capture:0}};
+  }
   function queueLabel(counts){
     const parts=[];
     if(counts.script)parts.push(`${counts.script} sin guion`);
@@ -297,39 +307,51 @@
     }
     return selectedMobileDate;
   }
+  function streamRank(item){const s=streamFor(item);return s==='ESTETICA'?1:s==='CIRUGIA'?2:3}
   function mobileWeekStrip(week){
     ensureMobileDate(week);
     const days=weekDates(week).map(date=>{
-      const rows=week.rows.filter(x=>x.date===date);
-      const chips=rows.length?rows.map(x=>`<span class="mobile-project-chip ${x.recorded?'done':'todo'}">P${esc(x.code)}</span>`).join(''):'<span class="mobile-project-chip empty">—</span>';
+      const rows=week.rows.filter(x=>x.date===date).sort((a,b)=>streamRank(a)-streamRank(b));
+      const chips=rows.length?rows.map(x=>`<span class="mobile-project-chip ${x.recorded?'done':'todo'}" data-stream="${streamFor(x)}">P${esc(x.code)}</span>`).join(''):'<span class="mobile-project-chip empty">—</span>';
       return `<button type="button" class="mobile-day ${selectedMobileDate===date?'selected':''} ${date===TODAY?'today':''}" data-mobile-date="${date}"><span>${weekday(date)}</span><b>${dayOfMonth(date)}</b><div>${chips}</div></button>`;
     }).join('');
     return `<div class="cal-mobile-weekstrip" aria-label="Semana rápida">${days}</div>`;
   }
   function mobileSelected(week){
     ensureMobileDate(week);
-    const rows=week.rows.filter(x=>x.date===selectedMobileDate);
+    const rows=week.rows.filter(x=>x.date===selectedMobileDate).sort((a,b)=>streamRank(a)-streamRank(b));
     return `<div class="cal-mobile-selected" id="calendarSelectedDay">${rows.length?rows.map(x=>card(x)).join(''):'<div class="cal-mobile-empty">No hay proyecto este día.</div>'}</div>`;
   }
 
   function weekGrid(week){
+    const isAll=window.DoctorPortalArea?.area==='all';
+    const dates=weekDates(week);
+    const generalRows=isAll?week.rows.filter(x=>streamFor(x)==='GENERAL'):[];
+    const generalStrip=generalRows.length?`<div class="cal-general-strip"><div class="cal-general-label"><span>TRANSVERSAL</span><b>Marca / equipo</b></div><div class="cal-general-items">${generalRows.map(x=>card(x,true)).join('')}</div></div>`:'';
+
+    if(isAll){
+      const head=dates.map(date=>`<div class="combined-date-head ${date===TODAY?'today':''}"><span>${weekday(date)}</span><b>${dayOfMonth(date)}</b>${date===TODAY?'<i>HOY</i>':''}</div>`).join('');
+      const lane=(stream,label,sub)=>`<div class="combined-lane-label" data-stream="${stream}"><span>${label}</span><small>${sub}</small></div>`+
+        dates.map(date=>{const item=week.rows.find(x=>x.date===date&&streamFor(x)===stream);return `<div class="combined-area-cell" data-stream="${stream}">${item?card(item):'<div class="combined-empty">Sin proyecto</div>'}</div>`}).join('');
+      return`<section class="cal-week-block combined-week">
+        <header class="cal-week-head"><div><span>SEMANA ${String(week.number).padStart(2,'0')}</span><h2>${esc(weekRange(week.start,week.end))}</h2></div><small>${week.rows.length} ${week.rows.length===1?'proyecto':'proyectos'}</small></header>
+        <div class="combined-calendar-shell"><div class="combined-week-grid"><div class="combined-corner">ÁREA</div>${head}${lane('ESTETICA','MEDICINA ESTÉTICA','Toxina · PRP · Limpieza')}${lane('CIRUGIA','NOVARE','Rino · Blefaro · Papada')}</div></div>
+        ${generalStrip}
+        ${mobileSelected(week)}
+      </section>`;
+    }
+
     const days=[];
-    const splitGeneral=window.DoctorPortalArea?.area==='all';
-    const generalRows=splitGeneral?week.rows.filter(x=>streamFor(x)==='GENERAL'):[];
-    for(let i=0;i<7;i++){
-      const d=new Date(dateObj(week.start));d.setDate(d.getDate()+i);
-      const date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-      const rows=week.rows.filter(x=>x.date===date&&(!splitGeneral||streamFor(x)!=='GENERAL'));
+    for(const date of dates){
+      const rows=week.rows.filter(x=>x.date===date);
       days.push(`<div class="cal-week-day ${date===TODAY?'today':''}" ${rows.length===1?`style="${cssVars(rows[0])}"`:''}>
         <div class="cal-date-head"><span>${weekday(date)}</span><b>${dayOfMonth(date)}</b>${date===TODAY?'<i>HOY</i>':''}</div>
         <div class="cal-day-projects">${rows.length?rows.map(x=>card(x)).join(''):'<div class="cal-empty-day"><span>Sin proyecto</span></div>'}</div>
       </div>`);
     }
-    const generalStrip=generalRows.length?`<div class="cal-general-strip"><div class="cal-general-label"><span>TRANSVERSAL</span><b>Marca / equipo</b></div><div class="cal-general-items">${generalRows.map(x=>card(x,true)).join('')}</div></div>`:'';
     return`<section class="cal-week-block">
       <header class="cal-week-head"><div><span>SEMANA ${String(week.number).padStart(2,'0')}</span><h2>${esc(weekRange(week.start,week.end))}</h2></div><small>${week.rows.length} ${week.rows.length===1?'proyecto':'proyectos'}</small></header>
       <div class="cal-week-grid">${days.join('')}</div>
-      ${generalStrip}
       ${mobileSelected(week)}
     </section>`;
   }
@@ -355,19 +377,19 @@
   }
 
   function recordingStatus(plan){
-    const q=currentWeekQueue(plan),pending=q.counts.total;
+    const q=totalRecordingQueue(plan),pending=q.counts.total;
     if(pending){
-      const label=queueLabel(q.counts);
-      return `<div class="cal-recording-status"><button type="button" class="record-alert calendar-record-alert" data-show-pending aria-label="${esc(label)}"><span class="record-alert-dot">!</span><b>${pending}</b><span>${esc(label)}</span></button></div>`;
+      const label=`${pending} por grabar en total`;
+      return `<div class="cal-recording-status"><button type="button" class="record-alert calendar-record-alert" data-show-pending aria-label="${esc(label)}"><span class="record-alert-dot">!</span><b>${pending}</b><span>por grabar en total</span></button></div>`;
     }
     return `<div class="cal-recording-status"><div class="record-alert all-done"><span class="record-alert-dot">✓</span><b>Estás al día</b></div></div>`;
   }
 
   function pendingPanel(plan){
-    const q=currentWeekQueue(plan),label=queueLabel(q.counts),rows=q.rows;
+    const q=totalRecordingQueue(plan),rows=q.rows;
     return`<div class="pending-recordings">
-      <div class="card pending-hero"><div class="pending-alert-icon">!</div><div><span>PENDIENTES DE LA SEMANA</span><h2>${q.counts.total} ${q.counts.total===1?'pendiente':'pendientes'}</h2><p>${esc(label)}. Esta vista corresponde únicamente a la semana que estás viendo.</p></div></div>
-      <div class="pending-grid">${rows.length?rows.map(x=>card(x,true)).join(''):'<div class="card pending-empty"><b>Semana al día.</b><br>No quedan pendientes operativos en esta semana.</div>'}</div>
+      <div class="card pending-hero"><div class="pending-alert-icon">!</div><div><span>POR GRABAR · TOTAL</span><h2>${q.counts.total} ${q.counts.total===1?'pieza pendiente':'piezas pendientes'}</h2><p>Incluye todo lo existente en este acceso, aunque esté repartido entre varias semanas o meses.</p></div></div>
+      <div class="pending-grid">${rows.length?rows.map(x=>card(x,true)).join(''):'<div class="card pending-empty"><b>Todo grabado.</b><br>No quedan piezas pendientes de grabación en este acceso.</div>'}</div>
     </div>`;
   }
 
