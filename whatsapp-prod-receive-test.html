@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#E6007E">
+  <title>WhatsApp PROD · Prueba de recepción</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--magenta:#E6007E;--coral:#F2385A;--orange:#FF6A00;--charcoal:#262626;--gray:#F5F5F7;--gray2:#ECECF0;--muted:#666871;--ok:#16794c;--warn:#9a6700;--danger:#C62828;--gradient:linear-gradient(135deg,var(--magenta),var(--coral) 52%,var(--orange));--shadow:0 18px 55px rgba(38,38,38,.10)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:26px;background:radial-gradient(circle at 12% 8%,rgba(230,0,126,.10),transparent 28%),radial-gradient(circle at 88% 92%,rgba(255,106,0,.10),transparent 30%),var(--gray);font-family:'Montserrat',system-ui,sans-serif;color:var(--charcoal)}
+    .wrap{width:min(900px,100%);margin:auto}.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:inherit;text-decoration:none}.brand img{width:54px;height:54px;border-radius:50%;object-fit:cover}.brand strong,h1,h2{font-family:'Anton',sans-serif;font-weight:400}.brand strong{font-size:1.4rem}.brand small{display:block;margin-top:4px;color:var(--magenta);font-weight:800;letter-spacing:.1em;font-size:11px}
+    h1{font-size:clamp(2rem,5vw,3rem);margin:.4rem 0}.lead{color:var(--muted);line-height:1.65}.tag{display:inline-block;padding:7px 11px;border-radius:999px;background:#eefbf4;color:#146b45;font-size:12px;font-weight:800;letter-spacing:.04em}.card{background:#fff;border:1px solid var(--gray2);border-radius:22px;padding:24px;margin:16px 0;box-shadow:var(--shadow)}.card::before{content:'';display:block;width:48px;height:4px;border-radius:999px;background:var(--gradient);margin-bottom:16px}
+    .notice{padding:14px;border-radius:14px;background:#eefbf4;border:1px solid #bae3cd;color:#155f41;font-weight:650;line-height:1.55}.warnbox{padding:14px;border-radius:14px;background:#fff8e5;border:1px solid #f2d89e;color:#765000;line-height:1.55}button,a.btn{display:inline-block;border:0;border-radius:12px;padding:12px 17px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;margin-right:8px;margin-top:8px}button{background:var(--gradient);color:#fff;box-shadow:0 10px 24px rgba(230,0,126,.18)}button:disabled{opacity:.45;cursor:not-allowed}.btn{background:#fff;border:1px solid #dedee4;color:var(--charcoal)}.ok{color:var(--ok);font-weight:800}.danger{color:var(--danger);font-weight:800}.warn{color:var(--warn);font-weight:800}pre{white-space:pre-wrap;word-break:break-word;background:#262626;color:#fff;border-radius:14px;padding:16px;min-height:160px}@media(max-width:650px){body{padding:16px}.card{padding:20px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a class="brand" href="./"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><span><strong>IMPULSO DIGITAL</strong><small>WHATSAPP · PROD RECEIVE TEST</small></span></a>
+  <span class="tag">PRODUCCIÓN · SOLO RECEPCIÓN</span>
+  <h1>Prueba controlada de recepción</h1>
+  <p class="lead">Este paso no envía nada desde el backend. Solo comprueba si un mensaje entrante real llega al webhook y se guarda correctamente.</p>
+
+  <section class="card">
+    <h2>1. Qué debes hacer</h2>
+    <div class="notice"><strong>Desde OTRO número de WhatsApp</strong>, envía un mensaje de texto a <strong>+51 903 396 082</strong>. Puedes escribir: <code>PRUEBA PROD 2309</code>.</div>
+    <p class="warnbox"><strong>No uses el mismo número +51 903 396 082 como remitente.</strong> No respondas desde el CRM todavía. Los envíos PROD siguen bloqueados.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Verificar recepción</h2>
+    <p id="session">Validando sesión…</p>
+    <button id="check" type="button" disabled>Ya envié el mensaje · verificar</button>
+    <a class="btn" href="./whatsapp-prod-subscribe-app.html">Volver a conexión PROD</a>
+  </section>
+
+  <section class="card">
+    <h2>3. Resultado seguro</h2>
+    <pre id="result">Aún no se ha consultado la recepción.</pre>
+  </section>
+</main>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+const supabase=createClient(
+  'https://xnlzsgulskqyecfgzhwa.supabase.co',
+  'sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',
+  {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}
+);
+const NEGOCIO_ID='c656a9ac-2739-451b-a93f-9e25fc9f4cbe';
+const sessionEl=document.getElementById('session');
+const checkBtn=document.getElementById('check');
+const resultEl=document.getElementById('result');
+const pretty=v=>typeof v==='string'?v:JSON.stringify(v,null,2);
+let ready=false,running=false;
+
+async function init(){
+  const {data:{session},error}=await supabase.auth.getSession();
+  if(error||!session?.user){
+    sessionEl.innerHTML='<span class="danger">Sin sesión CRM activa.</span>';
+    return;
+  }
+  const {data:m,error:me}=await supabase.from('usuarios_negocio').select('negocio_id,rol').eq('negocio_id',NEGOCIO_ID).eq('user_id',session.user.id).maybeSingle();
+  if(me||!m||m.rol!=='admin'){
+    sessionEl.innerHTML='<span class="danger">Se requiere rol admin de IMPULSO DIGITAL.</span>';
+    return;
+  }
+  ready=true;checkBtn.disabled=false;
+  sessionEl.innerHTML='<span class="ok">Sesión válida · esta página solo consulta recepción.</span>';
+}
+checkBtn.addEventListener('click',async()=>{
+  if(!ready||running)return;
+  running=true;checkBtn.disabled=true;
+  resultEl.textContent='Consultando eventos y mensajes PROD…';
+  try{
+    const {data,error}=await supabase.functions.invoke('whatsapp-prod-receive-check',{body:{negocio_id:NEGOCIO_ID}});
+    if(error){
+      let detail=null;try{if(error.context&&typeof error.context.json==='function')detail=await error.context.json()}catch{}
+      resultEl.textContent=pretty(detail||{ok:false,error:error.message||'No se pudo verificar recepción'});
+      return;
+    }
+    resultEl.textContent=pretty(data);
+    if(data?.recepcion_confirmada===true){
+      sessionEl.innerHTML='<span class="ok">Recepción PROD confirmada. No envíes nada desde el CRM todavía.</span>';
+    }else{
+      sessionEl.innerHTML='<span class="warn">Todavía no aparece un mensaje entrante PROD. Espera unos segundos y vuelve a verificar.</span>';
+    }
+  }catch(e){
+    resultEl.textContent=pretty({ok:false,error:e?.message||'No se pudo verificar recepción'});
+  }finally{
+    running=false;checkBtn.disabled=false;
+  }
+});
+await init();
+</script>
+</body>
+</html>
