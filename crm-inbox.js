@@ -1,6 +1,6 @@
 import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
 const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}),$=id=>document.getElementById(id);
-const E={tenantSelect:$('tenantSelect'),tenant:$('tenantName'),role:$('tenantRole'),panel:$('panelBtn'),logout:$('logoutBtn'),count:$('count'),search:$('search'),filter:$('filter'),list:$('list'),title:$('threadTitle'),sub:$('threadSub'),state:$('stateSel'),stateBtn:$('stateBtn'),assignLabel:$('assignLabel'),assignBtn:$('assignBtn'),botLabel:$('botLabel'),botBtn:$('botBtn'),messages:$('messages'),contact:$('contact'),brain:$('brain'),takeControl:$('takeControlBtn'),releaseControl:$('releaseControlBtn'),manualComposer:$('manualComposer'),manualText:$('manualText'),manualSend:$('manualSendBtn'),status:$('status')};
+const E={tenantSelect:$('tenantSelect'),tenant:$('tenantName'),role:$('tenantRole'),panel:$('panelBtn'),logout:$('logoutBtn'),count:$('count'),search:$('search'),filter:$('filter'),list:$('list'),title:$('threadTitle'),sub:$('threadSub'),state:$('stateSel'),stateBtn:$('stateBtn'),assignLabel:$('assignLabel'),assignBtn:$('assignBtn'),botLabel:$('botLabel'),botBtn:$('botBtn'),messages:$('messages'),contact:$('contact'),brain:$('brain'),takeControl:$('takeControlBtn'),releaseControl:$('releaseControlBtn'),manualComposer:$('manualComposer'),manualText:$('manualText'),manualSend:$('manualSendBtn'),notifyBtn:$('notifyBtn'),notifyBadge:$('notifyBadge'),notifyMenu:$('notifyMenu'),notifyList:$('notifyList'),status:$('status')};
 let S={uid:null,bid:null,role:null,session:null,memberships:[],businesses:new Map(),convs:[],contacts:new Map(),msgs:new Map(),brain:new Map(),selected:null},chan=null,timer=null,busy=false,queued=false;
 const text=(v,f='—')=>typeof v==='string'&&v.trim()?v.trim():f,fmt=v=>v?new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(v)):'—';
 function node(t,c,x){const n=document.createElement(t);if(c)n.className=c;if(x!==undefined)n.textContent=x;return n}function toast(m,err=false){E.status.textContent=m;E.status.classList.toggle('error',err);E.status.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>E.status.hidden=true,3800)}
@@ -59,9 +59,38 @@ async function switchTenant(id){
   }finally{E.tenantSelect.disabled=false}
 }
 async function load(first=false){const{data:c,error}=await sb.from('conversaciones').select('id,contacto_id,estado,asignado_a,automatizacion_pausada,handoff_motivo,ultimo_mensaje_at').eq('negocio_id',S.bid).order('ultimo_mensaje_at',{ascending:false,nullsFirst:false});if(error)throw error;S.convs=c||[];S.contacts=new Map;S.msgs=new Map;S.brain=new Map;const cids=[...new Set(S.convs.map(x=>x.contacto_id).filter(Boolean))];if(cids.length){const{data,error}=await sb.from('contactos').select('id,nombre,telefono_e164,email,etiquetas,notas').eq('negocio_id',S.bid).in('id',cids);if(error)throw error;S.contacts=new Map((data||[]).map(x=>[x.id,x]))}const ids=S.convs.map(x=>x.id);if(ids.length){const{data,error}=await sb.from('mensajes').select('id,conversacion_id,direccion,tipo,contenido,estado,fecha_mensaje,created_at').eq('negocio_id',S.bid).in('conversacion_id',ids).order('fecha_mensaje',{ascending:true,nullsFirst:false}).limit(500);if(error)throw error;for(const m of data||[]){if(!S.msgs.has(m.conversacion_id))S.msgs.set(m.conversacion_id,[]);S.msgs.get(m.conversacion_id).push(m)}}if(ids.length){const{data:ctxRows,error:ctxErr}=await sb.from('conversacion_contexto').select('conversacion_id,checkpoint_version,etapa_actual,etapa_recomendada,subetapa_actual,intencion_actual,datos_extraidos,datos_pendientes,resumen_ia,ultimo_evento,accion_recomendada,confianza_ia,requiere_revision_humana,updated_at').eq('negocio_id',S.bid).in('conversacion_id',ids);if(ctxErr)throw ctxErr;S.brain=new Map((ctxRows||[]).map(x=>[x.conversacion_id,x]))}apply(first)}
+function latestMessage(c){const ms=S.msgs.get(c.id)||[];return ms.at(-1)||null}
+function needsAttention(c){
+ const x=S.brain.get(c.id),last=latestMessage(c);
+ const review=x?.requiere_revision_humana===true;
+ const waitingAssign=c.estado==='abierta'&&c.automatizacion_pausada===true&&!c.asignado_a;
+ const waitingMine=c.estado==='abierta'&&c.automatizacion_pausada===true&&c.asignado_a===S.uid&&last?.direccion==='entrante';
+ return Boolean(review||waitingAssign||waitingMine)
+}
+function attentionReason(c){
+ const x=S.brain.get(c.id),last=latestMessage(c);
+ if(c.automatizacion_pausada===true&&!c.asignado_a)return'Pendiente de asignar y responder';
+ if(c.automatizacion_pausada===true&&c.asignado_a===S.uid&&last?.direccion==='entrante')return'Tienes una respuesta pendiente';
+ if(x?.requiere_revision_humana===true)return'Requiere revisión humana';
+ return'Pendiente'
+}
+function renderNotifications(){
+ const pending=S.convs.filter(needsAttention);
+ E.notifyBadge.hidden=!pending.length;E.notifyBadge.textContent=String(Math.min(pending.length,99));
+ E.notifyBtn.classList.toggle('has-pending',pending.length>0);
+ E.notifyList.replaceChildren();
+ if(!pending.length){E.notifyList.append(node('div','notify-empty','No tienes pendientes críticos.'));return}
+ for(const c of pending){
+  const u=S.contacts.get(c.contacto_id)||{},b=node('button','notify-item');b.type='button';
+  b.append(node('b','',text(u.nombre,text(u.telefono_e164,'Contacto'))),node('span','',attentionReason(c)));
+  b.onclick=()=>{E.notifyMenu.hidden=true;select(c.id)};E.notifyList.append(b)
+ }
+}
+E.notifyBtn.onclick=e=>{e.stopPropagation();E.notifyMenu.hidden=!E.notifyMenu.hidden};
+document.addEventListener('click',e=>{if(!E.notifyMenu.hidden&&!e.target.closest('.notify-wrap'))E.notifyMenu.hidden=true});
 function visible(){const q=E.search.value.trim().toLowerCase(),f=E.filter.value;return S.convs.filter(c=>{if(f!=='todas'&&c.estado!==f)return false;if(!q)return true;const u=S.contacts.get(c.contacto_id)||{},ms=S.msgs.get(c.id)||[],last=ms.at(-1);return[u.nombre,u.telefono_e164,u.email,...(Array.isArray(u.etiquetas)?u.etiquetas:[]),last?.contenido,c.handoff_motivo].filter(Boolean).join(' ').toLowerCase().includes(q)})}
-function apply(first=false){const v=visible();renderList(v);if(!S.convs.length)return clearView('Esta empresa todavía no tiene conversaciones. Puedes cambiar de empresa arriba.');if(!v.length)return clearView('No hay conversaciones con estos filtros.');if(first||!v.some(x=>x.id===S.selected))select(v[0].id);else select(S.selected)}
-function renderList(v){E.list.replaceChildren();E.count.textContent=`${v.length} de ${S.convs.length} conversación${S.convs.length===1?'':'es'} de esta empresa`;if(!v.length){E.list.append(node('div','empty',S.convs.length?'No hay resultados con estos filtros.':'Esta empresa todavía no tiene conversaciones. Cambia de empresa arriba para ver otra bandeja.'));return}for(const c of v){const u=S.contacts.get(c.contacto_id)||{},ms=S.msgs.get(c.id)||[],last=ms.at(-1),b=node('button','conv');b.type='button';b.dataset.id=c.id;b.classList.toggle('active',c.id===S.selected);const top=node('div','row');top.append(node('span','name',text(u.nombre,text(u.telefono_e164,'Contacto'))),node('span','time',fmt(c.ultimo_mensaje_at||last?.fecha_mensaje)));const pills=node('div','pills');pills.append(node('span','pill ok',text(c.estado,'sin estado')));if(c.asignado_a===S.uid)pills.append(node('span','pill','Asignada a mí'));else if(c.asignado_a)pills.append(node('span','pill','Asignada'));pills.append(node('span',`pill ${c.automatizacion_pausada?'warn':'ok'}`,c.automatizacion_pausada?'Bot pausado':'Bot activo'));b.append(top,node('div','preview',text(last?.contenido,last?.tipo?`[${last.tipo}]`:'Sin mensajes')),pills);b.onclick=()=>select(c.id);E.list.append(b)}}
+function apply(first=false){renderNotifications();const v=visible();renderList(v);if(!S.convs.length)return clearView('Esta empresa todavía no tiene conversaciones. Puedes cambiar de empresa arriba.');if(!v.length)return clearView('No hay conversaciones con estos filtros.');if(first||!v.some(x=>x.id===S.selected))select(v[0].id);else select(S.selected)}
+function renderList(v){E.list.replaceChildren();E.count.textContent=`${v.length} de ${S.convs.length} conversación${S.convs.length===1?'':'es'} de esta empresa`;if(!v.length){E.list.append(node('div','empty',S.convs.length?'No hay resultados con estos filtros.':'Esta empresa todavía no tiene conversaciones. Cambia de empresa arriba para ver otra bandeja.'));return}for(const c of v){const u=S.contacts.get(c.contacto_id)||{},ms=S.msgs.get(c.id)||[],last=ms.at(-1),b=node('button','conv');b.type='button';b.dataset.id=c.id;b.classList.toggle('active',c.id===S.selected);b.classList.toggle('needs-attention',needsAttention(c));const top=node('div','row');top.append(node('span','name',text(u.nombre,text(u.telefono_e164,'Contacto'))),node('span','time',fmt(c.ultimo_mensaje_at||last?.fecha_mensaje)));const pills=node('div','pills');pills.append(node('span','pill ok',text(c.estado,'sin estado')));if(c.asignado_a===S.uid)pills.append(node('span','pill','Asignada a mí'));else if(c.asignado_a)pills.append(node('span','pill','Asignada'));pills.append(node('span',`pill ${c.automatizacion_pausada?'warn':'ok'}`,c.automatizacion_pausada?'Bot pausado':'Bot activo'));b.append(top,node('div','preview',text(last?.contenido,last?.tipo?`[${last.tipo}]`:'Sin mensajes')),pills);b.onclick=()=>select(c.id);E.list.append(b)}}
 function select(id){S.selected=id;renderList(visible());const c=S.convs.find(x=>x.id===id);if(!c)return;const u=S.contacts.get(c.contacto_id)||{};E.title.textContent=text(u.nombre,text(u.telefono_e164,'Contacto'));E.sub.textContent=[text(u.telefono_e164,'Sin teléfono'),`estado: ${text(c.estado)}`,c.asignado_a===S.uid?'asignada a mí':c.asignado_a?'asignada':'sin asignar',c.automatizacion_pausada?'bot pausado':'bot activo'].join(' · ');E.state.value=c.estado;E.state.disabled=false;E.stateBtn.disabled=false;renderAssign(c);renderBot(c);renderMsgs(S.msgs.get(id)||[]);renderBrain(c);renderContact(u)}
 function renderAssign(c){const mine=c.asignado_a===S.uid;E.assignLabel.textContent=mine?'Asignada a mí':c.asignado_a?'Asignada a otro usuario':'Sin asignar';E.assignBtn.textContent=mine?'Quitar asignación':'Asignarme';E.assignBtn.disabled=Boolean(c.asignado_a&&!mine)}function renderBot(c){const paused=!!c.automatizacion_pausada;E.botLabel.textContent=paused?'Bot pausado':'Bot activo';E.botBtn.hidden=!(paused&&!c.asignado_a);E.botBtn.disabled=c.estado!=='abierta'}
 function humanText(v,f='—'){const s=String(v??'').trim();return s||f}
@@ -78,6 +107,9 @@ function renderBrain(c){
  }
  const mine=c.asignado_a===S.uid,paused=!!c.automatizacion_pausada;
  E.takeControl.hidden=mine;E.takeControl.disabled=c.estado!=='abierta'||Boolean(c.asignado_a&&!mine);
+ E.takeControl.classList.toggle('needs-attention',!mine&&needsAttention(c)&&!E.takeControl.disabled);
+ const existingStrip=E.brain.parentElement?.querySelector('.pending-strip');if(existingStrip)existingStrip.remove();
+ if(!mine&&needsAttention(c)){const strip=node('div','pending-strip',attentionReason(c));E.brain.parentElement?.insertBefore(strip,E.brain.nextSibling)}
  E.releaseControl.hidden=!mine;E.releaseControl.disabled=c.estado!=='abierta';
  E.manualComposer.hidden=!(mine&&paused&&c.estado==='abierta');
 }
