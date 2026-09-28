@@ -108,6 +108,7 @@ function renderBrain(c){
  const mine=c.asignado_a===S.uid,paused=!!c.automatizacion_pausada;
  E.takeControl.hidden=mine;E.takeControl.disabled=c.estado!=='abierta'||Boolean(c.asignado_a&&!mine);
  E.takeControl.classList.toggle('needs-attention',!mine&&needsAttention(c)&&!E.takeControl.disabled);
+ E.takeControl.textContent=!mine&&needsAttention(c)&&!E.takeControl.disabled?'✋ ATENDER AHORA':'✋ Tomar control';
  const existingStrip=E.brain.parentElement?.querySelector('.pending-strip');if(existingStrip)existingStrip.remove();
  if(!mine&&needsAttention(c)){const strip=node('div','pending-strip',attentionReason(c));E.brain.parentElement?.insertBefore(strip,E.brain.nextSibling)}
  E.releaseControl.hidden=!mine;E.releaseControl.disabled=c.estado!=='abierta';
