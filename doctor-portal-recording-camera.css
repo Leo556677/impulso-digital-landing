@@ -211,3 +211,14 @@ body.tele-camera-review-open{overflow:hidden!important}
   .tele-record-dock>button{min-width:42px;padding:0 8px}
   .tele-record-btn{min-width:84px}
 }
+
+.tele-camera-stage.landscape-fallback{
+  background:#05070a;
+}
+.tele-camera-stage.landscape-fallback video{
+  object-fit:contain;
+  background:#05070a;
+}
+.tele-camera-stage.landscape-fallback .tele-camera-vignette{
+  background:linear-gradient(180deg,rgba(0,0,0,.22),rgba(0,0,0,.08) 30%,rgba(0,0,0,.08) 70%,rgba(0,0,0,.24));
+}
