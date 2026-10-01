@@ -1,0 +1,213 @@
+.tele-camera-stage{
+  position:fixed;
+  inset:0;
+  z-index:101;
+  overflow:hidden;
+  background:#020304;
+  pointer-events:none;
+}
+.tele-camera-stage[hidden]{display:none!important}
+.tele-camera-stage video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  background:#020304;
+}
+.tele-camera-stage video.front-camera{transform:scaleX(-1)}
+.tele-camera-vignette{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.36) 0%,rgba(0,0,0,.08) 24%,rgba(0,0,0,.12) 68%,rgba(0,0,0,.46) 100%),
+    radial-gradient(circle at 50% 45%,transparent 36%,rgba(0,0,0,.20) 100%);
+}
+.tele.camera-preview-on .scroll{
+  z-index:102;
+  background:rgba(0,0,0,.24);
+  text-shadow:0 2px 14px rgba(0,0,0,.85);
+}
+.tele.camera-preview-on .line{opacity:.36}
+.tele.camera-preview-on .line.near{opacity:.72}
+.tele.camera-preview-on .line.active{opacity:1}
+.tele.camera-preview-on .focus{z-index:104}
+.tele-record-dock{
+  position:fixed;
+  top:max(64px,calc(env(safe-area-inset-top) + 54px));
+  left:10px;
+  z-index:121;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  max-width:calc(100vw - 20px);
+  padding:6px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:15px;
+  background:rgba(10,13,18,.86);
+  backdrop-filter:blur(12px);
+  box-shadow:0 12px 30px rgba(0,0,0,.28);
+}
+.tele-record-dock>button{
+  min-height:38px;
+  border:1px solid #343b46;
+  border-radius:10px;
+  background:#171c23;
+  color:#fff;
+  padding:0 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font:900 9px/1 system-ui;
+  letter-spacing:.02em;
+}
+.tele-record-dock>button:disabled{opacity:.42}
+.tele-record-dock>button.active{
+  border-color:#4ade80;
+  box-shadow:inset 0 0 0 1px rgba(74,222,128,.35);
+}
+.tele-cam-icon,.tele-flip-icon{font:1000 10px/1 system-ui}
+.tele-flip-icon{font-size:18px}
+.tele-record-btn{min-width:88px}
+.tele-rec-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#ff4d5e;
+  box-shadow:0 0 0 3px rgba(255,77,94,.12);
+}
+.tele-record-btn.recording{
+  border-color:#ff4d5e!important;
+  background:rgba(98,12,24,.88)!important;
+}
+.tele-record-btn.recording .tele-rec-dot{
+  animation:teleRecPulse 1s ease-in-out infinite;
+}
+@keyframes teleRecPulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 3px rgba(255,77,94,.12)}
+  50%{transform:scale(.82);box-shadow:0 0 0 7px rgba(255,77,94,.05)}
+}
+.tele-camera-status{
+  max-width:180px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  padding:0 6px;
+  color:#aab4c1;
+  font:800 9px/1 system-ui;
+}
+.tele-camera-status[data-state="ready"]{color:#72e7a6}
+.tele-camera-status[data-state="recording"]{color:#ff7884}
+.tele-camera-status[data-state="error"]{color:#ff8c96}
+.tele-camera-status[data-state="busy"]{color:#ffd84d}
+.tele-record-dock.unsupported{opacity:.72}
+.tele-camera-review{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:grid;
+  place-items:center;
+  padding:16px;
+  background:rgba(3,5,8,.88);
+  backdrop-filter:blur(14px);
+}
+.tele-camera-review[hidden]{display:none!important}
+.tele-camera-review-card{
+  width:min(720px,100%);
+  max-height:calc(100dvh - 32px);
+  overflow:auto;
+  border:1px solid #343b46;
+  border-radius:20px;
+  background:#0c1016;
+  color:#fff;
+  box-shadow:0 28px 90px rgba(0,0,0,.56);
+  padding:12px;
+}
+.tele-camera-review-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:4px 3px 10px;
+}
+.tele-camera-review-head>div{display:grid;gap:3px}
+.tele-camera-review-head small{
+  color:#ff7080;
+  font:950 9px/1 system-ui;
+  letter-spacing:.08em;
+}
+.tele-camera-review-head b{font:950 16px/1.2 system-ui}
+.tele-camera-review-head button{
+  width:38px;
+  height:38px;
+  border:1px solid #343b46;
+  border-radius:11px;
+  background:#171c23;
+  color:#fff;
+  font:400 25px/1 system-ui;
+}
+.tele-camera-review video{
+  width:100%;
+  max-height:62dvh;
+  border-radius:15px;
+  background:#000;
+  display:block;
+}
+.tele-camera-review-actions{
+  display:grid;
+  grid-template-columns:.8fr 1.2fr;
+  gap:8px;
+  margin-top:10px;
+}
+.tele-camera-review-actions button{
+  min-height:46px;
+  border:1px solid #343b46;
+  border-radius:12px;
+  background:#171c23;
+  color:#fff;
+  font:950 11px/1 system-ui;
+}
+.tele-camera-review-actions button.primary{
+  border-color:#ff4d5e;
+  background:linear-gradient(135deg,#e6007e,#f2385a 58%,#ff6a00);
+}
+.tele-camera-review-card>p{
+  margin:10px 4px 2px;
+  color:#98a3b1;
+  font:750 10px/1.4 system-ui;
+}
+body.tele-camera-review-open{overflow:hidden!important}
+@media(max-width:600px){
+  .tele-record-dock{
+    top:max(60px,calc(env(safe-area-inset-top) + 50px));
+    left:6px;
+    gap:4px;
+    padding:5px;
+    max-width:calc(100vw - 12px);
+  }
+  .tele-record-dock>button{
+    min-height:36px;
+    padding:0 8px;
+    border-radius:9px;
+    font-size:8px;
+  }
+  .tele-record-btn{min-width:82px}
+  .tele-camera-status{
+    max-width:94px;
+    font-size:8px;
+    padding:0 3px;
+  }
+  .tele-camera-review{padding:8px}
+  .tele-camera-review-card{
+    max-height:calc(100dvh - 16px);
+    border-radius:17px;
+    padding:9px;
+  }
+  .tele-camera-review video{max-height:64dvh}
+}
+@media(max-width:430px){
+  .tele-camera-status{display:none}
+  .tele-record-dock>button span:last-child{display:none}
+  .tele-record-btn span:last-child{display:inline}
+  .tele-record-dock>button{min-width:42px;padding:0 8px}
+  .tele-record-btn{min-width:84px}
+}
