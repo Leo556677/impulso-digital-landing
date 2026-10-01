@@ -17,6 +17,14 @@
   let reviewFile=null;
   let closeCameraAfterStop=false;
   let pendingStop=false;
+  let recordingStream=null;
+  let recordingCanvas=null;
+  let recordingCanvasStream=null;
+  let recordingVideoTrack=null;
+  let portraitRenderRaf=0;
+  const PORTRAIT_WIDTH=1080;
+  const PORTRAIT_HEIGHT=1920;
+  const PORTRAIT_FPS=30;
 
   const ui={};
 
@@ -35,6 +43,9 @@
   }
   function isRecording(){return Boolean(recorder&&recorder.state!=='inactive')}
   function canUseCamera(){return Boolean(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder)}
+  function canRecordPortrait(){
+    try{return typeof document.createElement('canvas').captureStream==='function'}catch{return false}
+  }
   function cameraErrorMessage(err){
     const n=String(err?.name||'');
     if(n==='NotAllowedError'||n==='PermissionDeniedError')return 'Permite cámara y micrófono en el navegador para grabar.';
@@ -174,7 +185,8 @@
         video:{
           facingMode:{ideal:facing},
           width:{ideal:1080},
-          height:{ideal:1920}
+          height:{ideal:1920},
+          aspectRatio:{ideal:9/16}
         }
       });
       ui.preview.srcObject=stream;
@@ -217,6 +229,62 @@
     facing=old;
     await openCamera();
   }
+  function stopPortraitComposer(){
+    if(portraitRenderRaf){cancelAnimationFrame(portraitRenderRaf);portraitRenderRaf=0}
+    try{recordingVideoTrack?.stop?.()}catch{}
+    recordingVideoTrack=null;
+    recordingCanvasStream=null;
+    recordingStream=null;
+    recordingCanvas=null;
+  }
+  async function startPortraitComposer(sourceStream){
+    if(!canRecordPortrait())throw new Error('PORTRAIT_CAPTURE_UNSUPPORTED');
+    const video=ui.preview;
+    if(!video)throw new Error('CAMERA_PREVIEW_MISSING');
+    if(!video.videoWidth||!video.videoHeight){
+      await new Promise(resolve=>{
+        const done=()=>resolve();
+        video.addEventListener('loadedmetadata',done,{once:true});
+        setTimeout(resolve,1200);
+      });
+    }
+    const canvas=document.createElement('canvas');
+    canvas.width=PORTRAIT_WIDTH;
+    canvas.height=PORTRAIT_HEIGHT;
+    const ctx=canvas.getContext('2d',{alpha:false,desynchronized:true});
+    if(!ctx)throw new Error('CANVAS_CONTEXT_FAILED');
+
+    const draw=()=>{
+      const sw=Math.max(1,video.videoWidth||sourceStream.getVideoTracks()[0]?.getSettings?.().width||PORTRAIT_WIDTH);
+      const sh=Math.max(1,video.videoHeight||sourceStream.getVideoTracks()[0]?.getSettings?.().height||PORTRAIT_HEIGHT);
+      const targetRatio=PORTRAIT_WIDTH/PORTRAIT_HEIGHT;
+      const sourceRatio=sw/sh;
+      let sx=0,sy=0,cw=sw,ch=sh;
+      if(sourceRatio>targetRatio){
+        cw=sh*targetRatio;
+        sx=(sw-cw)/2;
+      }else if(sourceRatio<targetRatio){
+        ch=sw/targetRatio;
+        sy=(sh-ch)/2;
+      }
+      ctx.drawImage(video,sx,sy,cw,ch,0,0,PORTRAIT_WIDTH,PORTRAIT_HEIGHT);
+      portraitRenderRaf=requestAnimationFrame(draw);
+    };
+    draw();
+
+    const canvasStream=canvas.captureStream(PORTRAIT_FPS);
+    const vtrack=canvasStream.getVideoTracks()[0];
+    if(!vtrack)throw new Error('PORTRAIT_VIDEO_TRACK_FAILED');
+    const out=new MediaStream();
+    out.addTrack(vtrack);
+    sourceStream.getAudioTracks().forEach(t=>out.addTrack(t));
+
+    recordingCanvas=canvas;
+    recordingCanvasStream=canvasStream;
+    recordingVideoTrack=vtrack;
+    recordingStream=out;
+    return out;
+  }
   async function lockScreen(){
     try{if('wakeLock' in navigator)wakeLock=await navigator.wakeLock.request('screen')}catch{}
   }
@@ -231,11 +299,17 @@
     chunks=[];
     closeCameraAfterStop=false;
     const mime=chooseMimeType();
+    let captureStream=null;
     try{
-      recorder=new MediaRecorder(s,mime?{mimeType:mime}:undefined);
+      captureStream=await startPortraitComposer(s);
+      const opts={videoBitsPerSecond:7000000,audioBitsPerSecond:128000};
+      if(mime)opts.mimeType=mime;
+      recorder=new MediaRecorder(captureStream,opts);
     }catch(err){
-      setStatus('Este navegador abrió la cámara, pero no pudo iniciar el video.','error');
-      window.PortalTrace?.warn?.('TELE_RECORD_CONSTRUCTOR_FAIL',{message:err?.message||String(err),mime});
+      stopPortraitComposer();
+      const unsupported=String(err?.message||'')==='PORTRAIT_CAPTURE_UNSUPPORTED';
+      setStatus(unsupported?'Este navegador no permite grabación vertical 9:16.':'No se pudo preparar la grabación vertical.','error');
+      window.PortalTrace?.warn?.('TELE_RECORD_CONSTRUCTOR_FAIL',{message:err?.message||String(err),mime,portrait:true});
       return;
     }
     recorder.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data)};
@@ -251,9 +325,9 @@
       elapsedTimer=setInterval(tickElapsed,500);
       updateControls();
       tickElapsed();
-      setStatus('Grabando cámara + micrófono','recording');
+      setStatus('Grabando vertical 9:16 · cámara + micrófono','recording');
       await lockScreen();
-      window.PortalTrace?.log?.('TELE_RECORD_START',{mime:recorder.mimeType||mime,facing});
+      window.PortalTrace?.log?.('TELE_RECORD_START',{mime:recorder.mimeType||mime,facing,output_width:PORTRAIT_WIDTH,output_height:PORTRAIT_HEIGHT,output_ratio:'9:16'});
       setTimeout(()=>{
         const label=playBtn?.getAttribute('aria-label')||'';
         if(playBtn&&/reproducir/i.test(label))playBtn.click();
@@ -263,8 +337,9 @@
       clearInterval(elapsedTimer);
       elapsedTimer=0;
       recorder=null;
+      stopPortraitComposer();
       updateControls();
-      setStatus('No se pudo iniciar la grabación.','error');
+      setStatus('No se pudo iniciar la grabación vertical.','error');
       await unlockScreen();
       window.PortalTrace?.warn?.('TELE_RECORD_START_FAIL',{message:err?.message||String(err)});
     }
@@ -292,6 +367,7 @@
     await unlockScreen();
     const type=recorder?.mimeType||chunks.find(x=>x?.type)?.type||'video/webm';
     const blob=new Blob(chunks,{type});
+    stopPortraitComposer();
     const duration=startedAt?Math.max(0,Date.now()-startedAt):0;
     startedAt=0;
     const title=document.getElementById('ttitle')?.textContent||'dr-olano';
@@ -308,7 +384,7 @@
     }else{
       setStatus('Video listo para revisar','ready');
     }
-    window.PortalTrace?.log?.('TELE_RECORD_STOP',{bytes:blob.size,type:blob.type,duration_ms:duration,name});
+    window.PortalTrace?.log?.('TELE_RECORD_STOP',{bytes:blob.size,type:blob.type,duration_ms:duration,name,output_width:PORTRAIT_WIDTH,output_height:PORTRAIT_HEIGHT,output_ratio:'9:16'});
   }
   function showReview(blob){
     if(reviewUrl){URL.revokeObjectURL(reviewUrl);reviewUrl=''}
@@ -350,6 +426,7 @@
   closeButtons.forEach(b=>b.addEventListener('click',stopForTeleClose,true));
   window.addEventListener('beforeunload',()=>{
     try{if(isRecording())recorder.stop()}catch{}
+    stopPortraitComposer();
     try{stream?.getTracks?.().forEach(t=>t.stop())}catch{}
     if(reviewUrl)URL.revokeObjectURL(reviewUrl);
   });
@@ -362,6 +439,6 @@
     stop:()=>stopRecording(),
     camera:openCamera,
     closeCamera:stopCamera,
-    state:()=>({supported:canUseCamera(),camera_on:Boolean(stream),recording:isRecording(),facing})
+    state:()=>({supported:canUseCamera(),portrait_supported:canRecordPortrait(),camera_on:Boolean(stream),recording:isRecording(),facing,output:{width:PORTRAIT_WIDTH,height:PORTRAIT_HEIGHT,ratio:'9:16'}})
   };
 })();
