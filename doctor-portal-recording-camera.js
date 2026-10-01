@@ -17,6 +17,8 @@
   let reviewFile=null;
   let closeCameraAfterStop=false;
   let pendingStop=false;
+  let sourceOrientation='unknown';
+  let sourceSettings={};
   let recordingStream=null;
   let recordingCanvas=null;
   let recordingCanvasStream=null;
@@ -175,29 +177,85 @@
     }
     updateControls();
   }
-  async function openCamera(){
-    if(stream)return stream;
-    if(!canUseCamera()){setStatus('Grabación no disponible en este navegador.','error');return null}
-    setStatus('Solicitando cámara y micrófono…','busy');
-    try{
-      stream=await navigator.mediaDevices.getUserMedia({
-        audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},
+  async function requestCamera(){
+    const audio={echoCancellation:true,noiseSuppression:true,autoGainControl:true};
+    const attempts=[
+      {
+        label:'PORTRAIT_EXACT',
+        video:{
+          facingMode:{ideal:facing},
+          width:{exact:1080},
+          height:{exact:1920},
+          aspectRatio:{exact:9/16},
+          resizeMode:'crop-and-scale'
+        }
+      },
+      {
+        label:'PORTRAIT_RATIO',
+        video:{
+          facingMode:{ideal:facing},
+          width:{ideal:1080},
+          height:{ideal:1920},
+          aspectRatio:{exact:9/16},
+          resizeMode:'crop-and-scale'
+        }
+      },
+      {
+        label:'PORTRAIT_IDEAL',
         video:{
           facingMode:{ideal:facing},
           width:{ideal:1080},
           height:{ideal:1920},
           aspectRatio:{ideal:9/16}
         }
-      });
+      }
+    ];
+    let lastErr=null,lastStream=null,lastLabel='';
+    for(const attempt of attempts){
+      try{
+        const candidate=await navigator.mediaDevices.getUserMedia({audio,video:attempt.video});
+        const track=candidate.getVideoTracks()[0],settings=track?.getSettings?.()||{};
+        const w=Number(settings.width)||0,h=Number(settings.height)||0;
+        window.PortalTrace?.log?.('TELE_CAMERA_ATTEMPT',{label:attempt.label,width:w,height:h,aspect_ratio:settings.aspectRatio||null});
+        if(w>0&&h>0&&h>w)return{stream:candidate,label:attempt.label,settings};
+        if(lastStream)lastStream.getTracks().forEach(t=>{try{t.stop()}catch{}});
+        lastStream=candidate;lastLabel=attempt.label;
+      }catch(err){
+        lastErr=err;
+        window.PortalTrace?.warn?.('TELE_CAMERA_ATTEMPT_FAIL',{label:attempt.label,name:err?.name||'',message:err?.message||String(err)});
+      }
+    }
+    if(lastStream){
+      const settings=lastStream.getVideoTracks()[0]?.getSettings?.()||{};
+      return{stream:lastStream,label:lastLabel||'LANDSCAPE_FALLBACK',settings};
+    }
+    throw lastErr||new Error('CAMERA_OPEN_FAILED');
+  }
+  async function openCamera(){
+    if(stream)return stream;
+    if(!canUseCamera()){setStatus('Grabación no disponible en este navegador.','error');return null}
+    setStatus('Buscando encuadre amplio…','busy');
+    try{
+      const result=await requestCamera();
+      stream=result.stream;
+      sourceSettings=result.settings||{};
+      const sw=Number(sourceSettings.width)||0,sh=Number(sourceSettings.height)||0;
+      sourceOrientation=sh>sw?'portrait':'landscape';
       ui.preview.srcObject=stream;
       await ui.preview.play().catch(()=>{});
+      if(ui.stage)ui.stage.classList.toggle('landscape-fallback',sourceOrientation==='landscape');
       stream.getVideoTracks().forEach(t=>t.addEventListener('ended',()=>{if(!isRecording())stopCamera()}));
-      setStatus(facing==='user'?'Cámara frontal lista':'Cámara posterior lista','ready');
+      setStatus(
+        sourceOrientation==='portrait'
+          ?(facing==='user'?'Selfie vertical lista':'Cámara posterior vertical lista')
+          :(facing==='user'?'Selfie amplia · sin recorte agresivo':'Cámara amplia · sin recorte agresivo'),
+        'ready'
+      );
       updateControls();
-      window.PortalTrace?.log?.('TELE_CAMERA_READY',{facing,video:stream.getVideoTracks()[0]?.getSettings?.()||{}});
+      window.PortalTrace?.log?.('TELE_CAMERA_READY',{facing,mode:result.label,source_orientation:sourceOrientation,video:sourceSettings});
       return stream;
     }catch(err){
-      stream=null;
+      stream=null;sourceOrientation='unknown';sourceSettings={};
       setStatus(cameraErrorMessage(err),'error');
       updateControls();
       window.PortalTrace?.warn?.('TELE_CAMERA_FAIL',{name:err?.name||'',message:err?.message||String(err)});
@@ -211,6 +269,8 @@
       stream=null;
     }
     if(ui.preview)ui.preview.srcObject=null;
+    sourceOrientation='unknown';sourceSettings={};
+    if(ui.stage)ui.stage.classList.remove('landscape-fallback');
     setStatus('Cámara apagada','idle');
     updateControls();
     window.PortalTrace?.log?.('TELE_CAMERA_STOP',{});
@@ -257,17 +317,32 @@
     const draw=()=>{
       const sw=Math.max(1,video.videoWidth||sourceStream.getVideoTracks()[0]?.getSettings?.().width||PORTRAIT_WIDTH);
       const sh=Math.max(1,video.videoHeight||sourceStream.getVideoTracks()[0]?.getSettings?.().height||PORTRAIT_HEIGHT);
-      const targetRatio=PORTRAIT_WIDTH/PORTRAIT_HEIGHT;
-      const sourceRatio=sw/sh;
-      let sx=0,sy=0,cw=sw,ch=sh;
-      if(sourceRatio>targetRatio){
-        cw=sh*targetRatio;
-        sx=(sw-cw)/2;
-      }else if(sourceRatio<targetRatio){
-        ch=sw/targetRatio;
-        sy=(sh-ch)/2;
+      const isPortrait=sh>sw;
+      ctx.save();
+      ctx.clearRect(0,0,PORTRAIT_WIDTH,PORTRAIT_HEIGHT);
+      if(isPortrait){
+        const targetRatio=PORTRAIT_WIDTH/PORTRAIT_HEIGHT;
+        const sourceRatio=sw/sh;
+        let sx=0,sy=0,cw=sw,ch=sh;
+        if(sourceRatio>targetRatio){cw=sh*targetRatio;sx=(sw-cw)/2}
+        else if(sourceRatio<targetRatio){ch=sw/targetRatio;sy=(sh-ch)/2}
+        ctx.filter='none';
+        ctx.drawImage(video,sx,sy,cw,ch,0,0,PORTRAIT_WIDTH,PORTRAIT_HEIGHT);
+      }else{
+        // Android/Chrome puede entregar una selfie horizontal aun con el teléfono vertical.
+        // No volver a recortar 16:9 -> 9:16, porque eso genera un zoom de ~3.16x.
+        // Fondo lleno y suavizado; encima, encuadre principal conservando el campo de visión.
+        const bgScale=Math.max(PORTRAIT_WIDTH/sw,PORTRAIT_HEIGHT/sh);
+        const bgW=sw*bgScale,bgH=sh*bgScale;
+        ctx.filter='blur(34px) brightness(.72)';
+        ctx.drawImage(video,(PORTRAIT_WIDTH-bgW)/2,(PORTRAIT_HEIGHT-bgH)/2,bgW,bgH);
+        ctx.filter='none';
+        const mainWidth=PORTRAIT_WIDTH*1.30;
+        const mainScale=mainWidth/sw;
+        const mainHeight=sh*mainScale;
+        ctx.drawImage(video,(PORTRAIT_WIDTH-mainWidth)/2,(PORTRAIT_HEIGHT-mainHeight)/2,mainWidth,mainHeight);
       }
-      ctx.drawImage(video,sx,sy,cw,ch,0,0,PORTRAIT_WIDTH,PORTRAIT_HEIGHT);
+      ctx.restore();
       portraitRenderRaf=requestAnimationFrame(draw);
     };
     draw();
@@ -327,7 +402,7 @@
       tickElapsed();
       setStatus('Grabando vertical 9:16 · cámara + micrófono','recording');
       await lockScreen();
-      window.PortalTrace?.log?.('TELE_RECORD_START',{mime:recorder.mimeType||mime,facing,output_width:PORTRAIT_WIDTH,output_height:PORTRAIT_HEIGHT,output_ratio:'9:16'});
+      window.PortalTrace?.log?.('TELE_RECORD_START',{mime:recorder.mimeType||mime,facing,source_orientation:sourceOrientation,source_settings:sourceSettings,output_width:PORTRAIT_WIDTH,output_height:PORTRAIT_HEIGHT,output_ratio:'9:16'});
       setTimeout(()=>{
         const label=playBtn?.getAttribute('aria-label')||'';
         if(playBtn&&/reproducir/i.test(label))playBtn.click();
@@ -439,6 +514,6 @@
     stop:()=>stopRecording(),
     camera:openCamera,
     closeCamera:stopCamera,
-    state:()=>({supported:canUseCamera(),portrait_supported:canRecordPortrait(),camera_on:Boolean(stream),recording:isRecording(),facing,output:{width:PORTRAIT_WIDTH,height:PORTRAIT_HEIGHT,ratio:'9:16'}})
+    state:()=>({supported:canUseCamera(),portrait_supported:canRecordPortrait(),camera_on:Boolean(stream),recording:isRecording(),facing,source_orientation:sourceOrientation,source_settings:sourceSettings,output:{width:PORTRAIT_WIDTH,height:PORTRAIT_HEIGHT,ratio:'9:16'}})
   };
 })();
