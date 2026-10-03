@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#E6007E">
+<title>Conectar WhatsApp real · Impulso Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--p:#E6007E;--o:#FF6A00;--ink:#25252A;--m:#676B78;--bg:#F6F6F8;--line:#E4E4EA;--ok:#147A42;--warn:#8A5700;--danger:#B42318;--grad:linear-gradient(135deg,var(--p),#F2385A 52%,var(--o))}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Montserrat,system-ui,sans-serif}.top{background:#fff;border-bottom:1px solid var(--line)}.topin,.wrap{width:min(760px,calc(100% - 24px));margin:auto}.topin{min-height:66px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink)}.brand img{width:40px;height:40px;border-radius:50%}.brand strong,h1,h2{font-family:Anton,sans-serif;font-weight:400}.back{font-size:12px;font-weight:800;text-decoration:none;color:var(--p)}.wrap{margin-top:22px;margin-bottom:60px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 14px 40px rgba(30,30,35,.07);margin-bottom:14px}h1{font-size:2.5rem;margin:0}.lead{color:var(--m);line-height:1.65;font-size:13px}.context,.notice,.dangerbox,.okbox{margin:14px 0;padding:13px;border-radius:12px;font-size:12px;line-height:1.55}.context{background:#FFF5FA;border:1px solid #F0D8E5}.notice{background:#FFF5DF;color:var(--warn)}.dangerbox{background:#FFF0F0;color:var(--danger);border:1px solid #F0CCCC}.okbox{background:#EAF8EF;color:var(--ok);border:1px solid #CBEBD5}.phone{font-family:Anton,sans-serif;font-size:2rem;margin:6px 0}.confirm{display:flex;gap:10px;align-items:flex-start;margin:18px 0;font-size:12px;font-weight:700;line-height:1.5}.confirm input{margin-top:4px}.btn,button{display:inline-flex;border:0;border-radius:11px;padding:12px 15px;background:var(--grad);color:#fff;font:inherit;font-weight:800;text-decoration:none;cursor:pointer}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:9px;flex-wrap:wrap}.result{white-space:pre-wrap;word-break:break-word;background:#25252A;color:#fff;padding:14px;border-radius:12px;min-height:110px;font-size:11px;line-height:1.55}@media(max-width:600px){.card{padding:18px}.actions{display:grid}.btn,button{width:100%;justify-content:center}}
+</style>
+</head>
+<body>
+<div id="fb-root"></div>
+<header class="top"><div class="topin"><a id="brandLink" class="brand" href="./cliente-panel.html"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><strong>IMPULSO DIGITAL</strong></a><a id="backLink" class="back" href="./cliente-panel.html">← Volver</a></div></header>
+<main class="wrap">
+<section class="card">
+<div style="font-size:11px;color:var(--p);font-weight:800">WHATSAPP · PRODUCCIÓN · FASE A</div>
+<h1>Conecta tu WhatsApp real</h1>
+<p class="lead">Meta abrirá su flujo oficial. En esta fase solo validaremos y guardaremos de forma cifrada la autorización. <strong>No activaremos mensajes, IA ni automatizaciones.</strong></p>
+<div id="context" class="context">Validando empresa activa…</div>
+<div id="phoneBox" class="notice" hidden><div>Número oficial del negocio</div><div id="phone" class="phone">—</div></div>
+<div class="dangerbox"><strong>Protección:</strong> esta ruta bloquea expresamente el WABA y Phone Number ID reales de IMPULSO DIGITAL. También rechaza números asignados a otro tenant.</div>
+</section>
+
+<section class="card">
+<h2>Antes de continuar</h2>
+<p class="lead">Esta ruta usa <strong>WhatsApp Business App Coexistence</strong>. El número debe estar funcionando actualmente en la app WhatsApp Business del teléfono.</p>
+<label class="confirm"><input id="confirmApp" type="checkbox" disabled><span>Confirmo que el número mostrado arriba está activo actualmente en <strong>WhatsApp Business App</strong> y tengo acceso al teléfono para completar el enlace con Meta.</span></label>
+<div class="actions">
+<button id="start" type="button" disabled>Conectar con Meta</button>
+<a id="backPanel" class="btn secondary" href="./cliente-panel.html">Cancelar</a>
+</div>
+</section>
+
+<section class="card">
+<h2>Estado seguro</h2>
+<div id="result" class="result">Esperando validación de sesión…</div>
+</section>
+</main>
+
+<script type="module">
+import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const APP_ID='860468763590445',CONFIG_ID='1771287760748703',GRAPH_VERSION='v26.0';
+const $=id=>document.getElementById(id),result=$('result'),confirmApp=$('confirmApp'),start=$('start');
+let negocioId=null,sessionReady=false,sdkReady=false,submitting=false,finishEvent=null,authCredential=null;
+const setResult=v=>result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2);
+function panelHref(){return './cliente-panel.html?negocio='+encodeURIComponent(negocioId)}
+function update(){start.disabled=!(sessionReady&&sdkReady&&confirmApp.checked&&!submitting)}
+function safeFacebookOrigin(origin){try{const h=new URL(origin).hostname.toLowerCase();return h==='facebook.com'||h.endsWith('.facebook.com')}catch{return false}}
+confirmApp.addEventListener('change',update);
+
+async function submitWhenReady(){
+  if(submitting||!finishEvent||!authCredential||!negocioId)return;
+  submitting=true;update();
+  setResult('Meta terminó el enlace. Validando tenant, WABA y número oficial en backend seguro…');
+  try{
+    const body={
+      mode:'CLIENT_PROD_COEXISTENCE',
+      negocio_id:negocioId,
+      session_event:'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING',
+      session_waba_id:String(finishEvent?.data?.waba_id||''),
+      session_phone_number_id:String(finishEvent?.data?.phone_number_id||'')
+    };
+    if(authCredential.code)body.code=authCredential.code;else body.access_token=authCredential.accessToken;
+    const {data,error}=await sb.functions.invoke('whatsapp-embedded-signup',{body});
+    if(error){let detail=null;try{if(error.context?.json)detail=await error.context.json()}catch{}setResult(detail||{ok:false,error:error.message||'No se pudo validar el onboarding'});return}
+    setResult(data);
+    if(data?.ok===true){
+      confirmApp.disabled=true;start.disabled=true;
+      result.insertAdjacentHTML('beforebegin','<div class="okbox"><strong>✓ Fase A completada.</strong><br>La autorización quedó validada y cifrada. Aún no se creó canal ni se habilitaron mensajes.</div>');
+    }
+  }catch(e){setResult({ok:false,error:e?.message||'No se pudo completar la validación'})}
+  finally{submitting=false;authCredential=null;update()}
+}
+
+window.addEventListener('message',event=>{
+  if(!safeFacebookOrigin(event.origin))return;
+  let data=event.data;if(typeof data==='string'){try{data=JSON.parse(data)}catch{return}}
+  if(!data||data.type!=='WA_EMBEDDED_SIGNUP')return;
+  if(data.event==='FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING'){
+    finishEvent=data;setResult({estado:'META_FINISH_RECIBIDO',waba_id:data?.data?.waba_id??null,phone_number_id:data?.data?.phone_number_id??null,detalle:'Esperando autorización segura…'});submitWhenReady();return
+  }
+  if(data.event==='CANCEL'){setResult({ok:false,estado:'CANCELADO_EN_META',current_step:data?.data?.current_step??null});return}
+  if(data.event==='ERROR'){setResult({ok:false,estado:'ERROR_EN_META',detalle:data?.data?.error_message??'Meta reportó un error'})}
+});
+
+window.fbAsyncInit=function(){FB.init({appId:APP_ID,cookie:true,xfbml:false,version:GRAPH_VERSION});sdkReady=true;update()};
+const sdk=document.createElement('script');sdk.async=true;sdk.defer=true;sdk.crossOrigin='anonymous';sdk.src='https://connect.facebook.net/en_US/sdk.js';sdk.onerror=()=>setResult({ok:false,error:'No se pudo cargar el SDK de Meta'});document.head.appendChild(sdk);
+
+start.addEventListener('click',()=>{
+  if(start.disabled)return;
+  submitting=true;finishEvent=null;authCredential=null;update();setResult('Abriendo Embedded Signup oficial de Meta…');
+  FB.login(response=>{
+    submitting=false;update();
+    const auth=response?.authResponse;if(!auth){setResult({ok:false,estado:'META_LOGIN_NO_COMPLETADO',detalle:'No se recibió autorización del popup.'});return}
+    const code=String(auth?.code??'').trim(),accessToken=String(auth?.accessToken??'').trim();
+    if(!code&&!accessToken){setResult({ok:false,error:'Meta no devolvió code ni accessToken.'});return}
+    authCredential=code?{code}:{accessToken};
+    if(!finishEvent)setResult({estado:'AUTORIZACION_RECIBIDA',detalle:'Esperando finalización del enlace desde WhatsApp Business…'});
+    submitWhenReady();
+  },{
+    config_id:CONFIG_ID,response_type:'code',override_default_response_type:true,
+    extras:{setup:{},featureType:'whatsapp_business_app_onboarding',sessionInfoVersion:'3'}
+  });
+});
+
+async function init(){
+  const {data:{session}}=await sb.auth.getSession();if(!session){location.replace('./cliente-acceso.html');return}
+  const {data:m,error}=await sb.from('usuarios_negocio').select('negocio_id,rol,created_at,negocios(nombre,telefono_e164)').eq('user_id',session.user.id).order('created_at');
+  if(error||!m?.length)throw new Error('No pudimos identificar una empresa autorizada.');
+  const params=new URLSearchParams(location.search),requested=params.get('negocio'),saved=localStorage.getItem('impulso_negocio_activo'),pick=id=>m.find(x=>String(x.negocio_id)===String(id)),membership=pick(requested)||pick(saved)||m[0];
+  if(!['admin','propietario'].includes(String(membership.rol)))throw new Error('Se requiere rol admin o propietario.');
+  negocioId=membership.negocio_id;localStorage.setItem('impulso_negocio_activo',String(negocioId));history.replaceState({},'',location.pathname+'?negocio='+encodeURIComponent(negocioId));
+  $('brandLink').href=panelHref();$('backLink').href=panelHref();$('backPanel').href=panelHref();
+  $('context').innerHTML='Conectando WhatsApp de: <b>'+String(membership.negocios?.nombre||'Mi negocio').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</b>';
+  $('phone').textContent=membership.negocios?.telefono_e164||'Sin teléfono configurado';$('phoneBox').hidden=false;
+  if(!membership.negocios?.telefono_e164)throw new Error('Este negocio no tiene teléfono oficial configurado.');
+  const {count,error:ce}=await sb.from('canales_whatsapp').select('id',{count:'exact',head:true}).eq('negocio_id',negocioId).eq('activo',true);if(ce)throw ce;
+  if((count||0)>0){confirmApp.disabled=true;setResult('Este negocio ya tiene un canal WhatsApp activo. No se iniciará otro onboarding.');return}
+  sessionReady=true;confirmApp.disabled=false;setResult('Listo. Aún no se ha enviado nada a Meta. Confirma el requisito de WhatsApp Business App para habilitar el botón.');update();
+}
+try{await init()}catch(e){setResult({ok:false,error:e.message||'No pudimos preparar el onboarding.'})}
+</script>
+</body></html>
