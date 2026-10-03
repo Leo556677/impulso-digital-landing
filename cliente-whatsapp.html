@@ -26,8 +26,8 @@ try{
       actions.innerHTML='<a class="btn" href="'+panel+'">Continuar</a>';
     }else{
       state.className='state warn';
-      state.innerHTML='<strong>Conexión pendiente</strong><br><span style="font-size:12px">La app Meta de Impulso Digital ya está publicada. La conexión real se realiza en una ruta protegida y aislada por empresa. No se habilitan mensajes ni IA durante esta primera fase.</span>';
-      actions.innerHTML='<a class="btn secondary" href="'+panel+'">Volver al panel</a>'+(['admin','propietario'].includes(String(membership.rol))?'<a class="btn" href="./cliente-whatsapp-onboarding-prod.html?negocio='+encodeURIComponent(negocioId)+'">Conectar WhatsApp real</a>':'');
+      state.innerHTML='<strong>Conexión pendiente</strong><br><span style="font-size:12px">Conecta tu propio WhatsApp con Meta. Tú autorizas tu cuenta; Impulso Digital no necesita tu contraseña de Facebook ni acceso manual a tu negocio. La conexión queda aislada para esta empresa.</span>';
+      actions.innerHTML='<a class="btn secondary" href="'+panel+'">Volver al panel</a>'+(['admin','propietario'].includes(String(membership.rol))?'<a class="btn" href="./cliente-whatsapp-onboarding-prod.html?negocio='+encodeURIComponent(negocioId)+'">Conectar mi WhatsApp</a>':'');
     }
   }
 }catch(e){state.className='state warn';state.textContent=e.message||'No pudimos revisar tu conexión.'}
