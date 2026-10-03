@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--p:#E6007E;--o:#FF6A00;--ink:#25252A;--m:#676B78;--bg:#F6F6F8;--line:#E4E4EA;--ok:#147A42;--warn:#8A5700;--danger:#B42318;--grad:linear-gradient(135deg,var(--p),#F2385A 52%,var(--o))}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Montserrat,system-ui,sans-serif}.top{background:#fff;border-bottom:1px solid var(--line)}.topin,.wrap{width:min(760px,calc(100% - 24px));margin:auto}.topin{min-height:66px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink)}.brand img{width:40px;height:40px;border-radius:50%}.brand strong,h1,h2{font-family:Anton,sans-serif;font-weight:400}.back{font-size:12px;font-weight:800;text-decoration:none;color:var(--p)}.wrap{margin-top:22px;margin-bottom:60px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 14px 40px rgba(30,30,35,.07);margin-bottom:14px}h1{font-size:2.5rem;margin:0}.lead{color:var(--m);line-height:1.65;font-size:13px}.context,.notice,.dangerbox,.okbox{margin:14px 0;padding:13px;border-radius:12px;font-size:12px;line-height:1.55}.context{background:#FFF5FA;border:1px solid #F0D8E5}.notice{background:#FFF5DF;color:var(--warn)}.dangerbox{background:#FFF0F0;color:var(--danger);border:1px solid #F0CCCC}.okbox{background:#EAF8EF;color:var(--ok);border:1px solid #CBEBD5}.phone{font-family:Anton,sans-serif;font-size:2rem;margin:6px 0}.confirm{display:flex;gap:10px;align-items:flex-start;margin:18px 0;font-size:12px;font-weight:700;line-height:1.5}.confirm input{margin-top:4px}.btn,button{display:inline-flex;border:0;border-radius:11px;padding:12px 15px;background:var(--grad);color:#fff;font:inherit;font-weight:800;text-decoration:none;cursor:pointer}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:9px;flex-wrap:wrap}.result{white-space:pre-wrap;word-break:break-word;background:#25252A;color:#fff;padding:14px;border-radius:12px;min-height:110px;font-size:11px;line-height:1.55}@media(max-width:600px){.card{padding:18px}.actions{display:grid}.btn,button{width:100%;justify-content:center}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Montserrat,system-ui,sans-serif}.top{background:#fff;border-bottom:1px solid var(--line)}.topin,.wrap{width:min(760px,calc(100% - 24px));margin:auto}.topin{min-height:66px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink)}.brand img{width:40px;height:40px;border-radius:50%}.brand strong,h1,h2{font-family:Anton,sans-serif;font-weight:400}.back{font-size:12px;font-weight:800;text-decoration:none;color:var(--p)}.wrap{margin-top:22px;margin-bottom:60px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 14px 40px rgba(30,30,35,.07);margin-bottom:14px}h1{font-size:2.5rem;margin:0}.lead{color:var(--m);line-height:1.65;font-size:13px}.context,.notice,.dangerbox,.okbox{margin:14px 0;padding:13px;border-radius:12px;font-size:12px;line-height:1.55}.context{background:#FFF5FA;border:1px solid #F0D8E5}.notice{background:#FFF5DF;color:var(--warn)}.dangerbox{background:#FFF0F0;color:var(--danger);border:1px solid #F0CCCC}.okbox{background:#EAF8EF;color:var(--ok);border:1px solid #CBEBD5}.phone{font-family:Anton,sans-serif;font-size:2rem;margin:6px 0}.modebox{display:grid;gap:10px;margin:16px 0}.mode{display:flex;gap:10px;align-items:flex-start;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff}.mode input{margin-top:4px}.mode b{display:block;font-size:12px}.mode span{display:block;margin-top:4px;color:var(--m);font-size:11px;line-height:1.45}.confirm{display:flex;gap:10px;align-items:flex-start;margin:18px 0;font-size:12px;font-weight:700;line-height:1.5}.confirm input{margin-top:4px}.btn,button{display:inline-flex;border:0;border-radius:11px;padding:12px 15px;background:var(--grad);color:#fff;font:inherit;font-weight:800;text-decoration:none;cursor:pointer}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:9px;flex-wrap:wrap}.result{white-space:pre-wrap;word-break:break-word;background:#25252A;color:#fff;padding:14px;border-radius:12px;min-height:110px;font-size:11px;line-height:1.55}@media(max-width:600px){.card{padding:18px}.actions{display:grid}.btn,button{width:100%;justify-content:center}}
 </style>
 </head>
 <body>
@@ -27,9 +27,12 @@
 </section>
 
 <section class="card">
-<h2>Antes de continuar</h2>
-<p class="lead">Esta ruta usa <strong>WhatsApp Business App Coexistence</strong>. El número debe estar funcionando actualmente en la app WhatsApp Business del teléfono.</p>
-<label class="confirm"><input id="confirmApp" type="checkbox" disabled><span>Confirmo que este es <strong>mi número de negocio</strong>, está activo actualmente en <strong>WhatsApp Business App</strong> y tengo acceso al teléfono para completar el enlace con Meta.</span></label>
+<h2>¿Cómo usas este número?</h2>
+<div class="modebox">
+<label class="mode"><input type="radio" name="waMode" value="COEXISTENCE" checked><span><b>Ya uso WhatsApp Business en mi celular</b><span>Conservarás la app del teléfono y además conectarás el CRM.</span></span></label>
+<label class="mode"><input type="radio" name="waMode" value="STANDARD"><span><b>Es un número nuevo o no uso WhatsApp Business App</b><span>Meta lo conectará directamente a WhatsApp Cloud API.</span></span></label>
+</div>
+<label class="confirm"><input id="confirmApp" type="checkbox" disabled><span>Confirmo que este es <strong>mi número de negocio</strong> y que tengo autorización para conectarlo.</span></label>
 <div class="actions">
 <button id="start" type="button" disabled>Conectar con Meta</button>
 <a id="backPanel" class="btn secondary" href="./cliente-panel.html">Cancelar</a>
@@ -47,12 +50,12 @@ import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.11
 const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const APP_ID='860468763590445',CONFIG_ID='1771287760748703',GRAPH_VERSION='v26.0';
 const $=id=>document.getElementById(id),result=$('result'),confirmApp=$('confirmApp'),start=$('start');
-let negocioId=null,sessionReady=false,sdkReady=false,submitting=false,finishEvent=null,authCredential=null;
+let negocioId=null,sessionReady=false,sdkReady=false,submitting=false,finishEvent=null,authCredential=null,onboardingMode='COEXISTENCE';
 const setResult=v=>result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2);
 function panelHref(){return './cliente-panel.html?negocio='+encodeURIComponent(negocioId)}
 function update(){start.disabled=!(sessionReady&&sdkReady&&confirmApp.checked&&!submitting)}
 function safeFacebookOrigin(origin){try{const h=new URL(origin).hostname.toLowerCase();return h==='facebook.com'||h.endsWith('.facebook.com')}catch{return false}}
-confirmApp.addEventListener('change',update);
+confirmApp.addEventListener('change',update);document.querySelectorAll('input[name="waMode"]').forEach(el=>el.addEventListener('change',()=>{onboardingMode=String(document.querySelector('input[name="waMode"]:checked')?.value||'COEXISTENCE');setResult(onboardingMode==='COEXISTENCE'?'Usaremos Coexistence para conservar WhatsApp Business App en tu teléfono.':'Usaremos el onboarding estándar de Cloud API.');update()}));
 
 async function submitWhenReady(){
   if(submitting||!finishEvent||!authCredential||!negocioId)return;
@@ -60,9 +63,9 @@ async function submitWhenReady(){
   setResult('Meta terminó el enlace. Validando tenant, WABA y número oficial en backend seguro…');
   try{
     const body={
-      mode:'CLIENT_PROD_COEXISTENCE',
+      mode:onboardingMode==='COEXISTENCE'?'CLIENT_PROD_COEXISTENCE':'CLIENT_PROD_STANDARD',
       negocio_id:negocioId,
-      session_event:'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING',
+      session_event:String(finishEvent?.event||''),
       session_waba_id:String(finishEvent?.data?.waba_id||''),
       session_phone_number_id:String(finishEvent?.data?.phone_number_id||'')
     };
@@ -82,8 +85,8 @@ window.addEventListener('message',event=>{
   if(!safeFacebookOrigin(event.origin))return;
   let data=event.data;if(typeof data==='string'){try{data=JSON.parse(data)}catch{return}}
   if(!data||data.type!=='WA_EMBEDDED_SIGNUP')return;
-  if(data.event==='FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING'){
-    finishEvent=data;setResult({estado:'META_FINISH_RECIBIDO',waba_id:data?.data?.waba_id??null,phone_number_id:data?.data?.phone_number_id??null,detalle:'Esperando autorización segura…'});submitWhenReady();return
+  if(data.event==='FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING'||data.event==='FINISH'){
+    finishEvent=data;setResult({estado:'META_FINISH_RECIBIDO',modo:onboardingMode,waba_id:data?.data?.waba_id??null,phone_number_id:data?.data?.phone_number_id??null,detalle:'Esperando autorización segura…'});submitWhenReady();return
   }
   if(data.event==='CANCEL'){setResult({ok:false,estado:'CANCELADO_EN_META',current_step:data?.data?.current_step??null});return}
   if(data.event==='ERROR'){const detail=String(data?.data?.error_message??'Meta reportó un error');setResult({ok:false,estado:'ERROR_EN_META',detalle:detail,que_hacer:'Cierra el popup. Vuelve a intentarlo con el perfil personal de Facebook que administra tu negocio y tu número. No necesitas dar acceso manual a Impulso Digital.'})}
@@ -103,9 +106,12 @@ start.addEventListener('click',()=>{
     authCredential=code?{code}:{accessToken};
     if(!finishEvent)setResult({estado:'AUTORIZACION_RECIBIDA',detalle:'Esperando finalización del enlace desde WhatsApp Business…'});
     submitWhenReady();
-  },{
+  },onboardingMode==='COEXISTENCE'?{
     config_id:CONFIG_ID,response_type:'code',override_default_response_type:true,
     extras:{setup:{},featureType:'whatsapp_business_app_onboarding',sessionInfoVersion:'3'}
+  }:{
+    config_id:CONFIG_ID,response_type:'code',override_default_response_type:true,
+    extras:{setup:{}}
   });
 });
 
@@ -122,7 +128,7 @@ async function init(){
   if(!membership.negocios?.telefono_e164)throw new Error('Este negocio no tiene teléfono oficial configurado.');
   const {count,error:ce}=await sb.from('canales_whatsapp').select('id',{count:'exact',head:true}).eq('negocio_id',negocioId).eq('activo',true);if(ce)throw ce;
   if((count||0)>0){confirmApp.disabled=true;setResult('Este negocio ya tiene un canal WhatsApp activo. No se iniciará otro onboarding.');return}
-  sessionReady=true;confirmApp.disabled=false;setResult('Listo. Aún no se ha enviado nada a Meta. Confirma el requisito de WhatsApp Business App para habilitar el botón.');update();
+  sessionReady=true;confirmApp.disabled=false;setResult('Listo. Elige cómo usas tu número, confirma que te pertenece y pulsa “Conectar con Meta”.');update();
 }
 try{await init()}catch(e){setResult({ok:false,error:e.message||'No pudimos preparar el onboarding.'})}
 </script>
