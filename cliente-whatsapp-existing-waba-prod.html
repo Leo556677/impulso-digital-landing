@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#E6007E">
+<title>Activar número corporativo · Impulso Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--p:#E6007E;--o:#FF6A00;--ink:#25252A;--m:#676B78;--bg:#F6F6F8;--line:#E4E4EA;--ok:#147A42;--warn:#8A5700;--bad:#B42318;--grad:linear-gradient(135deg,var(--p),#F2385A 52%,var(--o))}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Montserrat,system-ui,sans-serif}.wrap,.topin{width:min(760px,calc(100% - 24px));margin:auto}.top{background:#fff;border-bottom:1px solid var(--line)}.topin{min-height:66px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink)}.brand img{width:40px;height:40px;border-radius:50%}.brand strong,h1,h2{font-family:Anton,sans-serif;font-weight:400}.back{font-size:12px;font-weight:800;text-decoration:none;color:var(--p)}.wrap{margin-top:22px;margin-bottom:60px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 14px 40px rgba(30,30,35,.07);margin-bottom:14px}h1{font-size:2.2rem;margin:0}.lead{color:var(--m);line-height:1.6;font-size:13px}.box{margin:12px 0;padding:13px;border-radius:12px;font-size:12px;line-height:1.5}.info{background:#FFF5FA;border:1px solid #F0D8E5}.warn{background:#FFF5DF;color:var(--warn)}.ok{background:#EAF8EF;color:var(--ok)}.bad{background:#FFF0F0;color:var(--bad)}.phone{font-family:Anton,sans-serif;font-size:2rem}.btn,button{display:inline-flex;border:0;border-radius:11px;padding:12px 15px;background:var(--grad);color:#fff;font:inherit;font-weight:800;text-decoration:none;cursor:pointer}.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:8px;flex-wrap:wrap}.otp{width:100%;font:inherit;font-weight:800;font-size:1.4rem;letter-spacing:.2em;padding:12px;border:1px solid var(--line);border-radius:10px;margin:8px 0}.result{white-space:pre-wrap;word-break:break-word;background:#25252A;color:#fff;padding:14px;border-radius:12px;min-height:90px;font-size:11px;line-height:1.5}.step{display:flex;gap:10px;align-items:flex-start;margin:12px 0}.num{width:28px;height:28px;border-radius:50%;background:#eee;display:grid;place-items:center;font-weight:800;flex:0 0 auto}.hidden{display:none}@media(max-width:600px){.card{padding:17px}.actions{display:grid}.btn,button{width:100%;justify-content:center}}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin"><a id="brand" class="brand" href="./cliente-panel.html"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><strong>IMPULSO DIGITAL</strong></a><a id="back" class="back" href="./cliente-whatsapp.html">← Volver</a></div></header>
+<main class="wrap">
+<section class="card">
+<div style="font-size:11px;color:var(--p);font-weight:800">WHATSAPP · PRODUCCIÓN · RUTA ASISTIDA</div>
+<h1>Activa el número corporativo</h1>
+<p class="lead">Esta ruta no intenta volver a agregar el número a Meta. Usa la WABA existente, verifica la propiedad del número y termina su registro en Cloud API.</p>
+<div class="box info">Negocio: <strong>Dr. Olano</strong><br>Número objetivo: <span class="phone">+51 907 108 271</span><br>WABA existente: <strong>Dr Olano</strong></div>
+<div class="box bad"><strong>Protección:</strong> el número personal +51 929 498 237 queda fuera de esta ruta. El backend exige coincidencia exacta con el 907 oficial.</div>
+</section>
+
+<section class="card">
+<h2>Estado</h2>
+<div id="status" class="box warn">Comprobando si IMPULSO ya tiene acceso al WABA…</div>
+<div id="partner" class="hidden">
+  <div class="step"><div class="num">1</div><div><strong>Comparte la WABA con IMPULSO DIGITAL</strong><br><span style="font-size:12px;color:var(--m)">En Meta Business Settings de IMAGENES, asigna como socio el Business ID de IMPULSO y dale permisos para administrar la cuenta WhatsApp.</span></div></div>
+  <div class="box info">Business ID de IMPULSO: <strong id="providerId">886038977932226</strong></div>
+  <div class="actions"><a class="btn secondary" href="https://business.facebook.com/settings/partners/?business_id=259173804891411" target="_blank" rel="noopener">Abrir Socios de IMAGENES</a><button id="retryRead" type="button">Ya lo asigné · comprobar</button></div>
+</div>
+<div id="flow" class="hidden">
+  <div id="metaState" class="box info"></div>
+  <div class="step"><div class="num">2</div><div><strong>Preparar conexión segura</strong><br><span style="font-size:12px;color:var(--m)">Guarda la autorización del socio en Vault para este tenant.</span></div></div>
+  <div class="actions"><button id="prepare" type="button">Preparar 907</button></div>
+
+  <div id="verifyBlock" class="hidden">
+    <div class="step"><div class="num">3</div><div><strong>Verificar que controlas el 907</strong><br><span style="font-size:12px;color:var(--m)">Meta enviará un código al número corporativo. El código se introduce aquí, no en el chat.</span></div></div>
+    <div class="actions"><button id="sms" type="button">Enviar código por SMS</button><button id="voice" class="secondary" type="button">Enviar por llamada</button></div>
+    <input id="otp" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Código de Meta">
+    <div class="actions"><button id="verify" type="button">Verificar código</button></div>
+  </div>
+
+  <div id="registerBlock" class="hidden">
+    <div class="step"><div class="num">4</div><div><strong>Registrar en Cloud API</strong><br><span style="font-size:12px;color:var(--m)">El backend generará y custodiará cifrado el PIN 2FA. No se mostrará en pantalla.</span></div></div>
+    <div class="actions"><button id="register" type="button">Registrar 907 en Cloud API</button></div>
+  </div>
+
+  <div id="finalBlock" class="hidden">
+    <div class="step"><div class="num">5</div><div><strong>Finalizar canal</strong><br><span style="font-size:12px;color:var(--m)">Suscribe la app y crea el canal del tenant. IA y outbound siguen apagados hasta el canary.</span></div></div>
+    <div class="actions"><button id="finalize" type="button">Finalizar conexión</button></div>
+  </div>
+</div>
+</section>
+
+<section class="card"><h2>Registro seguro</h2><div id="result" class="result">Preparando…</div></section>
+</main>
+
+<script type="module">
+import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb',WABA='3285972601590465';
+const $=id=>document.getElementById(id),status=$('status'),partner=$('partner'),flow=$('flow'),result=$('result');
+let prepared=false,verified=false,registered=false,busy=false;
+function out(v){result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2)}
+function setBusy(v){busy=v;document.querySelectorAll('button').forEach(b=>b.disabled=v)}
+async function call(mode,extra={}){
+  setBusy(true);
+  try{
+    const{data,error}=await sb.functions.invoke('whatsapp-prod-subscribe-app',{body:{mode,negocio_id:BUSINESS,waba_id:WABA,...extra}});
+    if(error){let detail=null;try{if(error.context?.json)detail=await error.context.json()}catch{}throw Object.assign(new Error(detail?.error||error.message||'Error'),{detail})}
+    out(data);return data;
+  }finally{setBusy(false)}
+}
+async function ensureAuth(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){const here=location.pathname+location.search;location.replace('./cliente-acceso.html?next='+encodeURIComponent(here));return false}
+  const{data:m}=await sb.from('usuarios_negocio').select('rol').eq('negocio_id',BUSINESS).eq('user_id',session.user.id).maybeSingle();
+  if(!m||!['admin','propietario'].includes(String(m.rol)))throw new Error('Se requiere admin o propietario de Dr. Olano.');
+  return true;
+}
+async function read(){
+  status.className='box warn';status.textContent='Comprobando acceso de IMPULSO al WABA existente…';partner.classList.add('hidden');flow.classList.add('hidden');
+  try{
+    const data=await call('CLIENT_EXISTING_WABA_READ');
+    status.className='box ok';status.innerHTML='<strong>✓ WABA accesible por IMPULSO.</strong> Ya podemos trabajar sobre el 907 existente sin volver a agregarlo.';
+    flow.classList.remove('hidden');
+    $('metaState').textContent='Meta: '+String(data.display_phone_number||'')+' · estado '+String(data.phone_status||'desconocido')+' · plataforma '+String(data.platform_type||'sin registrar')+' · verificación '+String(data.code_verification_status||'desconocida');
+    if(String(data.platform_type||'')==='CLOUD_API'&&String(data.phone_status||'')==='CONNECTED'){
+      $('prepare').textContent='Preparar conexión existente';
+    }
+  }catch(e){
+    const d=e.detail||{};
+    if(d.codigo==='PARTNER_ACCESS_REQUIRED'){
+      status.className='box warn';status.innerHTML='<strong>Falta un único permiso empresarial:</strong> compartir la WABA Dr Olano con IMPULSO DIGITAL como socio.';
+      $('providerId').textContent=String(d.provider_business_id||'886038977932226');
+      partner.classList.remove('hidden');out(d);return;
+    }
+    status.className='box bad';status.textContent=e.message;out(e.detail||{ok:false,error:e.message});
+  }
+}
+$('retryRead').onclick=read;
+$('prepare').onclick=async()=>{
+  try{
+    const d=await call('CLIENT_EXISTING_WABA_PREPARE');prepared=true;
+    $('verifyBlock').classList.remove('hidden');
+    if(String(d.code_verification_status||'').toUpperCase()==='VERIFIED'){
+      verified=true;$('registerBlock').classList.remove('hidden');
+    }
+  }catch(e){out(e.detail||{ok:false,error:e.message})}
+};
+$('sms').onclick=async()=>{try{await call('CLIENT_EXISTING_WABA_REQUEST_CODE',{code_method:'SMS'})}catch(e){out(e.detail||{ok:false,error:e.message})}};
+$('voice').onclick=async()=>{try{await call('CLIENT_EXISTING_WABA_REQUEST_CODE',{code_method:'VOICE'})}catch(e){out(e.detail||{ok:false,error:e.message})}};
+$('verify').onclick=async()=>{
+  const code=String($('otp').value||'').replace(/\D/g,'');
+  try{await call('CLIENT_EXISTING_WABA_VERIFY_CODE',{code});verified=true;$('registerBlock').classList.remove('hidden')}catch(e){out(e.detail||{ok:false,error:e.message})}
+};
+$('register').onclick=async()=>{
+  try{await call('CLIENT_EXISTING_WABA_REGISTER');registered=true;$('finalBlock').classList.remove('hidden')}catch(e){out(e.detail||{ok:false,error:e.message})}
+};
+$('finalize').onclick=async()=>{
+  setBusy(true);
+  try{
+    const{data,error}=await sb.functions.invoke('whatsapp-prod-subscribe-app',{body:{mode:'CLIENT_TENANT_FINALIZE',negocio_id:BUSINESS,confirmacion:'ACTIVAR_CANAL_CLIENTE'}});
+    if(error){let detail=null;try{if(error.context?.json)detail=await error.context.json()}catch{}throw Object.assign(new Error(detail?.error||error.message),{detail})}
+    out(data);
+    if(data?.ok===true){
+      status.className='box ok';status.innerHTML='<strong>✓ 907 conectado a IMPULSO.</strong> Canal creado con IA/outbound todavía protegidos.';
+      document.querySelectorAll('button').forEach(b=>b.disabled=true);
+      setTimeout(()=>location.replace('./cliente-whatsapp.html?negocio='+encodeURIComponent(BUSINESS)),1800);
+    }
+  }catch(e){out(e.detail||{ok:false,error:e.message})}
+  finally{setBusy(false)}
+};
+try{if(await ensureAuth())await read()}catch(e){status.className='box bad';status.textContent=e.message;out({ok:false,error:e.message})}
+</script>
+</body></html>
