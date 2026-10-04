@@ -24,6 +24,8 @@
     const ORIGIN = 'https://leo556677.github.io';
     const CHANNEL = 'impulso-meta-oauth';
     const BUSINESS_CONTEXT_KEY = 'impulso_business_management_oauth_context';
+    const EXISTING_WABA_CONTEXT_KEY = 'impulso_existing_waba_oauth_context';
+    const EXISTING_WABA_RESULT_KEY = 'impulso_existing_waba_oauth_result';
     const SUPABASE_URL = 'https://xnlzsgulskqyecfgzhwa.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
     const params = new URLSearchParams(window.location.search);
@@ -68,7 +70,75 @@
       Date.now() - Number(businessContext.created_at) <= 10 * 60 * 1000
     );
 
-    if (isBusinessReview) {
+    let existingWabaContext = null;
+    try {
+      const raw = localStorage.getItem(EXISTING_WABA_CONTEXT_KEY);
+      if (raw) existingWabaContext = JSON.parse(raw);
+    } catch (_) {}
+
+    const isExistingWaba = Boolean(
+      payload.state &&
+      existingWabaContext?.state === payload.state &&
+      /^[0-9a-fA-F-]{36}$/.test(String(existingWabaContext?.negocio_id || '')) &&
+      /^[0-9]{6,30}$/.test(String(existingWabaContext?.waba_id || '')) &&
+      Number.isFinite(Number(existingWabaContext?.created_at)) &&
+      Date.now() - Number(existingWabaContext.created_at) >= 0 &&
+      Date.now() - Number(existingWabaContext.created_at) <= 10 * 60 * 1000
+    );
+
+    if (isExistingWaba) {
+      localStorage.removeItem(EXISTING_WABA_CONTEXT_KEY);
+      let finalData = null;
+
+      if (payload.error) {
+        finalData = { ok:false, error:payload.error, detalle:payload.error_description || payload.error_reason || null };
+      } else if (!payload.code) {
+        finalData = { ok:false, error:'META_SIN_CODIGO' };
+      } else {
+        status.textContent = 'Autorización recibida. Validando WABA y número corporativo en backend seguro…';
+        try {
+          const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+            auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}
+          });
+          const { data, error } = await supabase.functions.invoke('whatsapp-prod-subscribe-app', {
+            body:{
+              mode:'CLIENT_EXISTING_WABA_AUTHORIZE',
+              negocio_id:String(existingWabaContext.negocio_id),
+              waba_id:String(existingWabaContext.waba_id),
+              code:String(payload.code)
+            }
+          });
+
+          finalData = data;
+          if (error) {
+            let detail = null;
+            try { if (error.context && typeof error.context.json === 'function') detail = await error.context.json(); } catch (_) {}
+            finalData = detail || { ok:false, error:error.message || 'No se pudo validar la autorización.' };
+          }
+        } catch (error) {
+          finalData = { ok:false, error:error?.message || 'No se pudo completar la autorización.' };
+        }
+      }
+
+      try {
+        localStorage.setItem(EXISTING_WABA_RESULT_KEY, JSON.stringify({
+          at:Date.now(),
+          result:finalData
+        }));
+      } catch (_) {}
+
+      if (finalData?.ok === true) {
+        status.innerHTML = '<span class="ok">Autorización validada.</span> Regresando a la activación del número corporativo…';
+      } else {
+        status.innerHTML = '<span class="danger">La autorización no pudo completarse.</span> Regresando con el detalle…';
+      }
+      showResult(finalData);
+
+      const next = './cliente-whatsapp-existing-waba-prod.html?negocio=' +
+        encodeURIComponent(String(existingWabaContext.negocio_id)) +
+        '&oauth_return=1';
+      setTimeout(() => location.replace(next), 1300);
+    } else     if (isBusinessReview) {
       localStorage.removeItem(BUSINESS_CONTEXT_KEY);
 
       if (payload.error) {
