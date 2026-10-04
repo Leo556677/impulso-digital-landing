@@ -56,7 +56,7 @@
 </section>
 
 <section class="card">
-<div class="tracehead"><h2>Trazas visuales</h2><span class="tracever">DBG 20261004-6</span></div>
+<div class="tracehead"><h2>Trazas visuales</h2><span class="tracever">DBG 20261004-7</span></div>
 <p class="tracehelp">Copia este bloque y pégalo en el chat. No incluye contraseñas, tokens, códigos OAuth, OTP ni PIN.</p>
 <div class="actions" style="margin-bottom:10px"><button id="copyTrace" type="button">Copiar trazas</button><button id="clearTrace" class="secondary" type="button">Limpiar</button></div>
 <pre id="traceBox" class="tracebox">[inicio] esperando JavaScript…</pre>
@@ -65,218 +65,319 @@
 <section class="card"><h2>Registro seguro</h2><div id="result" class="result">Preparando…</div></section>
 </main>
 
-<script type="module">
-import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
-const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-const BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb',WABA='3285972601590465',APP_ID='860468763590445',GRAPH_VERSION='v26.0';
-const $=id=>document.getElementById(id),status=$('status'),partner=$('partner'),flow=$('flow'),result=$('result'),traceBox=$('traceBox');
-let prepared=false,verified=false,registered=false,busy=false,traceSeq=0;
-const TRACE_VERSION='DBG-20261004-6';
-const traceLines=[];
-function trace(step,data=null){
-  const ts=new Date().toISOString();
-  const seq=String(++traceSeq).padStart(2,'0');
-  let suffix='';
-  if(data!==null&&data!==undefined){
-    try{suffix=' · '+JSON.stringify(data)}catch{suffix=' · [dato no serializable]'}
+<script>
+(function(){
+  'use strict';
+
+  const SUPABASE_URL='https://xnlzsgulskqyecfgzhwa.supabase.co';
+  const SUPABASE_KEY='sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
+  const AUTH_KEY='sb-xnlzsgulskqyecfgzhwa-auth-token';
+  const BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb';
+  const WABA='3285972601590465';
+  const APP_ID='860468763590445';
+  const OAUTH_CALLBACK='https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
+  const OAUTH_CONTEXT_KEY='impulso_existing_waba_oauth_context';
+  const OAUTH_RESULT_KEY='impulso_existing_waba_oauth_result';
+  const TRACE_VERSION='DBG-20261004-7';
+
+  const $=id=>document.getElementById(id);
+  const status=$('status'),partner=$('partner'),flow=$('flow'),result=$('result'),traceBox=$('traceBox');
+  let traceSeq=0,busy=false;
+  const traceLines=[];
+
+  function trace(step,data){
+    const ts=new Date().toISOString();
+    const seq=String(++traceSeq).padStart(2,'0');
+    let suffix='';
+    if(data!==undefined&&data!==null){
+      try{suffix=' · '+JSON.stringify(data)}catch(_){suffix=' · [dato no serializable]'}
+    }
+    const line='T'+seq+' · '+ts+' · '+step+suffix;
+    traceLines.push(line);
+    if(traceLines.length>160)traceLines.shift();
+    if(traceBox){
+      traceBox.textContent='VERSION · '+TRACE_VERSION+'\n'+traceLines.join('\n');
+      traceBox.scrollTop=traceBox.scrollHeight;
+    }
   }
-  const line='T'+seq+' · '+ts+' · '+step+suffix;
-  traceLines.push(line);
-  if(traceLines.length>120)traceLines.shift();
-  traceBox.textContent='VERSION · '+TRACE_VERSION+'\n'+traceLines.join('\n');
-  traceBox.scrollTop=traceBox.scrollHeight;
-}
-trace('JS_INICIADO',{path:location.pathname,query:location.search||''});
-const OAUTH_CALLBACK='https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
-const OAUTH_CONTEXT_KEY='impulso_existing_waba_oauth_context';
-const OAUTH_RESULT_KEY='impulso_existing_waba_oauth_result';
-function out(v){result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2)}
-function setBusy(v){busy=v;document.querySelectorAll('button').forEach(b=>{if(!['copyTrace','clearTrace'].includes(b.id))b.disabled=v})}
-function withTimeout(promise,ms,label){
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_,reject)=>{timer=setTimeout(()=>reject(Object.assign(new Error(label+'_TIMEOUT'),{trace_label:label})),ms)})
-  ]).finally(()=>clearTimeout(timer));
-}
-$('copyTrace').onclick=async()=>{
-  const text=traceBox.textContent;
-  try{await navigator.clipboard.writeText(text);trace('TRAZAS_COPIADAS',{chars:text.length});$('copyTrace').textContent='Copiado ✓';setTimeout(()=>$('copyTrace').textContent='Copiar trazas',1400)}
-  catch{
+
+  function out(v){result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2)}
+  function setBusy(v){
+    busy=v;
+    document.querySelectorAll('button').forEach(b=>{
+      if(!['copyTrace','clearTrace','selectTrace'].includes(b.id))b.disabled=v;
+    });
+  }
+  function withTimeout(promise,ms,label){
+    let timer;
+    return Promise.race([
+      promise,
+      new Promise((_,reject)=>{
+        timer=setTimeout(()=>reject(Object.assign(new Error(label+'_TIMEOUT'),{trace_label:label})),ms);
+      })
+    ]).finally(()=>clearTimeout(timer));
+  }
+
+  function readStoredSession(){
+    trace('AUTH_STORAGE_READ_INICIO',{key:AUTH_KEY});
+    let raw=null;
+    try{raw=localStorage.getItem(AUTH_KEY)}catch(e){
+      trace('AUTH_STORAGE_READ_ERROR',{message:String(e&&e.message||e)});
+      return null;
+    }
+    trace('AUTH_STORAGE_RAW',{present:Boolean(raw),chars:raw?raw.length:0});
+    if(!raw)return null;
     try{
-      const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
-      trace('TRAZAS_COPIADAS_FALLBACK',{chars:text.length});
-    }catch{trace('TRAZAS_COPIA_ERROR')}
+      const parsed=JSON.parse(raw);
+      const candidates=[
+        parsed,
+        parsed&&parsed.currentSession,
+        parsed&&parsed.session,
+        parsed&&parsed.data&&parsed.data.session
+      ].filter(Boolean);
+      const session=candidates.find(x=>typeof x.access_token==='string'&&x.access_token.length>20)||null;
+      trace('AUTH_STORAGE_PARSE',{session_found:Boolean(session),user_present:Boolean(session&&session.user&&session.user.id),expires_at:session&&session.expires_at||null});
+      return session;
+    }catch(e){
+      trace('AUTH_STORAGE_PARSE_ERROR',{message:String(e&&e.message||e)});
+      return null;
+    }
   }
-};
-$('clearTrace').onclick=()=>{traceLines.length=0;traceSeq=0;traceBox.textContent='VERSION · '+TRACE_VERSION;trace('TRAZAS_LIMPIADAS')};
-async function call(mode,extra={}){
-  setBusy(true);
-  const started=performance.now();
-  trace('EDGE_INVOKE_INICIO',{mode});
-  try{
-    const invoke=sb.functions.invoke('whatsapp-prod-subscribe-app',{body:{mode,negocio_id:BUSINESS,waba_id:WABA,...extra}});
-    const{data,error}=await withTimeout(invoke,15000,'EDGE_'+mode);
-    trace('EDGE_INVOKE_RESPUESTA',{mode,ms:Math.round(performance.now()-started),ok:!error,data_ok:data?.ok??null,codigo:data?.codigo??null});
-    if(error){
-      let detail=null;try{if(error.context?.json)detail=await error.context.json()}catch{}
-      trace('EDGE_INVOKE_ERROR',{mode,message:detail?.error||error.message||'Error',codigo:detail?.codigo??null,meta_code:detail?.meta?.code??null,meta_subcode:detail?.meta?.error_subcode??null});
-      throw Object.assign(new Error(detail?.error||error.message||'Error'),{detail});
-    }
-    out(data);return data;
-  }catch(e){
-    if(String(e?.message||'').includes('_TIMEOUT')){
-      trace('EDGE_INVOKE_TIMEOUT',{mode,ms:Math.round(performance.now()-started)});
-      throw Object.assign(new Error('TIMEOUT_BACKEND'),{detail:{ok:false,error:'El backend tardó demasiado en responder. No se realizó ninguna mutación.',mode}});
-    }
-    throw e;
-  }finally{
-    setBusy(false);
-    trace('EDGE_INVOKE_FIN',{mode});
+
+  function getAccessToken(){
+    const s=readStoredSession();
+    return s&&s.access_token?String(s.access_token):'';
   }
-}
-async function ensureAuth(){
-  trace('SESION_CHECK_INICIO');
-  let sessionResp;
-  try{sessionResp=await withTimeout(sb.auth.getSession(),8000,'SUPABASE_SESSION')}
-  catch(e){trace('SESION_CHECK_TIMEOUT');throw e}
-  const session=sessionResp?.data?.session||null;
-  trace('SESION_CHECK_RESULTADO',{has_session:Boolean(session),user_present:Boolean(session?.user?.id)});
-  if(!session){
-    trace('REDIRECT_LOGIN');
-    const here=location.pathname+location.search;location.replace('./cliente-acceso.html?next='+encodeURIComponent(here));return false
+
+  async function invokeEdge(mode,extra){
+    setBusy(true);
+    const started=performance.now();
+    trace('EDGE_FETCH_INICIO',{mode});
+    try{
+      const token=getAccessToken();
+      if(!token){
+        trace('EDGE_NO_SESSION',{mode});
+        throw Object.assign(new Error('SESION_LOCAL_NO_DISPONIBLE'),{detail:{ok:false,error:'No encontré una sesión activa del portal. Vuelve a iniciar sesión en IMPULSO.'}});
+      }
+      const body=Object.assign({mode,negocio_id:BUSINESS,waba_id:WABA},extra||{});
+      const request=fetch(SUPABASE_URL+'/functions/v1/whatsapp-prod-subscribe-app',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer '+token
+        },
+        body:JSON.stringify(body),
+        cache:'no-store'
+      });
+      const resp=await withTimeout(request,15000,'EDGE_FETCH_'+mode);
+      trace('EDGE_HTTP_RESPUESTA',{mode,status:resp.status,ok:resp.ok,ms:Math.round(performance.now()-started)});
+      let data=null;
+      try{data=await withTimeout(resp.json(),4000,'EDGE_JSON_'+mode)}
+      catch(e){
+        trace('EDGE_JSON_ERROR',{mode,message:String(e&&e.message||e)});
+        throw Object.assign(new Error('RESPUESTA_BACKEND_INVALIDA'),{detail:{ok:false,error:'El backend respondió sin JSON válido.',http_status:resp.status}});
+      }
+      trace('EDGE_BODY',{mode,data_ok:data&&data.ok!==undefined?data.ok:null,codigo:data&&data.codigo||null,error:data&&data.error||null});
+      if(!resp.ok||!data||data.ok!==true){
+        throw Object.assign(new Error(data&&data.error||('HTTP_'+resp.status)),{detail:data||{ok:false,error:'HTTP_'+resp.status}});
+      }
+      out(data);
+      return data;
+    }catch(e){
+      if(String(e&&e.message||'').includes('_TIMEOUT')){
+        trace('EDGE_TIMEOUT',{mode,message:String(e&&e.message||e),ms:Math.round(performance.now()-started)});
+        throw Object.assign(new Error('TIMEOUT_BACKEND'),{detail:{ok:false,error:'El backend tardó demasiado en responder. No se realizó ninguna mutación.',mode}});
+      }
+      trace('EDGE_ERROR',{mode,message:String(e&&e.message||e),codigo:e&&e.detail&&e.detail.codigo||null});
+      throw e;
+    }finally{
+      setBusy(false);
+      trace('EDGE_FETCH_FIN',{mode});
+    }
   }
-  trace('MEMBRESIA_CHECK_INICIO',{business:BUSINESS});
-  let memberResp;
-  try{
-    memberResp=await withTimeout(
-      sb.from('usuarios_negocio').select('rol').eq('negocio_id',BUSINESS).eq('user_id',session.user.id).maybeSingle(),
-      8000,
-      'SUPABASE_MEMBERSHIP'
-    );
-  }catch(e){trace('MEMBRESIA_CHECK_TIMEOUT');throw e}
-  const m=memberResp?.data||null;
-  trace('MEMBRESIA_CHECK_RESULTADO',{found:Boolean(m),rol:m?.rol||null,error:Boolean(memberResp?.error)});
-  if(memberResp?.error)throw new Error('No se pudo validar membresía: '+String(memberResp.error.message||'error'));
-  if(!m||!['admin','propietario'].includes(String(m.rol)))throw new Error('Se requiere admin o propietario de Dr. Olano.');
-  return true;
-}
-async function read(){
-  trace('PREFLIGHT_INICIO');
-  status.className='box warn';status.textContent='Comprobando acceso de IMPULSO al WABA existente…';partner.classList.add('hidden');flow.classList.add('hidden');
-  try{
-    const data=await call('CLIENT_EXISTING_WABA_READ');
-    trace('PREFLIGHT_OK',{phone:data?.display_phone_number||null,platform:data?.platform_type||null,status:data?.phone_status||null});
-    status.className='box ok';status.innerHTML='<strong>✓ WABA accesible por IMPULSO.</strong> Ya podemos trabajar sobre el 907 existente sin volver a agregarlo.';
-    flow.classList.remove('hidden');
-    $('metaState').textContent='Meta: '+String(data.display_phone_number||'')+' · estado '+String(data.phone_status||'desconocido')+' · plataforma '+String(data.platform_type||'sin registrar')+' · verificación '+String(data.code_verification_status||'desconocida');
-    if(String(data.platform_type||'')==='CLOUD_API'&&String(data.phone_status||'')==='CONNECTED'){
-      $('prepare').textContent='Preparar conexión existente';
+
+  async function ensureLocalSession(){
+    trace('SESION_LOCAL_CHECK_INICIO');
+    const session=readStoredSession();
+    if(!session){
+      trace('SESION_LOCAL_AUSENTE');
+      const here=location.pathname+location.search;
+      location.replace('./cliente-acceso.html?next='+encodeURIComponent(here));
+      return false;
     }
-  }catch(e){
-    const d=e.detail||{};
-    if(d.codigo==='USER_OAUTH_REQUIRED'||d.codigo==='PARTNER_ACCESS_REQUIRED'){
-      trace('PREFLIGHT_REQUIERE_OAUTH',{codigo:d.codigo});
-      status.className='box warn';status.innerHTML='<strong>Falta autorización del administrador de IMAGENES.</strong> Kamo puede concederla directamente a la app de IMPULSO.';
-      partner.classList.remove('hidden');out(d);return;
-    }
-    trace('PREFLIGHT_ERROR',{message:e?.message||'Error',codigo:d?.codigo||null});
-    status.className='box bad';status.textContent=e.message;out(e.detail||{ok:false,error:e.message});
-  }finally{
-    trace('PREFLIGHT_FIN');
+    trace('SESION_LOCAL_OK',{user_present:Boolean(session.user&&session.user.id)});
+    return true;
   }
-}
-$('retryRead').onclick=()=>{trace('CLICK_COMPROBAR_DE_NUEVO');read()};
-$('authorizeMeta').onclick=()=>{
-  trace('CLICK_AUTORIZAR_META');
-  const state=crypto.randomUUID();
-  try{
-    localStorage.setItem(OAUTH_CONTEXT_KEY,JSON.stringify({
-      state,
-      negocio_id:BUSINESS,
-      waba_id:WABA,
-      created_at:Date.now()
-    }));
-  }catch(e){
-    out({ok:false,error:'No se pudo preparar el retorno seguro de Meta.'});
-    return;
+
+  async function readPreflight(){
+    trace('PREFLIGHT_INICIO');
+    status.className='box warn';
+    status.textContent='Comprobando acceso autorizado a la WABA…';
+    partner.classList.add('hidden');
+    flow.classList.add('hidden');
+    try{
+      const data=await invokeEdge('CLIENT_EXISTING_WABA_READ');
+      trace('PREFLIGHT_OK',{phone:data.display_phone_number||null,platform:data.platform_type||null,phone_status:data.phone_status||null});
+      status.className='box ok';
+      status.innerHTML='<strong>✓ WABA accesible.</strong> Ya podemos trabajar sobre el 907 existente.';
+      flow.classList.remove('hidden');
+      $('metaState').textContent='Meta: '+String(data.display_phone_number||'')+' · estado '+String(data.phone_status||'desconocido')+' · plataforma '+String(data.platform_type||'sin registrar')+' · verificación '+String(data.code_verification_status||'desconocida');
+      if(String(data.platform_type||'')==='CLOUD_API'&&String(data.phone_status||'')==='CONNECTED'){
+        $('prepare').textContent='Preparar conexión existente';
+      }
+    }catch(e){
+      const d=e&&e.detail||{};
+      if(d.codigo==='USER_OAUTH_REQUIRED'||d.codigo==='PARTNER_ACCESS_REQUIRED'){
+        trace('PREFLIGHT_REQUIERE_OAUTH',{codigo:d.codigo});
+        status.className='box warn';
+        status.innerHTML='<strong>Falta autorización del administrador de IMAGENES.</strong> Kamo puede concederla directamente a la app de IMPULSO.';
+        partner.classList.remove('hidden');
+        out(d);
+      }else{
+        trace('PREFLIGHT_ERROR',{message:String(e&&e.message||e),codigo:d.codigo||null});
+        status.className='box bad';
+        status.textContent=String(e&&e.message||'Error');
+        out(d&&Object.keys(d).length?d:{ok:false,error:String(e&&e.message||e)});
+      }
+    }finally{
+      trace('PREFLIGHT_FIN');
+    }
   }
-  const oauth=new URL('https://www.facebook.com/v26.0/dialog/oauth');
-  oauth.searchParams.set('client_id',APP_ID);
-  oauth.searchParams.set('redirect_uri',OAUTH_CALLBACK);
-  oauth.searchParams.set('state',state);
-  oauth.searchParams.set('response_type','code');
-  oauth.searchParams.set('scope','business_management,whatsapp_business_management,whatsapp_business_messaging');
-  oauth.searchParams.set('auth_type','rerequest');
-  oauth.searchParams.set('display','page');
-  trace('OAUTH_REDIRECT_PREPARADO',{redirect_uri:OAUTH_CALLBACK,state_saved:true});
-  out('Abriendo autorización completa de Meta…');
-  location.assign(oauth.toString());
-};
-$('prepare').onclick=async()=>{
-  try{
-    const d=await call('CLIENT_EXISTING_WABA_PREPARE');prepared=true;
-    $('verifyBlock').classList.remove('hidden');
-    if(String(d.code_verification_status||'').toUpperCase()==='VERIFIED'){
-      verified=true;$('registerBlock').classList.remove('hidden');
-    }
-  }catch(e){out(e.detail||{ok:false,error:e.message})}
-};
-$('sms').onclick=async()=>{try{await call('CLIENT_EXISTING_WABA_REQUEST_CODE',{code_method:'SMS'})}catch(e){out(e.detail||{ok:false,error:e.message})}};
-$('voice').onclick=async()=>{try{await call('CLIENT_EXISTING_WABA_REQUEST_CODE',{code_method:'VOICE'})}catch(e){out(e.detail||{ok:false,error:e.message})}};
-$('verify').onclick=async()=>{
-  const code=String($('otp').value||'').replace(/\D/g,'');
-  try{await call('CLIENT_EXISTING_WABA_VERIFY_CODE',{code});verified=true;$('registerBlock').classList.remove('hidden')}catch(e){out(e.detail||{ok:false,error:e.message})}
-};
-$('register').onclick=async()=>{
-  try{await call('CLIENT_EXISTING_WABA_REGISTER');registered=true;$('finalBlock').classList.remove('hidden')}catch(e){out(e.detail||{ok:false,error:e.message})}
-};
-$('finalize').onclick=async()=>{
-  setBusy(true);
-  try{
-    const{data,error}=await sb.functions.invoke('whatsapp-prod-subscribe-app',{body:{mode:'CLIENT_TENANT_FINALIZE',negocio_id:BUSINESS,confirmacion:'ACTIVAR_CANAL_CLIENTE'}});
-    if(error){let detail=null;try{if(error.context?.json)detail=await error.context.json()}catch{}throw Object.assign(new Error(detail?.error||error.message),{detail})}
-    out(data);
-    if(data?.ok===true){
-      status.className='box ok';status.innerHTML='<strong>✓ 907 conectado a IMPULSO.</strong> Canal creado con IA/outbound todavía protegidos.';
-      document.querySelectorAll('button').forEach(b=>b.disabled=true);
-      setTimeout(()=>location.replace('./cliente-whatsapp.html?negocio='+encodeURIComponent(BUSINESS)),1800);
-    }
-  }catch(e){out(e.detail||{ok:false,error:e.message})}
-  finally{setBusy(false)}
-};
-try{
-  trace('INIT_FLUJO_INICIO');
-  if(await ensureAuth()){
-    trace('AUTH_LOCAL_OK');
+
+  async function init(){
+    trace('JS_INICIADO',{path:location.pathname,query:location.search||''});
+    trace('INIT_FLUJO_INICIO');
+
+    const hasSession=await ensureLocalSession();
+    if(!hasSession)return;
+
     let oauthResult=null;
+    trace('OAUTH_RESULT_STORAGE_CHECK');
     try{
       const raw=localStorage.getItem(OAUTH_RESULT_KEY);
+      trace('OAUTH_RESULT_STORAGE_RAW',{present:Boolean(raw),chars:raw?raw.length:0});
       if(raw){
         const parsed=JSON.parse(raw);
         localStorage.removeItem(OAUTH_RESULT_KEY);
-        if(Number.isFinite(Number(parsed?.at))&&Date.now()-Number(parsed.at)<=10*60*1000)oauthResult=parsed.result;
+        if(Number.isFinite(Number(parsed&&parsed.at))&&Date.now()-Number(parsed.at)<=10*60*1000){
+          oauthResult=parsed.result;
+        }
       }
-    }catch(_){}
-    trace('OAUTH_RESULT_LOCAL',{present:Boolean(oauthResult),ok:oauthResult?.ok??null,error:oauthResult?.error||null});
+    }catch(e){
+      trace('OAUTH_RESULT_STORAGE_ERROR',{message:String(e&&e.message||e)});
+    }
+
+    trace('OAUTH_RESULT_LOCAL',{present:Boolean(oauthResult),ok:oauthResult&&oauthResult.ok!==undefined?oauthResult.ok:null,error:oauthResult&&oauthResult.error||null});
     if(oauthResult){
       out(oauthResult);
-      if(oauthResult?.ok===true){
+      if(oauthResult.ok===true){
         trace('OAUTH_RESULT_OK');
         status.className='box ok';
         status.innerHTML='<strong>✓ Autorización de Kamo validada.</strong> Continuando con la WABA existente…';
-        await read();
+        await readPreflight();
       }else{
-        trace('OAUTH_RESULT_ERROR',{error:oauthResult?.error||'desconocido'});
+        trace('OAUTH_RESULT_ERROR',{error:oauthResult.error||'desconocido'});
         status.className='box bad';
-        status.textContent=String(oauthResult?.error||'Meta no pudo completar la autorización.');
+        status.textContent=String(oauthResult.error||'Meta no pudo completar la autorización.');
         partner.classList.remove('hidden');
-        return;
       }
     }else{
-      await read();
+      await readPreflight();
     }
   }
-}catch(e){trace('INIT_FLUJO_ERROR',{message:e?.message||'Error'});status.className='box bad';status.textContent=e.message;out({ok:false,error:e.message})}
+
+  $('copyTrace').onclick=async()=>{
+    const text=traceBox.textContent;
+    try{
+      await navigator.clipboard.writeText(text);
+      trace('TRAZAS_COPIADAS',{chars:text.length});
+      $('copyTrace').textContent='Copiado ✓';
+      setTimeout(()=>$('copyTrace').textContent='Copiar trazas',1400);
+    }catch(e){
+      trace('CLIPBOARD_API_FALLO',{message:String(e&&e.message||e)});
+      try{
+        const ta=document.createElement('textarea');
+        ta.value=text;
+        ta.style.position='fixed';ta.style.left='-9999px';
+        document.body.appendChild(ta);ta.focus();ta.select();
+        const ok=document.execCommand('copy');ta.remove();
+        trace(ok?'TRAZAS_COPIADAS_FALLBACK':'TRAZAS_COPIA_FALLBACK_FALLO',{chars:text.length});
+      }catch(err){
+        trace('TRAZAS_COPIA_ERROR',{message:String(err&&err.message||err)});
+      }
+    }
+  };
+
+  $('clearTrace').onclick=()=>{
+    traceLines.length=0;traceSeq=0;
+    traceBox.textContent='VERSION · '+TRACE_VERSION;
+    trace('TRAZAS_LIMPIADAS');
+  };
+
+  $('retryRead').onclick=()=>{trace('CLICK_COMPROBAR_DE_NUEVO');readPreflight()};
+
+  $('authorizeMeta').onclick=()=>{
+    trace('CLICK_AUTORIZAR_META');
+    const state=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(16).slice(2);
+    try{
+      localStorage.setItem(OAUTH_CONTEXT_KEY,JSON.stringify({state,negocio_id:BUSINESS,waba_id:WABA,created_at:Date.now()}));
+      trace('OAUTH_CONTEXT_GUARDADO',{state_saved:true});
+    }catch(e){
+      trace('OAUTH_CONTEXT_ERROR',{message:String(e&&e.message||e)});
+      out({ok:false,error:'No se pudo preparar el retorno seguro de Meta.'});
+      return;
+    }
+    const oauth=new URL('https://www.facebook.com/v26.0/dialog/oauth');
+    oauth.searchParams.set('client_id',APP_ID);
+    oauth.searchParams.set('redirect_uri',OAUTH_CALLBACK);
+    oauth.searchParams.set('state',state);
+    oauth.searchParams.set('response_type','code');
+    oauth.searchParams.set('scope','business_management,whatsapp_business_management,whatsapp_business_messaging');
+    oauth.searchParams.set('auth_type','rerequest');
+    oauth.searchParams.set('display','page');
+    trace('OAUTH_REDIRECT_PREPARADO',{redirect_uri:OAUTH_CALLBACK});
+    out('Abriendo autorización completa de Meta…');
+    location.assign(oauth.toString());
+  };
+
+  $('prepare').onclick=async()=>{
+    trace('CLICK_PREPARAR_907');
+    try{
+      const d=await invokeEdge('CLIENT_EXISTING_WABA_PREPARE');
+      $('verifyBlock').classList.remove('hidden');
+      if(String(d.code_verification_status||'').toUpperCase()==='VERIFIED')$('registerBlock').classList.remove('hidden');
+    }catch(e){out(e&&e.detail||{ok:false,error:String(e&&e.message||e)})}
+  };
+  $('sms').onclick=async()=>{trace('CLICK_OTP_SMS');try{await invokeEdge('CLIENT_EXISTING_WABA_REQUEST_CODE',{code_method:'SMS'})}catch(e){out(e&&e.detail||{ok:false,error:String(e&&e.message||e)})}};
+  $('voice').onclick=async()=>{trace('CLICK_OTP_VOICE');try{await invokeEdge('CLIENT_EXISTING_WABA_REQUEST_CODE',{code_method:'VOICE'})}catch(e){out(e&&e.detail||{ok:false,error:String(e&&e.message||e)})}};
+  $('verify').onclick=async()=>{
+    trace('CLICK_VERIFICAR_OTP');
+    const code=String($('otp').value||'').replace(/\D/g,'');
+    try{await invokeEdge('CLIENT_EXISTING_WABA_VERIFY_CODE',{code});$('registerBlock').classList.remove('hidden')}catch(e){out(e&&e.detail||{ok:false,error:String(e&&e.message||e)})}
+  };
+  $('register').onclick=async()=>{
+    trace('CLICK_REGISTRAR_CLOUD_API');
+    try{await invokeEdge('CLIENT_EXISTING_WABA_REGISTER');$('finalBlock').classList.remove('hidden')}catch(e){out(e&&e.detail||{ok:false,error:String(e&&e.message||e)})}
+  };
+  $('finalize').onclick=async()=>{
+    trace('CLICK_FINALIZAR_CANAL');
+    try{
+      const d=await invokeEdge('CLIENT_TENANT_FINALIZE',{confirmacion:'ACTIVAR_CANAL_CLIENTE'});
+      if(d&&d.ok===true){
+        status.className='box ok';
+        status.innerHTML='<strong>✓ 907 conectado a IMPULSO.</strong> Canal creado con IA/outbound todavía protegidos.';
+        trace('FINALIZACION_OK',{channel_id:d.channel&&d.channel.id||null});
+      }
+    }catch(e){out(e&&e.detail||{ok:false,error:String(e&&e.message||e)})}
+  };
+
+  init().catch(e=>{
+    trace('INIT_FATAL',{message:String(e&&e.message||e)});
+    status.className='box bad';
+    status.textContent=String(e&&e.message||'Error');
+    out({ok:false,error:String(e&&e.message||e)});
+  });
+})();
 </script>
 </body></html>
