@@ -176,12 +176,16 @@ try{
       if(oauthResult?.ok===true){
         status.className='box ok';
         status.innerHTML='<strong>✓ Autorización de Kamo validada.</strong> Continuando con la WABA existente…';
+        await read();
       }else{
         status.className='box bad';
         status.textContent=String(oauthResult?.error||'Meta no pudo completar la autorización.');
+        partner.classList.remove('hidden');
+        return;
       }
+    }else{
+      await read();
     }
-    await read();
   }
 }catch(e){status.className='box bad';status.textContent=e.message;out({ok:false,error:e.message})}
 </script>
