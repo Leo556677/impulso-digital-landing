@@ -13,6 +13,7 @@
 </style>
 </head>
 <body>
+<div id="fb-root"></div>
 <header class="top"><div class="topin"><a id="brand" class="brand" href="./cliente-panel.html"><img src="./img/logo-impulso-digital.png" alt="Impulso Digital"><strong>IMPULSO DIGITAL</strong></a><a id="back" class="back" href="./cliente-whatsapp.html">← Volver</a></div></header>
 <main class="wrap">
 <section class="card">
@@ -27,9 +28,8 @@
 <h2>Estado</h2>
 <div id="status" class="box warn">Comprobando si IMPULSO ya tiene acceso al WABA…</div>
 <div id="partner" class="hidden">
-  <div class="step"><div class="num">1</div><div><strong>Comparte la WABA con IMPULSO DIGITAL</strong><br><span style="font-size:12px;color:var(--m)">En Meta Business Settings de IMAGENES, asigna como socio el Business ID de IMPULSO y dale permisos para administrar la cuenta WhatsApp.</span></div></div>
-  <div class="box info">Business ID de IMPULSO: <strong id="providerId">886038977932226</strong></div>
-  <div class="actions"><a class="btn secondary" href="https://business.facebook.com/settings/partners/?business_id=259173804891411" target="_blank" rel="noopener">Abrir Socios de IMAGENES</a><button id="retryRead" type="button">Ya lo asigné · comprobar</button></div>
+  <div class="step"><div class="num">1</div><div><strong>Autoriza con Kamo Olano</strong><br><span style="font-size:12px;color:var(--m)">Kamo ya administra IMAGENES y la WABA Dr Olano. Meta pedirá autorización para que la app de IMPULSO gestione WhatsApp en nombre de ese negocio. No compartas contraseña ni códigos.</span></div></div>
+  <div class="actions"><button id="authorizeMeta" type="button">Autorizar con Meta</button><button id="retryRead" class="secondary" type="button">Comprobar de nuevo</button></div>
 </div>
 <div id="flow" class="hidden">
   <div id="metaState" class="box info"></div>
@@ -61,9 +61,9 @@
 <script type="module">
 import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
 const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-const BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb',WABA='3285972601590465';
+const BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb',WABA='3285972601590465',APP_ID='860468763590445',GRAPH_VERSION='v26.0';
 const $=id=>document.getElementById(id),status=$('status'),partner=$('partner'),flow=$('flow'),result=$('result');
-let prepared=false,verified=false,registered=false,busy=false;
+let prepared=false,verified=false,registered=false,busy=false,sdkReady=false;
 function out(v){result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2)}
 function setBusy(v){busy=v;document.querySelectorAll('button').forEach(b=>b.disabled=v)}
 async function call(mode,extra={}){
@@ -74,6 +74,9 @@ async function call(mode,extra={}){
     out(data);return data;
   }finally{setBusy(false)}
 }
+window.fbAsyncInit=function(){FB.init({appId:APP_ID,cookie:true,xfbml:false,version:GRAPH_VERSION});sdkReady=true};
+const fbSdk=document.createElement('script');fbSdk.async=true;fbSdk.defer=true;fbSdk.crossOrigin='anonymous';fbSdk.src='https://connect.facebook.net/en_US/sdk.js';fbSdk.onerror=()=>out({ok:false,error:'No se pudo cargar el SDK de Meta'});document.head.appendChild(fbSdk);
+
 async function ensureAuth(){
   const{data:{session}}=await sb.auth.getSession();
   if(!session){const here=location.pathname+location.search;location.replace('./cliente-acceso.html?next='+encodeURIComponent(here));return false}
@@ -93,15 +96,34 @@ async function read(){
     }
   }catch(e){
     const d=e.detail||{};
-    if(d.codigo==='PARTNER_ACCESS_REQUIRED'){
-      status.className='box warn';status.innerHTML='<strong>Falta un único permiso empresarial:</strong> compartir la WABA Dr Olano con IMPULSO DIGITAL como socio.';
-      $('providerId').textContent=String(d.provider_business_id||'886038977932226');
+    if(d.codigo==='USER_OAUTH_REQUIRED'||d.codigo==='PARTNER_ACCESS_REQUIRED'){
+      status.className='box warn';status.innerHTML='<strong>Falta autorización del administrador de IMAGENES.</strong> Kamo puede concederla directamente a la app de IMPULSO.';
       partner.classList.remove('hidden');out(d);return;
     }
     status.className='box bad';status.textContent=e.message;out(e.detail||{ok:false,error:e.message});
   }
 }
 $('retryRead').onclick=read;
+$('authorizeMeta').onclick=()=>{
+  if(!sdkReady){out({ok:false,error:'Meta todavía está cargando. Espera unos segundos y vuelve a intentarlo.'});return}
+  setBusy(true);out('Abriendo autorización oficial de Meta…');
+  FB.login(async response=>{
+    setBusy(false);
+    const code=String(response?.authResponse?.code||'').trim();
+    if(!code){out({ok:false,error:'Meta no devolvió autorización. Verifica que Kamo Olano sea el perfil activo y vuelve a intentarlo.'});return}
+    try{
+      const data=await call('CLIENT_EXISTING_WABA_AUTHORIZE',{code});
+      status.className='box ok';status.innerHTML='<strong>✓ Autorización validada.</strong> IMPULSO ya puede trabajar de forma segura con la WABA Dr Olano.';
+      partner.classList.add('hidden');out(data);
+      await read();
+    }catch(e){out(e.detail||{ok:false,error:e.message})}
+  },{
+    scope:'business_management,whatsapp_business_management,whatsapp_business_messaging',
+    response_type:'code',
+    override_default_response_type:true,
+    return_scopes:true
+  });
+};
 $('prepare').onclick=async()=>{
   try{
     const d=await call('CLIENT_EXISTING_WABA_PREPARE');prepared=true;
