@@ -107,20 +107,26 @@ $('retryRead').onclick=read;
 $('authorizeMeta').onclick=()=>{
   if(!sdkReady){out({ok:false,error:'Meta todavía está cargando. Espera unos segundos y vuelve a intentarlo.'});return}
   setBusy(true);out('Abriendo autorización oficial de Meta…');
+  let finished=false;
+  const timer=setTimeout(()=>{
+    if(finished)return;
+    finished=true;setBusy(false);
+    out({ok:false,error:'Meta no respondió al popup de autorización. Vuelve a tocar “Autorizar con Meta”. Si el navegador bloqueó una ventana emergente, permítela para este sitio.'});
+  },25000);
   FB.login(async response=>{
-    setBusy(false);
-    const code=String(response?.authResponse?.code||'').trim();
-    if(!code){out({ok:false,error:'Meta no devolvió autorización. Verifica que Kamo Olano sea el perfil activo y vuelve a intentarlo.'});return}
+    if(finished)return;
+    finished=true;clearTimeout(timer);setBusy(false);
+    const token=String(response?.authResponse?.accessToken||'').trim();
+    if(!token){out({ok:false,error:'Meta no devolvió autorización. Verifica que Kamo Olano sea el perfil activo y vuelve a intentarlo.'});return}
     try{
-      const data=await call('CLIENT_EXISTING_WABA_AUTHORIZE',{code});
+      const data=await call('CLIENT_EXISTING_WABA_AUTHORIZE',{access_token:token});
       status.className='box ok';status.innerHTML='<strong>✓ Autorización validada.</strong> IMPULSO ya puede trabajar de forma segura con la WABA Dr Olano.';
       partner.classList.add('hidden');out(data);
       await read();
     }catch(e){out(e.detail||{ok:false,error:e.message})}
   },{
     scope:'business_management,whatsapp_business_management,whatsapp_business_messaging',
-    response_type:'code',
-    override_default_response_type:true,
+    auth_type:'rerequest',
     return_scopes:true
   });
 };
