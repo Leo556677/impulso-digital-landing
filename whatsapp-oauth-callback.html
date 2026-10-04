@@ -58,10 +58,10 @@
     }catch(_){}
   }
 
-  function storedAccessToken(){
+  function storedSession(){
     try{
       const raw=localStorage.getItem(AUTH_KEY);
-      if(!raw)return '';
+      if(!raw)return null;
       const parsed=JSON.parse(raw);
       const candidates=[
         parsed,
@@ -69,13 +69,48 @@
         parsed&&parsed.session,
         parsed&&parsed.data&&parsed.data.session
       ].filter(Boolean);
-      const session=candidates.find(x=>typeof x.access_token==='string'&&x.access_token.length>20);
-      return session?String(session.access_token):'';
-    }catch(_){return ''}
+      return candidates.find(x=>typeof x.access_token==='string'&&x.access_token.length>20)||null;
+    }catch(_){return null}
   }
 
-  async function invokeEdge(slug,body){
-    const token=storedAccessToken();
+  function saveStoredSession(session){
+    try{localStorage.setItem(AUTH_KEY,JSON.stringify(session));return true}catch(_){return false}
+  }
+
+  async function refreshStoredSession(){
+    const current=storedSession();
+    const refreshToken=current&&current.refresh_token?String(current.refresh_token):'';
+    if(!refreshToken)return null;
+    try{
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),10000);
+      const resp=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=refresh_token',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY},
+        body:JSON.stringify({refresh_token:refreshToken}),
+        cache:'no-store',
+        signal:controller.signal
+      });
+      clearTimeout(timer);
+      let data=null;
+      try{data=await resp.json()}catch(_){}
+      if(!resp.ok||!data||!data.access_token)return null;
+      saveStoredSession(data);
+      return data;
+    }catch(_){return null}
+  }
+
+  async function freshAccessToken(force){
+    let session=storedSession();
+    const exp=Number(session&&session.expires_at||0);
+    const expired=Boolean(exp&&exp*1000<=Date.now()+60000);
+    if(!force&&session&&session.access_token&&!expired)return String(session.access_token);
+    session=await refreshStoredSession();
+    return session&&session.access_token?String(session.access_token):'';
+  }
+
+  async function invokeEdge(slug,body,retried){
+    const token=await freshAccessToken(false);
     if(!token)return {ok:false,error:'SESION_PORTAL_NO_DISPONIBLE'};
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),15000);
@@ -93,6 +128,10 @@
       });
       let data=null;
       try{data=await resp.json()}catch(_){}
+      if(resp.status===401&&!retried){
+        const renewed=await freshAccessToken(true);
+        if(renewed)return await invokeEdge(slug,body,true);
+      }
       if(!resp.ok)return data||{ok:false,error:'HTTP_'+resp.status};
       return data||{ok:false,error:'RESPUESTA_VACIA'};
     }catch(e){
@@ -163,7 +202,7 @@
       }
       showResult(finalData);
 
-      const next='./cliente-whatsapp-existing-waba-prod.html?negocio='+encodeURIComponent(String(existingWabaContext.negocio_id))+'&oauth_return=1&v=20261004-10';
+      const next='./cliente-whatsapp-existing-waba-prod.html?negocio='+encodeURIComponent(String(existingWabaContext.negocio_id))+'&oauth_return=1&v=20261004-11';
       setTimeout(()=>location.replace(next),1300);
       return;
     }
