@@ -33,8 +33,17 @@
 </div>
 <div id="flow" class="hidden">
   <div id="metaState" class="box info"></div>
-  <div class="step"><div class="num">2</div><div><strong>Preparar conexión segura</strong><br><span style="font-size:12px;color:var(--m)">Guarda la autorización del socio en Vault para este tenant.</span></div></div>
-  <div class="actions"><button id="prepare" type="button">Preparar 907</button></div>
+
+  <div id="coexistenceBlock" class="hidden">
+    <div class="box warn"><strong>Meta detecta el 907 como WhatsApp Business App.</strong><br>No pediremos más SMS ni haremos un registro estándar. Debe terminarse el flujo oficial de Coexistence para que Meta cambie el número a Cloud API sin re-registrarlo.</div>
+    <div class="step"><div class="num">2</div><div><strong>Completar Coexistence</strong><br><span style="font-size:12px;color:var(--m)">Se abrirá el flujo oficial de Meta para el mismo WABA y número. Si Meta lo completa, saltaremos directamente al cierre seguro del canal.</span></div></div>
+    <div class="actions"><button id="completeCoexistence" type="button">Completar conexión con Meta</button></div>
+  </div>
+
+  <div id="standardPrepareBlock">
+    <div class="step"><div class="num">2</div><div><strong>Preparar conexión segura</strong><br><span style="font-size:12px;color:var(--m)">Guarda la autorización del socio en Vault para este tenant.</span></div></div>
+    <div class="actions"><button id="prepare" type="button">Preparar 907</button></div>
+  </div>
 
   <div id="verifyBlock" class="hidden">
     <div class="step"><div class="num">3</div><div><strong>Verificar que controlas el 907</strong><br><span style="font-size:12px;color:var(--m)">Meta enviará un código al número corporativo. El código se introduce aquí, no en el chat.</span></div></div>
@@ -56,7 +65,7 @@
 </section>
 
 <section class="card">
-<div class="tracehead"><h2>Trazas visuales</h2><span class="tracever">DBG 20261004-8</span></div>
+<div class="tracehead"><h2>Trazas visuales</h2><span class="tracever">DBG 20261004-9</span></div>
 <p class="tracehelp">Copia este bloque y pégalo en el chat. No incluye contraseñas, tokens, códigos OAuth, OTP ni PIN.</p>
 <div class="actions" style="margin-bottom:10px"><button id="copyTrace" type="button">Copiar trazas</button><button id="clearTrace" class="secondary" type="button">Limpiar</button></div>
 <pre id="traceBox" class="tracebox">[inicio] esperando JavaScript…</pre>
@@ -75,14 +84,15 @@
   const BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb';
   const WABA='3285972601590465';
   const APP_ID='860468763590445';
+  const CONFIG_ID='1771287760748703';
   const OAUTH_CALLBACK='https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
   const OAUTH_CONTEXT_KEY='impulso_existing_waba_oauth_context';
   const OAUTH_RESULT_KEY='impulso_existing_waba_oauth_result';
-  const TRACE_VERSION='DBG-20261004-8';
+  const TRACE_VERSION='DBG-20261004-9';
 
   const $=id=>document.getElementById(id);
   const status=$('status'),partner=$('partner'),flow=$('flow'),result=$('result'),traceBox=$('traceBox');
-  let traceSeq=0,busy=false;
+  let traceSeq=0,busy=false,metaSdkReady=false,coexistenceFinish=null,coexistenceCredential=null,coexistenceSubmitting=false;
   const traceLines=[];
 
   function trace(step,data){
@@ -210,6 +220,99 @@
     return true;
   }
 
+  function safeFacebookOrigin(origin){
+    try{
+      const h=new URL(origin).hostname.toLowerCase();
+      return h==='facebook.com'||h.endsWith('.facebook.com');
+    }catch(_){return false}
+  }
+
+  async function invokeEmbedded(body){
+    const token=getAccessToken();
+    if(!token)throw Object.assign(new Error('SESION_LOCAL_NO_DISPONIBLE'),{detail:{ok:false,error:'No encontré una sesión activa del portal.'}});
+    trace('EMBEDDED_BACKEND_INICIO',{mode:body.mode});
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),20000);
+    try{
+      const resp=await fetch(SUPABASE_URL+'/functions/v1/whatsapp-embedded-signup',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer '+token
+        },
+        body:JSON.stringify(body),
+        cache:'no-store',
+        signal:controller.signal
+      });
+      let data=null;
+      try{data=await resp.json()}catch(_){}
+      trace('EMBEDDED_BACKEND_RESPUESTA',{status:resp.status,ok:resp.ok,data_ok:data&&data.ok!==undefined?data.ok:null,error:data&&data.error||null});
+      if(!resp.ok||!data||data.ok!==true)throw Object.assign(new Error(data&&data.error||('HTTP_'+resp.status)),{detail:data||{ok:false,error:'HTTP_'+resp.status}});
+      return data;
+    }finally{clearTimeout(timer)}
+  }
+
+  async function submitCoexistenceWhenReady(){
+    if(coexistenceSubmitting||!coexistenceFinish||!coexistenceCredential)return;
+    coexistenceSubmitting=true;
+    setBusy(true);
+    trace('COEXISTENCE_BACKEND_SUBMIT',{event:coexistenceFinish.event,waba_id:coexistenceFinish&&coexistenceFinish.data&&coexistenceFinish.data.waba_id||null});
+    try{
+      const body={
+        mode:'CLIENT_PROD_COEXISTENCE',
+        negocio_id:BUSINESS,
+        session_event:String(coexistenceFinish&&coexistenceFinish.event||''),
+        session_waba_id:String(coexistenceFinish&&coexistenceFinish.data&&coexistenceFinish.data.waba_id||''),
+        session_phone_number_id:String(coexistenceFinish&&coexistenceFinish.data&&coexistenceFinish.data.phone_number_id||'')
+      };
+      if(coexistenceCredential.code)body.code=coexistenceCredential.code;
+      else body.access_token=coexistenceCredential.accessToken;
+      const data=await invokeEmbedded(body);
+      out(data);
+      trace('COEXISTENCE_PHASE_A_OK',{waba_id:data.waba_id,phone_number_id:data.phone_number_id,platform_type:data.platform_type});
+      coexistenceFinish=null;coexistenceCredential=null;
+      await readPreflight();
+    }catch(e){
+      const d=e&&e.detail||{};
+      trace('COEXISTENCE_PHASE_A_ERROR',{message:String(e&&e.message||e),platform_type:d&&d.estado&&d.estado.platform_type||null,is_on_biz_app:d&&d.estado&&d.estado.is_on_biz_app??null});
+      status.className='box bad';
+      status.textContent=String(e&&e.message||'No se pudo completar Coexistence.');
+      out(d&&Object.keys(d).length?d:{ok:false,error:String(e&&e.message||e)});
+    }finally{
+      coexistenceSubmitting=false;
+      setBusy(false);
+    }
+  }
+
+  window.addEventListener('message',event=>{
+    if(!safeFacebookOrigin(event.origin))return;
+    let data=event.data;
+    if(typeof data==='string'){try{data=JSON.parse(data)}catch(_){return}}
+    if(!data||data.type!=='WA_EMBEDDED_SIGNUP')return;
+    trace('META_EMBEDDED_EVENT',{event:data.event||null,waba_id:data&&data.data&&data.data.waba_id||null,phone_number_id:data&&data.data&&data.data.phone_number_id||null});
+    if(data.event==='FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING'){
+      coexistenceFinish=data;
+      submitCoexistenceWhenReady();
+    }else if(data.event==='CANCEL'){
+      trace('META_EMBEDDED_CANCEL',{current_step:data&&data.data&&data.data.current_step||null});
+    }else if(data.event==='ERROR'){
+      trace('META_EMBEDDED_ERROR',{message:String(data&&data.data&&data.data.error_message||'Meta reportó un error').slice(0,300)});
+    }
+  });
+
+  window.fbAsyncInit=function(){
+    FB.init({appId:APP_ID,cookie:true,xfbml:false,version:'v26.0'});
+    metaSdkReady=true;
+    trace('META_SDK_READY');
+  };
+  const metaSdk=document.createElement('script');
+  metaSdk.async=true;metaSdk.defer=true;metaSdk.crossOrigin='anonymous';
+  metaSdk.src='https://connect.facebook.net/en_US/sdk.js';
+  metaSdk.onload=()=>trace('META_SDK_SCRIPT_LOADED');
+  metaSdk.onerror=()=>trace('META_SDK_SCRIPT_ERROR');
+  document.head.appendChild(metaSdk);
+
   async function readPreflight(){
     trace('PREFLIGHT_INICIO');
     status.className='box warn';
@@ -219,10 +322,38 @@
     try{
       const data=await invokeEdge('CLIENT_EXISTING_WABA_READ');
       trace('PREFLIGHT_OK',{phone:data.display_phone_number||null,platform:data.platform_type||null,phone_status:data.phone_status||null});
+      flow.classList.remove('hidden');
+      $('metaState').textContent='Meta: '+String(data.display_phone_number||'')+' · estado '+String(data.phone_status||'desconocido')+' · plataforma '+String(data.platform_type||'sin registrar')+' · verificación '+String(data.code_verification_status||'desconocida')+' · Business App '+String(data.is_on_biz_app===true?'SÍ':'NO');
+
+      const coexistencePending=data.is_on_biz_app===true&&String(data.platform_type||'')!=='CLOUD_API';
+      const coexistenceReady=data.is_on_biz_app===true&&String(data.platform_type||'')==='CLOUD_API'&&String(data.phone_status||'')==='CONNECTED';
+
+      if(coexistencePending){
+        trace('COEXISTENCE_RESCUE_REQUIRED',{platform_type:data.platform_type,phone_status:data.phone_status,is_on_biz_app:true});
+        status.className='box warn';
+        status.innerHTML='<strong>Meta reconoce el 907 como WhatsApp Business App, pero todavía no lo terminó de pasar a Cloud API.</strong> Usaremos el flujo oficial de Coexistence y saltaremos OTP/registro estándar.';
+        $('coexistenceBlock').classList.remove('hidden');
+        $('standardPrepareBlock').classList.add('hidden');
+        $('verifyBlock').classList.add('hidden');
+        $('registerBlock').classList.add('hidden');
+        $('finalBlock').classList.add('hidden');
+        return;
+      }
+
+      $('coexistenceBlock').classList.add('hidden');
+
+      if(coexistenceReady){
+        trace('COEXISTENCE_READY_FOR_FINALIZE');
+        status.className='box ok';
+        status.innerHTML='<strong>✓ Coexistence listo.</strong> Meta ya reporta Business App + Cloud API. Falta únicamente suscribir la app y crear el canal protegido.';
+        $('standardPrepareBlock').classList.add('hidden');
+        $('finalBlock').classList.remove('hidden');
+        return;
+      }
+
       status.className='box ok';
       status.innerHTML='<strong>✓ WABA accesible.</strong> Ya podemos trabajar sobre el 907 existente.';
-      flow.classList.remove('hidden');
-      $('metaState').textContent='Meta: '+String(data.display_phone_number||'')+' · estado '+String(data.phone_status||'desconocido')+' · plataforma '+String(data.platform_type||'sin registrar')+' · verificación '+String(data.code_verification_status||'desconocida');
+      $('standardPrepareBlock').classList.remove('hidden');
       if(String(data.platform_type||'')==='CLOUD_API'&&String(data.phone_status||'')==='CONNECTED'){
         $('prepare').textContent='Preparar conexión existente';
       }
@@ -339,6 +470,44 @@
     trace('OAUTH_REDIRECT_PREPARADO',{redirect_uri:OAUTH_CALLBACK});
     out('Abriendo autorización completa de Meta…');
     location.assign(oauth.toString());
+  };
+
+  $('completeCoexistence').onclick=()=>{
+    trace('CLICK_COMPLETAR_COEXISTENCE');
+    if(!metaSdkReady||typeof FB==='undefined'){
+      trace('COEXISTENCE_SDK_NOT_READY');
+      out({ok:false,error:'Meta todavía está cargando. Espera unos segundos y vuelve a tocar el botón.'});
+      return;
+    }
+    coexistenceFinish=null;coexistenceCredential=null;
+    out('Abriendo el flujo oficial de Coexistence de Meta…');
+    FB.login(response=>{
+      const auth=response&&response.authResponse;
+      if(!auth){
+        trace('COEXISTENCE_LOGIN_NO_AUTH');
+        out({ok:false,error:'Meta no devolvió autorización del flujo Coexistence.'});
+        return;
+      }
+      const code=String(auth.code||'').trim();
+      const accessToken=String(auth.accessToken||'').trim();
+      if(!code&&!accessToken){
+        trace('COEXISTENCE_LOGIN_NO_CREDENTIAL');
+        out({ok:false,error:'Meta no devolvió credencial para completar Coexistence.'});
+        return;
+      }
+      coexistenceCredential=code?{code}:{accessToken};
+      trace('COEXISTENCE_AUTH_RECEIVED',{credential:code?'code':'token'});
+      submitCoexistenceWhenReady();
+    },{
+      config_id:CONFIG_ID,
+      response_type:'code',
+      override_default_response_type:true,
+      extras:{
+        setup:{},
+        featureType:'whatsapp_business_app_onboarding',
+        sessionInfoVersion:'3'
+      }
+    });
   };
 
   $('prepare').onclick=async()=>{
