@@ -28,7 +28,7 @@ try{
       state.className='state warn';
       state.innerHTML='<strong>Conexión pendiente</strong><br><span style="font-size:12px">Conecta tu propio WhatsApp con Meta. Tú autorizas tu cuenta; Impulso Digital no necesita tu contraseña de Facebook ni acceso manual a tu negocio. La conexión queda aislada para esta empresa.</span>';
       const onboardingHref=String(negocioId)==='48182e1a-06d5-4685-9627-7891d7aafacb'
-        ?'./cliente-whatsapp-onboarding-prod.html?negocio='+encodeURIComponent(negocioId)+'&mode=standard&lock=1'
+        ?'./cliente-whatsapp-existing-waba-prod.html?negocio='+encodeURIComponent(negocioId)
         :'./cliente-whatsapp-onboarding-prod.html?negocio='+encodeURIComponent(negocioId);
       actions.innerHTML='<a class="btn secondary" href="'+panel+'">Volver al panel</a>'+(['admin','propietario'].includes(String(membership.rol))?'<a class="btn" href="'+onboardingHref+'">Conectar mi WhatsApp</a>':'');
     }
