@@ -18,174 +18,195 @@
     <p id="status" class="muted">Procesando respuesta segura de Meta…</p>
     <pre id="result" hidden></pre>
   </main>
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+  <script>
+(function(){
+  'use strict';
 
-    const ORIGIN = 'https://leo556677.github.io';
-    const CHANNEL = 'impulso-meta-oauth';
-    const BUSINESS_CONTEXT_KEY = 'impulso_business_management_oauth_context';
-    const EXISTING_WABA_CONTEXT_KEY = 'impulso_existing_waba_oauth_context';
-    const EXISTING_WABA_RESULT_KEY = 'impulso_existing_waba_oauth_result';
-    const SUPABASE_URL = 'https://xnlzsgulskqyecfgzhwa.supabase.co';
-    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
-    const params = new URLSearchParams(window.location.search);
-    const payload = {
-      type: 'IMPULSO_META_OAUTH_CALLBACK',
-      code: params.get('code'),
-      state: params.get('state'),
-      error: params.get('error'),
-      error_reason: params.get('error_reason'),
-      error_description: params.get('error_description')
-    };
+  const ORIGIN='https://leo556677.github.io';
+  const CHANNEL='impulso-meta-oauth';
+  const BUSINESS_CONTEXT_KEY='impulso_business_management_oauth_context';
+  const EXISTING_WABA_CONTEXT_KEY='impulso_existing_waba_oauth_context';
+  const EXISTING_WABA_RESULT_KEY='impulso_existing_waba_oauth_result';
+  const SUPABASE_URL='https://xnlzsgulskqyecfgzhwa.supabase.co';
+  const SUPABASE_KEY='sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32';
+  const AUTH_KEY='sb-xnlzsgulskqyecfgzhwa-auth-token';
 
-    const status = document.getElementById('status');
-    const result = document.getElementById('result');
+  const params=new URLSearchParams(location.search);
+  const payload={
+    type:'IMPULSO_META_OAUTH_CALLBACK',
+    code:params.get('code'),
+    state:params.get('state'),
+    error:params.get('error'),
+    error_reason:params.get('error_reason'),
+    error_description:params.get('error_description')
+  };
 
-    function showResult(value) {
-      result.hidden = false;
-      result.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+  const status=document.getElementById('status');
+  const result=document.getElementById('result');
+
+  function showResult(value){
+    result.hidden=false;
+    result.textContent=typeof value==='string'?value:JSON.stringify(value,null,2);
+  }
+
+  function broadcast(message){
+    try{if(window.opener)window.opener.postMessage(message,ORIGIN)}catch(_){}
+    try{
+      const bc=new BroadcastChannel(CHANNEL);
+      bc.postMessage(message);
+      setTimeout(()=>bc.close(),1500);
+    }catch(_){}
+  }
+
+  function storedAccessToken(){
+    try{
+      const raw=localStorage.getItem(AUTH_KEY);
+      if(!raw)return '';
+      const parsed=JSON.parse(raw);
+      const candidates=[
+        parsed,
+        parsed&&parsed.currentSession,
+        parsed&&parsed.session,
+        parsed&&parsed.data&&parsed.data.session
+      ].filter(Boolean);
+      const session=candidates.find(x=>typeof x.access_token==='string'&&x.access_token.length>20);
+      return session?String(session.access_token):'';
+    }catch(_){return ''}
+  }
+
+  async function invokeEdge(slug,body){
+    const token=storedAccessToken();
+    if(!token)return {ok:false,error:'SESION_PORTAL_NO_DISPONIBLE'};
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),15000);
+    try{
+      const resp=await fetch(SUPABASE_URL+'/functions/v1/'+slug,{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer '+token
+        },
+        body:JSON.stringify(body),
+        cache:'no-store',
+        signal:controller.signal
+      });
+      let data=null;
+      try{data=await resp.json()}catch(_){}
+      if(!resp.ok)return data||{ok:false,error:'HTTP_'+resp.status};
+      return data||{ok:false,error:'RESPUESTA_VACIA'};
+    }catch(e){
+      return {ok:false,error:e&&e.name==='AbortError'?'TIMEOUT_BACKEND':String(e&&e.message||e)};
+    }finally{
+      clearTimeout(timer);
     }
+  }
 
-    function broadcast(message) {
-      try { if (window.opener) window.opener.postMessage(message, ORIGIN); } catch (_) {}
-      try {
-        const bc = new BroadcastChannel(CHANNEL);
-        bc.postMessage(message);
-        setTimeout(() => bc.close(), 1500);
-      } catch (_) {}
-    }
+  function getContext(key){
+    try{
+      const raw=localStorage.getItem(key);
+      return raw?JSON.parse(raw):null;
+    }catch(_){return null}
+  }
 
-    let businessContext = null;
-    try {
-      const raw = localStorage.getItem(BUSINESS_CONTEXT_KEY);
-      if (raw) businessContext = JSON.parse(raw);
-    } catch (_) {}
+  const businessContext=getContext(BUSINESS_CONTEXT_KEY);
+  const existingWabaContext=getContext(EXISTING_WABA_CONTEXT_KEY);
 
-    const isBusinessReview = Boolean(
-      payload.state &&
-      businessContext?.state === payload.state &&
-      /^[0-9a-fA-F-]{36}$/.test(String(businessContext?.negocio_id || '')) &&
-      Number.isFinite(Number(businessContext?.created_at)) &&
-      Date.now() - Number(businessContext.created_at) >= 0 &&
-      Date.now() - Number(businessContext.created_at) <= 10 * 60 * 1000
-    );
+  const isBusinessReview=Boolean(
+    payload.state &&
+    businessContext &&
+    businessContext.state===payload.state &&
+    /^[0-9a-fA-F-]{36}$/.test(String(businessContext.negocio_id||'')) &&
+    Number.isFinite(Number(businessContext.created_at)) &&
+    Date.now()-Number(businessContext.created_at)>=0 &&
+    Date.now()-Number(businessContext.created_at)<=10*60*1000
+  );
 
-    let existingWabaContext = null;
-    try {
-      const raw = localStorage.getItem(EXISTING_WABA_CONTEXT_KEY);
-      if (raw) existingWabaContext = JSON.parse(raw);
-    } catch (_) {}
+  const isExistingWaba=Boolean(
+    payload.state &&
+    existingWabaContext &&
+    existingWabaContext.state===payload.state &&
+    /^[0-9a-fA-F-]{36}$/.test(String(existingWabaContext.negocio_id||'')) &&
+    /^[0-9]{6,30}$/.test(String(existingWabaContext.waba_id||'')) &&
+    Number.isFinite(Number(existingWabaContext.created_at)) &&
+    Date.now()-Number(existingWabaContext.created_at)>=0 &&
+    Date.now()-Number(existingWabaContext.created_at)<=10*60*1000
+  );
 
-    const isExistingWaba = Boolean(
-      payload.state &&
-      existingWabaContext?.state === payload.state &&
-      /^[0-9a-fA-F-]{36}$/.test(String(existingWabaContext?.negocio_id || '')) &&
-      /^[0-9]{6,30}$/.test(String(existingWabaContext?.waba_id || '')) &&
-      Number.isFinite(Number(existingWabaContext?.created_at)) &&
-      Date.now() - Number(existingWabaContext.created_at) >= 0 &&
-      Date.now() - Number(existingWabaContext.created_at) <= 10 * 60 * 1000
-    );
-
-    if (isExistingWaba) {
+  async function main(){
+    if(isExistingWaba){
       localStorage.removeItem(EXISTING_WABA_CONTEXT_KEY);
-      let finalData = null;
+      let finalData=null;
 
-      if (payload.error) {
-        finalData = { ok:false, error:payload.error, detalle:payload.error_description || payload.error_reason || null };
-      } else if (!payload.code) {
-        finalData = { ok:false, error:'META_SIN_CODIGO' };
-      } else {
-        status.textContent = 'Autorización recibida. Validando WABA y número corporativo en backend seguro…';
-        try {
-          const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-            auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}
-          });
-          const { data, error } = await supabase.functions.invoke('whatsapp-prod-subscribe-app', {
-            body:{
-              mode:'CLIENT_EXISTING_WABA_AUTHORIZE',
-              negocio_id:String(existingWabaContext.negocio_id),
-              waba_id:String(existingWabaContext.waba_id),
-              code:String(payload.code)
-            }
-          });
-
-          finalData = data;
-          if (error) {
-            let detail = null;
-            try { if (error.context && typeof error.context.json === 'function') detail = await error.context.json(); } catch (_) {}
-            finalData = detail || { ok:false, error:error.message || 'No se pudo validar la autorización.' };
-          }
-        } catch (error) {
-          finalData = { ok:false, error:error?.message || 'No se pudo completar la autorización.' };
-        }
+      if(payload.error){
+        finalData={ok:false,error:payload.error,detalle:payload.error_description||payload.error_reason||null};
+      }else if(!payload.code){
+        finalData={ok:false,error:'META_SIN_CODIGO'};
+      }else{
+        status.textContent='Autorización recibida. Validando WABA y número corporativo en backend seguro…';
+        finalData=await invokeEdge('whatsapp-prod-subscribe-app',{
+          mode:'CLIENT_EXISTING_WABA_AUTHORIZE',
+          negocio_id:String(existingWabaContext.negocio_id),
+          waba_id:String(existingWabaContext.waba_id),
+          code:String(payload.code)
+        });
       }
 
-      try {
-        localStorage.setItem(EXISTING_WABA_RESULT_KEY, JSON.stringify({
-          at:Date.now(),
-          result:finalData
-        }));
-      } catch (_) {}
+      try{
+        localStorage.setItem(EXISTING_WABA_RESULT_KEY,JSON.stringify({at:Date.now(),result:finalData}));
+      }catch(_){}
 
-      if (finalData?.ok === true) {
-        status.innerHTML = '<span class="ok">Autorización validada.</span> Regresando a la activación del número corporativo…';
-      } else {
-        status.innerHTML = '<span class="danger">La autorización no pudo completarse.</span> Regresando con el detalle…';
+      if(finalData&&finalData.ok===true){
+        status.innerHTML='<span class="ok">Autorización validada.</span> Regresando a la activación del número corporativo…';
+      }else{
+        status.innerHTML='<span class="danger">La autorización no pudo completarse.</span> Regresando con el detalle…';
       }
       showResult(finalData);
 
-      const next = './cliente-whatsapp-existing-waba-prod.html?negocio=' +
-        encodeURIComponent(String(existingWabaContext.negocio_id)) +
-        '&oauth_return=1';
-      setTimeout(() => location.replace(next), 1300);
-    } else     if (isBusinessReview) {
+      const next='./cliente-whatsapp-existing-waba-prod.html?negocio='+encodeURIComponent(String(existingWabaContext.negocio_id))+'&oauth_return=1&v=20261004-7';
+      setTimeout(()=>location.replace(next),1300);
+      return;
+    }
+
+    if(isBusinessReview){
       localStorage.removeItem(BUSINESS_CONTEXT_KEY);
 
-      if (payload.error) {
-        status.innerHTML = '<span class="danger">Meta devolvió un error de autorización.</span>';
-        const safeError = { ok:false, error:payload.error, detalle:payload.error_description || payload.error_reason || null };
-        showResult(safeError);
-        broadcast({ type:'IMPULSO_BUSINESS_REVIEW_RESULT', state:payload.state, result:safeError });
-      } else if (!payload.code) {
-        status.innerHTML = '<span class="danger">Meta no devolvió un código de autorización.</span>';
-        const safeError = { ok:false, error:'META_SIN_CODIGO' };
-        showResult(safeError);
-        broadcast({ type:'IMPULSO_BUSINESS_REVIEW_RESULT', state:payload.state, result:safeError });
-      } else {
-        status.textContent = 'Autorización recibida. Validando Business Portfolio en backend seguro…';
-        try {
-          const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-            auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}
-          });
-          const { data, error } = await supabase.functions.invoke('business-management-review', {
-            body:{ negocio_id:String(businessContext.negocio_id), code:String(payload.code) }
-          });
-
-          let finalData = data;
-          if (error) {
-            let detail = null;
-            try { if (error.context && typeof error.context.json === 'function') detail = await error.context.json(); } catch (_) {}
-            finalData = detail || { ok:false, error:error.message || 'No se pudo completar la validación.' };
-          }
-
-          if (finalData?.ok === true) status.innerHTML = '<span class="ok">Autorización validada correctamente.</span> Puedes volver a la ventana de Impulso Digital.';
-          else status.innerHTML = '<span class="danger">La autorización llegó, pero la validación backend no se completó.</span>';
-          showResult(finalData);
-          broadcast({ type:'IMPULSO_BUSINESS_REVIEW_RESULT', state:payload.state, result:finalData });
-        } catch (error) {
-          const safeError = { ok:false, error:error?.message || 'No se pudo completar la validación backend.' };
-          status.innerHTML = '<span class="danger">No se pudo completar la validación backend.</span>';
-          showResult(safeError);
-          broadcast({ type:'IMPULSO_BUSINESS_REVIEW_RESULT', state:payload.state, result:safeError });
-        }
+      let finalData=null;
+      if(payload.error){
+        finalData={ok:false,error:payload.error,detalle:payload.error_description||payload.error_reason||null};
+      }else if(!payload.code){
+        finalData={ok:false,error:'META_SIN_CODIGO'};
+      }else{
+        status.textContent='Autorización recibida. Validando Business Portfolio en backend seguro…';
+        finalData=await invokeEdge('business-management-review',{
+          negocio_id:String(businessContext.negocio_id),
+          code:String(payload.code)
+        });
       }
-    } else {
-      broadcast(payload);
-      if (payload.code) status.textContent = 'Autorización recibida. Puedes volver a la ventana de Impulso Digital.';
-      else if (payload.error) status.textContent = 'Meta devolvió un error de autorización. Puedes volver a la ventana anterior.';
-      else status.textContent = 'Meta no devolvió un código de autorización. Puedes volver a la ventana anterior.';
-      setTimeout(() => window.close(), 1200);
+
+      if(finalData&&finalData.ok===true){
+        status.innerHTML='<span class="ok">Autorización validada correctamente.</span> Puedes volver a la ventana de Impulso Digital.';
+      }else{
+        status.innerHTML='<span class="danger">La autorización llegó, pero la validación backend no se completó.</span>';
+      }
+      showResult(finalData);
+      broadcast({type:'IMPULSO_BUSINESS_REVIEW_RESULT',state:payload.state,result:finalData});
+      return;
     }
-  </script>
+
+    broadcast(payload);
+    if(payload.code)status.textContent='Autorización recibida. Puedes volver a la ventana de Impulso Digital.';
+    else if(payload.error)status.textContent='Meta devolvió un error de autorización. Puedes volver a la ventana anterior.';
+    else status.textContent='Meta no devolvió un código de autorización. Puedes volver a la ventana anterior.';
+    setTimeout(()=>{try{window.close()}catch(_){}},1200);
+  }
+
+  main().catch(e=>{
+    const safe={ok:false,error:String(e&&e.message||e)};
+    status.innerHTML='<span class="danger">No se pudo procesar la autorización.</span>';
+    showResult(safe);
+  });
+})();
+</script>
 </body>
 </html>
