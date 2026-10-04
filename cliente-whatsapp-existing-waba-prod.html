@@ -63,7 +63,10 @@ import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.11
 const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const BUSINESS='48182e1a-06d5-4685-9627-7891d7aafacb',WABA='3285972601590465',APP_ID='860468763590445',GRAPH_VERSION='v26.0';
 const $=id=>document.getElementById(id),status=$('status'),partner=$('partner'),flow=$('flow'),result=$('result');
-let prepared=false,verified=false,registered=false,busy=false,sdkReady=false;
+let prepared=false,verified=false,registered=false,busy=false;
+const OAUTH_CALLBACK='https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
+const OAUTH_CONTEXT_KEY='impulso_existing_waba_oauth_context';
+const OAUTH_RESULT_KEY='impulso_existing_waba_oauth_result';
 function out(v){result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2)}
 function setBusy(v){busy=v;document.querySelectorAll('button').forEach(b=>b.disabled=v)}
 async function call(mode,extra={}){
@@ -74,9 +77,6 @@ async function call(mode,extra={}){
     out(data);return data;
   }finally{setBusy(false)}
 }
-window.fbAsyncInit=function(){FB.init({appId:APP_ID,cookie:true,xfbml:false,version:GRAPH_VERSION});sdkReady=true};
-const fbSdk=document.createElement('script');fbSdk.async=true;fbSdk.defer=true;fbSdk.crossOrigin='anonymous';fbSdk.src='https://connect.facebook.net/en_US/sdk.js';fbSdk.onerror=()=>out({ok:false,error:'No se pudo cargar el SDK de Meta'});document.head.appendChild(fbSdk);
-
 async function ensureAuth(){
   const{data:{session}}=await sb.auth.getSession();
   if(!session){const here=location.pathname+location.search;location.replace('./cliente-acceso.html?next='+encodeURIComponent(here));return false}
@@ -105,30 +105,28 @@ async function read(){
 }
 $('retryRead').onclick=read;
 $('authorizeMeta').onclick=()=>{
-  if(!sdkReady){out({ok:false,error:'Meta todavía está cargando. Espera unos segundos y vuelve a intentarlo.'});return}
-  setBusy(true);out('Abriendo autorización oficial de Meta…');
-  let finished=false;
-  const timer=setTimeout(()=>{
-    if(finished)return;
-    finished=true;setBusy(false);
-    out({ok:false,error:'Meta no respondió al popup de autorización. Vuelve a tocar “Autorizar con Meta”. Si el navegador bloqueó una ventana emergente, permítela para este sitio.'});
-  },25000);
-  FB.login(async response=>{
-    if(finished)return;
-    finished=true;clearTimeout(timer);setBusy(false);
-    const token=String(response?.authResponse?.accessToken||'').trim();
-    if(!token){out({ok:false,error:'Meta no devolvió autorización. Verifica que Kamo Olano sea el perfil activo y vuelve a intentarlo.'});return}
-    try{
-      const data=await call('CLIENT_EXISTING_WABA_AUTHORIZE',{access_token:token});
-      status.className='box ok';status.innerHTML='<strong>✓ Autorización validada.</strong> IMPULSO ya puede trabajar de forma segura con la WABA Dr Olano.';
-      partner.classList.add('hidden');out(data);
-      await read();
-    }catch(e){out(e.detail||{ok:false,error:e.message})}
-  },{
-    scope:'business_management,whatsapp_business_management,whatsapp_business_messaging',
-    auth_type:'rerequest',
-    return_scopes:true
-  });
+  const state=crypto.randomUUID();
+  try{
+    localStorage.setItem(OAUTH_CONTEXT_KEY,JSON.stringify({
+      state,
+      negocio_id:BUSINESS,
+      waba_id:WABA,
+      created_at:Date.now()
+    }));
+  }catch(e){
+    out({ok:false,error:'No se pudo preparar el retorno seguro de Meta.'});
+    return;
+  }
+  const oauth=new URL('https://www.facebook.com/v26.0/dialog/oauth');
+  oauth.searchParams.set('client_id',APP_ID);
+  oauth.searchParams.set('redirect_uri',OAUTH_CALLBACK);
+  oauth.searchParams.set('state',state);
+  oauth.searchParams.set('response_type','code');
+  oauth.searchParams.set('scope','business_management,whatsapp_business_management,whatsapp_business_messaging');
+  oauth.searchParams.set('auth_type','rerequest');
+  oauth.searchParams.set('display','page');
+  out('Abriendo autorización completa de Meta…');
+  location.assign(oauth.toString());
 };
 $('prepare').onclick=async()=>{
   try{
@@ -162,6 +160,29 @@ $('finalize').onclick=async()=>{
   }catch(e){out(e.detail||{ok:false,error:e.message})}
   finally{setBusy(false)}
 };
-try{if(await ensureAuth())await read()}catch(e){status.className='box bad';status.textContent=e.message;out({ok:false,error:e.message})}
+try{
+  if(await ensureAuth()){
+    let oauthResult=null;
+    try{
+      const raw=localStorage.getItem(OAUTH_RESULT_KEY);
+      if(raw){
+        const parsed=JSON.parse(raw);
+        localStorage.removeItem(OAUTH_RESULT_KEY);
+        if(Number.isFinite(Number(parsed?.at))&&Date.now()-Number(parsed.at)<=10*60*1000)oauthResult=parsed.result;
+      }
+    }catch(_){}
+    if(oauthResult){
+      out(oauthResult);
+      if(oauthResult?.ok===true){
+        status.className='box ok';
+        status.innerHTML='<strong>✓ Autorización de Kamo validada.</strong> Continuando con la WABA existente…';
+      }else{
+        status.className='box bad';
+        status.textContent=String(oauthResult?.error||'Meta no pudo completar la autorización.');
+      }
+    }
+    await read();
+  }
+}catch(e){status.className='box bad';status.textContent=e.message;out({ok:false,error:e.message})}
 </script>
 </body></html>
