@@ -72,7 +72,9 @@ function setBusy(v){busy=v;document.querySelectorAll('button').forEach(b=>b.disa
 async function call(mode,extra={}){
   setBusy(true);
   try{
-    const{data,error}=await sb.functions.invoke('whatsapp-prod-subscribe-app',{body:{mode,negocio_id:BUSINESS,waba_id:WABA,...extra}});
+    const invoke=sb.functions.invoke('whatsapp-prod-subscribe-app',{body:{mode,negocio_id:BUSINESS,waba_id:WABA,...extra}});
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(Object.assign(new Error('TIMEOUT_BACKEND'),{detail:{ok:false,error:'El backend tardó demasiado en responder. Vuelve a intentarlo; no se realizó ninguna mutación.'}})),15000));
+    const{data,error}=await Promise.race([invoke,timeout]);
     if(error){let detail=null;try{if(error.context?.json)detail=await error.context.json()}catch{}throw Object.assign(new Error(detail?.error||error.message||'Error'),{detail})}
     out(data);return data;
   }finally{setBusy(false)}
