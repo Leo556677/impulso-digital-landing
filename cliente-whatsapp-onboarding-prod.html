@@ -50,12 +50,12 @@ import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.11
 const sb=createClient('https://xnlzsgulskqyecfgzhwa.supabase.co','sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const APP_ID='860468763590445',CONFIG_ID='1771287760748703',GRAPH_VERSION='v26.0';
 const $=id=>document.getElementById(id),result=$('result'),confirmApp=$('confirmApp'),start=$('start');
-let negocioId=null,sessionReady=false,sdkReady=false,submitting=false,finishEvent=null,authCredential=null,onboardingMode='COEXISTENCE';
+let negocioId=null,sessionReady=false,sdkReady=false,submitting=false,finishEvent=null,authCredential=null,onboardingMode='COEXISTENCE',modeLocked=false;
 const setResult=v=>result.textContent=typeof v==='string'?v:JSON.stringify(v,null,2);
 function panelHref(){return './cliente-panel.html?negocio='+encodeURIComponent(negocioId)}
 function update(){start.disabled=!(sessionReady&&sdkReady&&confirmApp.checked&&!submitting)}
 function safeFacebookOrigin(origin){try{const h=new URL(origin).hostname.toLowerCase();return h==='facebook.com'||h.endsWith('.facebook.com')}catch{return false}}
-confirmApp.addEventListener('change',update);document.querySelectorAll('input[name="waMode"]').forEach(el=>el.addEventListener('change',()=>{onboardingMode=String(document.querySelector('input[name="waMode"]:checked')?.value||'COEXISTENCE');setResult(onboardingMode==='COEXISTENCE'?'Usaremos Coexistence para conservar WhatsApp Business App en tu teléfono.':'Usaremos el onboarding estándar de Cloud API.');update()}));
+confirmApp.addEventListener('change',update);document.querySelectorAll('input[name="waMode"]').forEach(el=>el.addEventListener('change',()=>{if(modeLocked)return;onboardingMode=String(document.querySelector('input[name="waMode"]:checked')?.value||'COEXISTENCE');setResult(onboardingMode==='COEXISTENCE'?'Usaremos Coexistence para conservar WhatsApp Business App en tu teléfono.':'Usaremos el onboarding estándar de Cloud API.');update()}));
 
 async function submitWhenReady(){
   if(submitting||!finishEvent||!authCredential||!negocioId)return;
@@ -172,14 +172,34 @@ async function init(){
   if(error||!m?.length)throw new Error('No pudimos identificar una empresa autorizada.');
   const params=new URLSearchParams(location.search),requested=params.get('negocio'),saved=localStorage.getItem('impulso_negocio_activo'),pick=id=>m.find(x=>String(x.negocio_id)===String(id)),membership=pick(requested)||pick(saved)||m[0];
   if(!['admin','propietario'].includes(String(membership.rol)))throw new Error('Se requiere rol admin o propietario.');
-  negocioId=membership.negocio_id;localStorage.setItem('impulso_negocio_activo',String(negocioId));history.replaceState({},'',location.pathname+'?negocio='+encodeURIComponent(negocioId));
+  const requestedMode=String(params.get('mode')||'').toLowerCase(),lockMode=params.get('lock')==='1';
+  if(requestedMode==='standard'||requestedMode==='coexistence'){
+    onboardingMode=requestedMode==='standard'?'STANDARD':'COEXISTENCE';
+    const chosen=document.querySelector('input[name="waMode"][value="'+onboardingMode+'"]');
+    if(chosen)chosen.checked=true;
+    if(lockMode){
+      modeLocked=true;
+      document.querySelectorAll('input[name="waMode"]').forEach(el=>{el.disabled=String(el.value)!==onboardingMode});
+      const locked=document.createElement('div');
+      locked.className='notice';
+      locked.innerHTML=onboardingMode==='STANDARD'
+        ?'<strong>Modo fijado:</strong> Cloud API estándar para el número corporativo. No se usará Coexistence ni se tocará un número personal activo en WhatsApp Business App.'
+        :'<strong>Modo fijado:</strong> Coexistence para conservar WhatsApp Business App en el teléfono.';
+      document.querySelector('.modebox')?.after(locked);
+    }
+  }
+  negocioId=membership.negocio_id;localStorage.setItem('impulso_negocio_activo',String(negocioId));
+  const nextParams=new URLSearchParams({negocio:String(negocioId)});
+  if(requestedMode==='standard'||requestedMode==='coexistence')nextParams.set('mode',requestedMode);
+  if(lockMode)nextParams.set('lock','1');
+  history.replaceState({},'',location.pathname+'?'+nextParams.toString());
   $('brandLink').href=panelHref();$('backLink').href=panelHref();$('backPanel').href=panelHref();
   $('context').innerHTML='Conectando WhatsApp de: <b>'+String(membership.negocios?.nombre||'Mi negocio').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</b>';
   $('phone').textContent=membership.negocios?.telefono_e164||'Sin teléfono configurado';$('phoneBox').hidden=false;
   if(!membership.negocios?.telefono_e164)throw new Error('Este negocio no tiene teléfono oficial configurado.');
   const {count,error:ce}=await sb.from('canales_whatsapp').select('id',{count:'exact',head:true}).eq('negocio_id',negocioId).eq('activo',true);if(ce)throw ce;
   if((count||0)>0){confirmApp.disabled=true;setResult('Este negocio ya tiene un canal WhatsApp activo. No se iniciará otro onboarding.');return}
-  sessionReady=true;confirmApp.disabled=false;setResult('Listo. Elige cómo usas tu número, confirma que te pertenece y pulsa “Conectar con Meta”.');update();
+  sessionReady=true;confirmApp.disabled=false;setResult(modeLocked&&onboardingMode==='STANDARD'?'Listo. Modo Cloud API estándar fijado para el número corporativo. Confirma que te pertenece y pulsa “Conectar con Meta”.':'Listo. Elige cómo usas tu número, confirma que te pertenece y pulsa “Conectar con Meta”.');update();
 }
 try{await init()}catch(e){setResult({ok:false,error:e.message||'No pudimos preparar el onboarding.'})}
 </script>
