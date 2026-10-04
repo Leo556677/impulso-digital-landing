@@ -87,11 +87,45 @@ async function submitWhenReady(){
       }
       setResult(finalized);
       if(finalized?.ok===true&&finalized?.channel?.id){
+        const templateName='impulso_recordatorio_cita_v1';
+        let templateStatus='NO_CONFIGURADA';
+        try{
+          const {data:listData,error:listErr}=await sb.functions.invoke('whatsapp-template-manager',{
+            body:{negocio_id:negocioId,action:'list',refresh:true,environment:'PRODUCCION'}
+          });
+          if(listErr)throw listErr;
+          let tpl=Array.isArray(listData?.templates)?listData.templates.find(x=>String(x?.nombre||'')===templateName&&String(x?.idioma||'')==='es'):null;
+          if(!tpl){
+            const {data:createData,error:createErr}=await sb.functions.invoke('whatsapp-template-manager',{
+              body:{
+                negocio_id:negocioId,
+                action:'create',
+                environment:'PRODUCCION',
+                template:{
+                  name:templateName,
+                  language:'es',
+                  category:'UTILITY',
+                  components:[{
+                    type:'BODY',
+                    text:'Hola {{1}}, te recordamos tu cita {{2}} programada para el {{3}} a las {{4}}. Si necesitas cambiarla, responde a este mensaje.',
+                    example:{body_text:[['Paciente','DO-ABC12345','viernes 10 de octubre','10:00']]}
+                  }]
+                }
+              }
+            });
+            if(createErr)throw createErr;
+            templateStatus=String(createData?.status||createData?.template?.estado||'EN_REVISION');
+          }else templateStatus=String(tpl.estado||'SIN_ESTADO');
+        }catch(e){
+          templateStatus='PENDIENTE_CONFIGURACION';
+        }
+
         const box=document.createElement('div');
         box.className='okbox';
-        box.innerHTML='<strong>✓ WhatsApp conectado.</strong><br>El canal ya pertenece a esta empresa. La automatización todavía está protegida hasta completar su prueba controlada.';
+        box.innerHTML='<strong>✓ WhatsApp conectado.</strong><br>El canal ya pertenece a esta empresa. Plantilla de recordatorio: <strong>'+templateStatus+'</strong>. La automatización sigue protegida hasta completar su prueba controlada.';
         result.before(box);
-        setTimeout(()=>location.replace('./cliente-whatsapp.html?negocio='+encodeURIComponent(negocioId)),1800);
+        setResult({...finalized,reminder_template:{name:templateName,status:templateStatus},automation_state:'PROTEGIDA_HASTA_CANARY'});
+        setTimeout(()=>location.replace('./cliente-whatsapp.html?negocio='+encodeURIComponent(negocioId)),2600);
       }
     }
   }catch(e){setResult({ok:false,error:e?.message||'No se pudo completar la validación'})}
