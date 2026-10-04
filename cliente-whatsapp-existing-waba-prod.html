@@ -65,7 +65,7 @@
 </section>
 
 <section class="card">
-<div class="tracehead"><h2>Trazas visuales</h2><span class="tracever">DBG 20261004-11</span></div>
+<div class="tracehead"><h2>Trazas visuales</h2><span class="tracever">DBG 20261004-12</span></div>
 <p class="tracehelp">Copia este bloque y pégalo en el chat. No incluye contraseñas, tokens, códigos OAuth, OTP ni PIN.</p>
 <div class="actions" style="margin-bottom:10px"><button id="copyTrace" type="button">Copiar trazas</button><button id="clearTrace" class="secondary" type="button">Limpiar</button></div>
 <pre id="traceBox" class="tracebox">[inicio] esperando JavaScript…</pre>
@@ -78,7 +78,7 @@
 window.addEventListener('error',function(e){
   try{
     var b=document.getElementById('traceBox');
-    if(b)b.textContent='VERSION · DBG-20261004-11\nBOOT_ERROR · '+String(e.message||'Error')+' · '+String(e.filename||'')+':'+String(e.lineno||'')+':'+String(e.colno||'');
+    if(b)b.textContent='VERSION · DBG-20261004-12\nBOOT_ERROR · '+String(e.message||'Error')+' · '+String(e.filename||'')+':'+String(e.lineno||'')+':'+String(e.colno||'');
   }catch(_){}
 });
 window.addEventListener('unhandledrejection',function(e){
@@ -102,7 +102,7 @@ window.addEventListener('unhandledrejection',function(e){
   const OAUTH_CALLBACK='https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
   const OAUTH_CONTEXT_KEY='impulso_existing_waba_oauth_context';
   const OAUTH_RESULT_KEY='impulso_existing_waba_oauth_result';
-  const TRACE_VERSION='DBG-20261004-11';
+  const TRACE_VERSION='DBG-20261004-12';
 
   const $=id=>document.getElementById(id);
   const status=$('status'),partner=$('partner'),flow=$('flow'),result=$('result'),traceBox=$('traceBox');
@@ -572,8 +572,8 @@ window.addEventListener('unhandledrejection',function(e){
     FB.login(response=>{
       const auth=response&&response.authResponse;
       if(!auth){
-        trace('COEXISTENCE_LOGIN_NO_AUTH');
-        out({ok:false,error:'Meta no devolvió autorización del flujo Coexistence.'});
+        trace('COEXISTENCE_LOGIN_CALLBACK_EMPTY_WAITING');
+        out('Meta abrió el flujo de Coexistence. Continúa dentro de Meta; esta pantalla seguirá esperando el evento final.');
         return;
       }
       const code=String(auth.code||'').trim();
