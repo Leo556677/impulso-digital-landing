@@ -75,7 +75,24 @@ async function submitWhenReady(){
     setResult(data);
     if(data?.ok===true){
       confirmApp.disabled=true;start.disabled=true;
-      result.insertAdjacentHTML('beforebegin','<div class="okbox"><strong>✓ Fase A completada.</strong><br>La autorización quedó validada y cifrada. Aún no se creó canal ni se habilitaron mensajes.</div>');
+      result.insertAdjacentHTML('beforebegin','<div class="okbox"><strong>✓ Autorización validada.</strong><br>Estamos terminando la conexión segura. La IA y los envíos automáticos siguen apagados.</div>');
+      setResult('Autorización cifrada. Suscribiendo la app de Impulso Digital y creando el canal del negocio…');
+      const {data:finalized,error:finalizeError}=await sb.functions.invoke('whatsapp-prod-subscribe-app',{
+        body:{mode:'CLIENT_TENANT_FINALIZE',negocio_id:negocioId,confirmacion:'ACTIVAR_CANAL_CLIENTE'}
+      });
+      if(finalizeError){
+        let detail=null;try{if(finalizeError.context?.json)detail=await finalizeError.context.json()}catch{}
+        setResult(detail||{ok:false,error:finalizeError.message||'La autorización quedó guardada, pero no se pudo finalizar la conexión.',fase:'FINALIZACION'});
+        return;
+      }
+      setResult(finalized);
+      if(finalized?.ok===true&&finalized?.channel?.id){
+        const box=document.createElement('div');
+        box.className='okbox';
+        box.innerHTML='<strong>✓ WhatsApp conectado.</strong><br>El canal ya pertenece a esta empresa. La automatización todavía está protegida hasta completar su prueba controlada.';
+        result.before(box);
+        setTimeout(()=>location.replace('./cliente-whatsapp.html?negocio='+encodeURIComponent(negocioId)),1800);
+      }
     }
   }catch(e){setResult({ok:false,error:e?.message||'No se pudo completar la validación'})}
   finally{submitting=false;authCredential=null;update()}
