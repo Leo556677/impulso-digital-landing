@@ -65,7 +65,7 @@
 </section>
 
 <section class="card">
-<div class="tracehead"><h2>Trazas visuales</h2><span class="tracever">DBG 20261004-10</span></div>
+<div class="tracehead"><h2>Trazas visuales</h2><span class="tracever">DBG 20261004-11</span></div>
 <p class="tracehelp">Copia este bloque y pégalo en el chat. No incluye contraseñas, tokens, códigos OAuth, OTP ni PIN.</p>
 <div class="actions" style="margin-bottom:10px"><button id="copyTrace" type="button">Copiar trazas</button><button id="clearTrace" class="secondary" type="button">Limpiar</button></div>
 <pre id="traceBox" class="tracebox">[inicio] esperando JavaScript…</pre>
@@ -78,7 +78,7 @@
 window.addEventListener('error',function(e){
   try{
     var b=document.getElementById('traceBox');
-    if(b)b.textContent='VERSION · DBG-20261004-10\nBOOT_ERROR · '+String(e.message||'Error')+' · '+String(e.filename||'')+':'+String(e.lineno||'')+':'+String(e.colno||'');
+    if(b)b.textContent='VERSION · DBG-20261004-11\nBOOT_ERROR · '+String(e.message||'Error')+' · '+String(e.filename||'')+':'+String(e.lineno||'')+':'+String(e.colno||'');
   }catch(_){}
 });
 window.addEventListener('unhandledrejection',function(e){
@@ -102,7 +102,7 @@ window.addEventListener('unhandledrejection',function(e){
   const OAUTH_CALLBACK='https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
   const OAUTH_CONTEXT_KEY='impulso_existing_waba_oauth_context';
   const OAUTH_RESULT_KEY='impulso_existing_waba_oauth_result';
-  const TRACE_VERSION='DBG-20261004-10';
+  const TRACE_VERSION='DBG-20261004-11';
 
   const $=id=>document.getElementById(id);
   const status=$('status'),partner=$('partner'),flow=$('flow'),result=$('result'),traceBox=$('traceBox');
@@ -168,20 +168,69 @@ window.addEventListener('unhandledrejection',function(e){
     }
   }
 
-  function getAccessToken(){
-    const s=readStoredSession();
+  function saveStoredSession(session){
+    try{
+      localStorage.setItem(AUTH_KEY,JSON.stringify(session));
+      trace('AUTH_STORAGE_SAVE',{ok:true,expires_at:session&&session.expires_at||null});
+      return true;
+    }catch(e){
+      trace('AUTH_STORAGE_SAVE_ERROR',{message:String(e&&e.message||e)});
+      return false;
+    }
+  }
+
+  async function refreshStoredSession(reason){
+    const current=readStoredSession();
+    const refreshToken=current&&current.refresh_token?String(current.refresh_token):'';
+    if(!refreshToken){
+      trace('AUTH_REFRESH_NO_TOKEN',{reason:reason||null});
+      return null;
+    }
+    trace('AUTH_REFRESH_INICIO',{reason:reason||null});
+    try{
+      const resp=await withTimeout(fetch(SUPABASE_URL+'/auth/v1/token?grant_type=refresh_token',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY},
+        body:JSON.stringify({refresh_token:refreshToken}),
+        cache:'no-store'
+      }),10000,'AUTH_REFRESH');
+      let data=null;
+      try{data=await resp.json()}catch(_){}
+      if(!resp.ok||!data||!data.access_token){
+        trace('AUTH_REFRESH_ERROR',{status:resp.status,error:data&&data.error_description||data&&data.msg||data&&data.error||null});
+        return null;
+      }
+      saveStoredSession(data);
+      trace('AUTH_REFRESH_OK',{expires_at:data.expires_at||null,user_present:Boolean(data.user&&data.user.id)});
+      return data;
+    }catch(e){
+      trace('AUTH_REFRESH_EXCEPTION',{message:String(e&&e.message||e)});
+      return null;
+    }
+  }
+
+  async function getFreshAccessToken(force,reason){
+    let s=readStoredSession();
+    const exp=Number(s&&s.expires_at||0);
+    const expired=Boolean(exp&&exp*1000<=Date.now()+60000);
+    if(!force&&s&&s.access_token&&!expired){
+      trace('AUTH_TOKEN_REUTILIZADO',{expires_at:exp||null});
+      return String(s.access_token);
+    }
+    trace('AUTH_TOKEN_REQUIERE_REFRESH',{force:Boolean(force),expired,expires_at:exp||null,reason:reason||null});
+    s=await refreshStoredSession(reason||'token_expired_or_forced');
     return s&&s.access_token?String(s.access_token):'';
   }
 
-  async function invokeEdge(mode,extra){
+  async function invokeEdge(mode,extra,retried){
     setBusy(true);
     const started=performance.now();
     trace('EDGE_FETCH_INICIO',{mode});
     try{
-      const token=getAccessToken();
+      const token=await getFreshAccessToken(false,'edge_'+mode);
       if(!token){
         trace('EDGE_NO_SESSION',{mode});
-        throw Object.assign(new Error('SESION_LOCAL_NO_DISPONIBLE'),{detail:{ok:false,error:'No encontré una sesión activa del portal. Vuelve a iniciar sesión en IMPULSO.'}});
+        throw Object.assign(new Error('SESION_LOCAL_NO_DISPONIBLE'),{detail:{ok:false,error:'No se pudo renovar la sesión del portal. Vuelve a iniciar sesión en IMPULSO.'}});
       }
       const body=Object.assign({mode,negocio_id:BUSINESS,waba_id:WABA},extra||{});
       const request=fetch(SUPABASE_URL+'/functions/v1/whatsapp-prod-subscribe-app',{
@@ -196,6 +245,15 @@ window.addEventListener('unhandledrejection',function(e){
       });
       const resp=await withTimeout(request,15000,'EDGE_FETCH_'+mode);
       trace('EDGE_HTTP_RESPUESTA',{mode,status:resp.status,ok:resp.ok,ms:Math.round(performance.now()-started)});
+      if(resp.status===401&&!retried){
+        trace('EDGE_401_REFRESH_RETRY',{mode});
+        const renewed=await getFreshAccessToken(true,'edge_401_'+mode);
+        if(renewed){
+          setBusy(false);
+          trace('EDGE_RETRY_AFTER_REFRESH',{mode});
+          return await invokeEdge(mode,extra,true);
+        }
+      }
       let data=null;
       try{data=await withTimeout(resp.json(),4000,'EDGE_JSON_'+mode)}
       catch(e){
@@ -223,14 +281,25 @@ window.addEventListener('unhandledrejection',function(e){
 
   async function ensureLocalSession(){
     trace('SESION_LOCAL_CHECK_INICIO');
-    const session=readStoredSession();
+    let session=readStoredSession();
     if(!session){
       trace('SESION_LOCAL_AUSENTE');
       const here=location.pathname+location.search;
       location.replace('./cliente-acceso.html?next='+encodeURIComponent(here));
       return false;
     }
-    trace('SESION_LOCAL_OK',{user_present:Boolean(session.user&&session.user.id)});
+    const exp=Number(session.expires_at||0);
+    if(exp&&exp*1000<=Date.now()+60000){
+      trace('SESION_LOCAL_EXPIRADA',{expires_at:exp});
+      session=await refreshStoredSession('init_expired');
+      if(!session){
+        trace('SESION_REFRESH_FALLIDO_REDIRECT_LOGIN');
+        const here=location.pathname+location.search;
+        location.replace('./cliente-acceso.html?next='+encodeURIComponent(here));
+        return false;
+      }
+    }
+    trace('SESION_LOCAL_OK',{user_present:Boolean(session.user&&session.user.id),expires_at:session.expires_at||null});
     return true;
   }
 
@@ -241,9 +310,9 @@ window.addEventListener('unhandledrejection',function(e){
     }catch(_){return false}
   }
 
-  async function invokeEmbedded(body){
-    const token=getAccessToken();
-    if(!token)throw Object.assign(new Error('SESION_LOCAL_NO_DISPONIBLE'),{detail:{ok:false,error:'No encontré una sesión activa del portal.'}});
+  async function invokeEmbedded(body,retried){
+    const token=await getFreshAccessToken(false,'embedded_'+String(body&&body.mode||''));
+    if(!token)throw Object.assign(new Error('SESION_LOCAL_NO_DISPONIBLE'),{detail:{ok:false,error:'No se pudo renovar la sesión del portal.'}});
     trace('EMBEDDED_BACKEND_INICIO',{mode:body.mode});
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),20000);
@@ -262,6 +331,11 @@ window.addEventListener('unhandledrejection',function(e){
       let data=null;
       try{data=await resp.json()}catch(_){}
       trace('EMBEDDED_BACKEND_RESPUESTA',{status:resp.status,ok:resp.ok,data_ok:data&&data.ok!==undefined?data.ok:null,error:data&&data.error||null});
+      if(resp.status===401&&!retried){
+        trace('EMBEDDED_401_REFRESH_RETRY',{mode:body&&body.mode||null});
+        const renewed=await getFreshAccessToken(true,'embedded_401');
+        if(renewed)return await invokeEmbedded(body,true);
+      }
       if(!resp.ok||!data||data.ok!==true)throw Object.assign(new Error(data&&data.error||('HTTP_'+resp.status)),{detail:data||{ok:false,error:'HTTP_'+resp.status}});
       return data;
     }finally{clearTimeout(timer)}
