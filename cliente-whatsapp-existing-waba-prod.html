@@ -65,7 +65,7 @@
 </section>
 
 <section class="card">
-<div class="tracehead"><h2>Trazas visuales</h2><span class="tracever">DBG 20261004-9</span></div>
+<div class="tracehead"><h2>Trazas visuales</h2><span class="tracever">DBG 20261004-10</span></div>
 <p class="tracehelp">Copia este bloque y pégalo en el chat. No incluye contraseñas, tokens, códigos OAuth, OTP ni PIN.</p>
 <div class="actions" style="margin-bottom:10px"><button id="copyTrace" type="button">Copiar trazas</button><button id="clearTrace" class="secondary" type="button">Limpiar</button></div>
 <pre id="traceBox" class="tracebox">[inicio] esperando JavaScript…</pre>
@@ -74,6 +74,20 @@
 <section class="card"><h2>Registro seguro</h2><div id="result" class="result">Preparando…</div></section>
 </main>
 
+<script>
+window.addEventListener('error',function(e){
+  try{
+    var b=document.getElementById('traceBox');
+    if(b)b.textContent='VERSION · DBG-20261004-10\nBOOT_ERROR · '+String(e.message||'Error')+' · '+String(e.filename||'')+':'+String(e.lineno||'')+':'+String(e.colno||'');
+  }catch(_){}
+});
+window.addEventListener('unhandledrejection',function(e){
+  try{
+    var b=document.getElementById('traceBox');
+    if(b)b.textContent+='\nUNHANDLED_REJECTION · '+String((e.reason&&e.reason.message)||e.reason||'Error');
+  }catch(_){}
+});
+</script>
 <script>
 (function(){
   'use strict';
@@ -88,7 +102,7 @@
   const OAUTH_CALLBACK='https://leo556677.github.io/impulso-digital-landing/whatsapp-oauth-callback.html';
   const OAUTH_CONTEXT_KEY='impulso_existing_waba_oauth_context';
   const OAUTH_RESULT_KEY='impulso_existing_waba_oauth_result';
-  const TRACE_VERSION='DBG-20261004-9';
+  const TRACE_VERSION='DBG-20261004-10';
 
   const $=id=>document.getElementById(id);
   const status=$('status'),partner=$('partner'),flow=$('flow'),result=$('result'),traceBox=$('traceBox');
@@ -275,7 +289,7 @@
       await readPreflight();
     }catch(e){
       const d=e&&e.detail||{};
-      trace('COEXISTENCE_PHASE_A_ERROR',{message:String(e&&e.message||e),platform_type:d&&d.estado&&d.estado.platform_type||null,is_on_biz_app:d&&d.estado&&d.estado.is_on_biz_app??null});
+      trace('COEXISTENCE_PHASE_A_ERROR',{message:String(e&&e.message||e),platform_type:d&&d.estado&&d.estado.platform_type||null,is_on_biz_app:(d&&d.estado)?(d.estado.is_on_biz_app??null):null});
       status.className='box bad';
       status.textContent=String(e&&e.message||'No se pudo completar Coexistence.');
       out(d&&Object.keys(d).length?d:{ok:false,error:String(e&&e.message||e)});
