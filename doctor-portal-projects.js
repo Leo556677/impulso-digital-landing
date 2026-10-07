@@ -200,7 +200,7 @@
       $('rhome').style.display='none';
       $('sdetail').style.display='none';
       $('vdetail').style.display='block';
-      $('vback').innerHTML=`${ic('left')}${origin==='pending'?'Volver a pendientes':'Volver al calendario'}`;
+      $('vback').innerHTML=`${ic('left')}${origin==='pending'?'Volver a pendientes':origin==='search'?'Volver a búsqueda':'Volver al calendario'}`;
       openVideo(0);
       mountCalendarBack($('vback'),'Regresar');
       const heading=document.querySelector('#vhero .project-heading'),dynamicLabel=labelFor(item);
@@ -246,7 +246,7 @@
   const oldToggleRec=toggleRec;toggleRec=async function(x){if(S?._calendarDirect){const result=await markCalendarRecorded(x);if(!result.ok)alert(result.message||'No se pudo marcar como grabado.');else if(typeof renderCal==='function')renderCal();return;}if(!S?._serviceKey)return oldToggleRec(x);const key=S._serviceKey;try{await api('mark_piece',{session_piece_id:x.session_piece_id,estado:x.estado==='GRABADO'?'PENDIENTE':'GRABADO'});P=await api('portal_get');invalidate();renderCal();renderHist();await renderRecord();const data=await loadItems();if(data.groups.has(key))await openService(key);else{S=null;resetViews();tab('record');}}catch(e){alert(e.message)}};
 
   const oldVBack=$('vback').onclick;
-  $('vback').onclick=()=>{if(S?._calendarDirect){const origin=S?._calendarOrigin||'calendar';restoreCalendarBack($('vback'));S=null;resetViews();tab('calendar');if(origin==='pending'&&typeof window.DoctorPortalCalendar?.showPending==='function')window.DoctorPortalCalendar.showPending();else if(typeof renderCal==='function')renderCal();return;}if(typeof oldVBack==='function')oldVBack();};
+  $('vback').onclick=()=>{if(S?._calendarDirect){const origin=S?._calendarOrigin||'calendar';restoreCalendarBack($('vback'));S=null;resetViews();if(origin==='search'){tab('record');window.DoctorPortalSearch?.restore?.();return;}tab('calendar');if(origin==='pending'&&typeof window.DoctorPortalCalendar?.showPending==='function')window.DoctorPortalCalendar.showPending();else if(typeof renderCal==='function')renderCal();return;}if(typeof oldVBack==='function')oldVBack();};
 
   window.DoctorPortalProjects={loadItems,index:()=>displayIndex,labelFor,displayCode,buildDisplayIndex,openCalendarItem,markCalendarRecorded,openCalendarSpecial,calendarItem,showBottomBack,clearBottomBack};
   window.DoctorPortalSpecials=window.DoctorPortalArea?.area==='all'?[captureGuide]:[];
