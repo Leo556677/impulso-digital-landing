@@ -1,0 +1,27 @@
+/* Sección de grabación excepcional de hiperhidrosis. Independiente del calendario fijo. */
+#hyperSpecialRecord[hidden]{display:none!important}
+.hyper-special{margin:0 0 17px;border:1px solid #1f5e60;border-radius:22px;overflow:hidden;background:linear-gradient(125deg,#123b4a,#0f4b52 64%,#19616a);box-shadow:0 12px 30px rgba(8,51,65,.18);color:#fff}
+.hyper-special-head{padding:19px 20px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.hyper-special-heading{min-width:0}
+.hyper-special-kicker{display:inline-flex;align-items:center;gap:8px;color:#e7cc90;font-size:10px;font-weight:900;letter-spacing:.065em}
+.hyper-special-dot{width:8px;height:8px;border-radius:50%;background:#ddc47e;box-shadow:0 0 0 4px rgba(221,196,126,.16)}
+.hyper-special h2{margin:9px 0 7px;color:#fff;font-size:clamp(19px,3vw,26px);font-weight:900;line-height:1.18}
+.hyper-special-heading>p{color:#d7e8e8;font-size:12px;line-height:1.55;margin:0}
+.hyper-special-counter{flex:0 0 auto;min-width:80px;padding:11px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);border-radius:14px;text-align:center}
+.hyper-special-counter strong{display:block;font-size:29px;line-height:1;font-variant-numeric:tabular-nums}
+.hyper-special-counter span{display:block;color:#d8e5e7;font-size:9px;letter-spacing:.1em;margin-top:5px;font-weight:800}
+.hyper-special-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;padding:0 13px 12px}
+.hyper-special-card{min-width:0;display:flex;flex-direction:column;border:1px solid #c0d3d7;background:#f9fcfc;border-radius:15px;padding:13px;color:#133341}
+.hyper-special-card-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hyper-special-number{background:#e1eced;color:#1e6370;border-radius:8px;font-size:13px;padding:6px 8px;font-weight:950}
+.hyper-special-state{font-size:8px;font-weight:900;letter-spacing:.02em;color:#167468;text-align:right}
+.hyper-special-state.is-done{color:#6b7580}
+.hyper-special-card h3{font-size:13px;line-height:1.35;color:#143e4c;margin:12px 0 8px;min-height:52px}
+.hyper-special-card p{margin:0 0 14px;font-size:10px;color:#5a737b;line-height:1.45}
+.hyper-special-open{margin-top:auto;min-height:43px;width:100%;border:0;border-radius:11px;background:#cfaa64;color:#123b4a;font:900 11px system-ui;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 11px;cursor:pointer}
+.hyper-special-open:disabled{opacity:.5;cursor:not-allowed}
+.hyper-special-open:hover:not(:disabled){background:#e4be76}
+.hyper-special-open span{font-size:19px}
+.hyper-special-foot{padding:11px 17px 14px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#d8e6e9;font-size:9px;font-weight:800;border-top:1px solid rgba(255,255,255,.13)}
+@media(max-width:660px){.hyper-special-head{padding:16px 14px 13px}.hyper-special-grid{grid-template-columns:1fr;padding:0 12px 12px}.hyper-special-card h3{min-height:0;font-size:14px;margin:8px 0 5px}.hyper-special-card p{margin-bottom:10px}.hyper-special-counter{min-width:59px;padding:8px}.hyper-special-counter strong{font-size:24px}.hyper-special-counter span{font-size:8px}.hyper-special-kicker{font-size:9px}.hyper-special-heading>p{font-size:11px}.hyper-special-open{min-height:45px}.hyper-special-foot{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.hyper-special *{animation:none!important;transition:none!important}}
