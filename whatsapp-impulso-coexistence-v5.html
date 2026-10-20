@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Impulso Digital | Coexistence V5</title>
+<style>
+:root{font-family:system-ui,Arial,sans-serif;color:#222;background:#f6f6f8}
+*{box-sizing:border-box}body{margin:0;padding:20px}
+main{max-width:760px;margin:auto}header,h1{font-weight:800}h1{font-size:29px}
+.card{padding:23px;border-radius:15px;background:white;margin:18px 0;border:1px solid #e5e5e9}
+.note{background:#fff7e3;border:1px solid #e7cc87;border-radius:10px;padding:14px;line-height:1.55}
+button{background:#252525;color:white;border:0;border-radius:10px;font-size:15px;padding:14px 18px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
+label{display:block;margin:13px 0;line-height:1.5}input{margin-right:8px}
+a{color:#a60064}pre{background:#222;color:white;padding:16px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<main>
+<header>IMPULSO DIGITAL · WHATSAPP</header>
+<h1>Conectar WhatsApp Business + chatbot IA</h1>
+<p>Conexión oficial de Meta para seguir utilizando el mismo número en WhatsApp Business App y Cloud API.</p>
+<section class="card">
+<h2>Identidad protegida</h2>
+<p><b>Número:</b> +51 903 396 082</p>
+<p><b>Cuenta WABA:</b> 482578634949575</p>
+<p><b>Configuración Meta:</b> IMPULSO PROD COEXISTENCE V5</p>
+<div class="note"><b>Protección:</b> no aceptes una migración que te obligue a abandonar WhatsApp Business App. No elimines, desregistres ni reemplaces el número. Si Meta muestra el error 1690130, cierra el intento y comparte la captura.</div>
+</section>
+<section class="card">
+<h2>Antes de continuar</h2>
+<p>Realiza la <b>copia de seguridad de los chats</b> en el celular y revisa el <a href="./whatsapp-prod-preflight.html" target="_blank" rel="noopener">diagnóstico de solo lectura</a>. Esta página no cambia Meta hasta que pulses el botón y confirmes los pasos dentro de Meta.</p>
+<label><input id="backup" type="checkbox"> Confirmo que terminé la copia de seguridad del WhatsApp real.</label>
+<label><input id="understood" type="checkbox"> Confirmo que quiero mantener WhatsApp Business App en el mismo número, sin migración exclusiva.</label>
+<button id="start" disabled>Conectar con Meta · Coexistence V5</button>
+<p id="status">Esperando SDK oficial de Meta.</p>
+</section>
+<section class="card">
+<h2>Resultado seguro</h2>
+<pre id="trace">Sin acciones ejecutadas.</pre>
+<p>Esta página no recopila ni envía códigos ni tokens de Meta. La conexión solo se confirma cuando un nuevo diagnóstico muestra Cloud API y WhatsApp Business App simultáneamente.</p>
+</section>
+</main>
+<script>
+(function(){
+"use strict";
+var appId="860468763590445",configId="1580383743257365";
+var b=document.getElementById("start"),bak=document.getElementById("backup"),ok=document.getElementById("understood"),trace=document.getElementById("trace"),status=document.getElementById("status");
+var ready=false,running=false;
+function setStatus(t){status.textContent=t}
+function log(name,d){trace.textContent=JSON.stringify({evento:name,detalle:d||null,fecha:new Date().toISOString()},null,2)}
+function update(){b.disabled=!ready||running||!bak.checked||!ok.checked}
+bak.addEventListener("change",update);ok.addEventListener("change",update);
+window.addEventListener("message",function(e){
+try{
+var host=new URL(e.origin).hostname;
+if(host!=="facebook.com"&&!host.endsWith(".facebook.com"))return;
+var p=typeof e.data==="string"?JSON.parse(e.data):e.data;
+if(!p||p.type!=="WA_EMBEDDED_SIGNUP")return;
+if(p.event==="FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING"){
+var valid=String(p.data&&p.data.waba_id||"")==="482578634949575"&&String(p.data&&p.data.phone_number_id||"")==="492828200591020";
+log(valid?"FINALIZADO_EN_META":"IDENTIDAD_NO_COINCIDE",{waba_correcta:String(p.data&&p.data.waba_id||"")==="482578634949575",numero_correcto:String(p.data&&p.data.phone_number_id||"")==="492828200591020"});
+setStatus(valid?"Meta indicó finalización. Ejecuta el preflight de solo lectura para comprobar la conexión real.":"El resultado de Meta no coincide con el número protegido. Detener y revisar.");
+}else if(p.event==="ERROR"){log("ERROR_META",{mensaje:String(p.data&&p.data.error_message||"Error de Meta").slice(0,350)});setStatus("Error en Meta. No repitas el proceso.");running=false;update();}
+else if(p.event==="CANCEL"){log("CANCELADO_EN_META");setStatus("Proceso cancelado.");running=false;update();}
+}catch(_){}
+});
+window.fbAsyncInit=function(){FB.init({appId:appId,cookie:true,xfbml:false,version:"v26.0"});ready=true;setStatus("Meta está listo. Verifica las confirmaciones antes de continuar.");update()};
+var s=document.createElement("script");s.async=true;s.defer=true;s.crossOrigin="anonymous";s.src="https://connect.facebook.net/en_US/sdk.js";s.onerror=function(){setStatus("No se pudo cargar Meta. Vuelve a abrir la página.")};document.head.appendChild(s);
+b.addEventListener("click",function(){
+if(b.disabled||typeof FB==="undefined")return;
+running=true;update();log("INICIO_META_V5");setStatus("Completa los pasos de Coexistence en la ventana oficial de Meta.");
+try{FB.login(function(response){running=false;update();log(response&&response.authResponse?"AUTORIZACION_META_RECIBIDA":"SIN_AUTORIZACION",{"nota":"No se almacenó ninguna credencial. Revisa el resultado de Coexistence en Meta y repite el preflight."});},{
+config_id:configId,
+response_type:"code",
+override_default_response_type:true,
+extras:{setup:{},featureType:"whatsapp_business_app_onboarding",sessionInfoVersion:"3"}
+})}catch(e){running=false;update();log("ERROR_META",{mensaje:String(e.message||e).slice(0,220)});}
+});
+})();
+</script>
+</body>
+</html>
