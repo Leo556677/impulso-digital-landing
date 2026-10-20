@@ -48,10 +48,10 @@ a{color:#a60064}pre{background:#222;color:white;padding:16px;border-radius:10px;
 "use strict";
 var appId="860468763590445",configId="1580383743257365";
 var b=document.getElementById("start"),bak=document.getElementById("backup"),ok=document.getElementById("understood"),trace=document.getElementById("trace"),status=document.getElementById("status");
-var ready=false,running=false;
+var ready=false,running=false,terminal=false;
 function setStatus(t){status.textContent=t}
-function log(name,d){trace.textContent=JSON.stringify({evento:name,detalle:d||null,fecha:new Date().toISOString()},null,2)}
-function update(){b.disabled=!ready||running||!bak.checked||!ok.checked}
+function log(name,d){var item=JSON.stringify({evento:name,detalle:d||null,fecha:new Date().toISOString()},null,2);trace.textContent=(trace.textContent==="Sin acciones ejecutadas."?"":trace.textContent+"\n\n")+item}
+function update(){b.disabled=!ready||running||terminal||!bak.checked||!ok.checked}
 bak.addEventListener("change",update);ok.addEventListener("change",update);
 window.addEventListener("message",function(e){
 try{
@@ -61,10 +61,10 @@ var p=typeof e.data==="string"?JSON.parse(e.data):e.data;
 if(!p||p.type!=="WA_EMBEDDED_SIGNUP")return;
 if(p.event==="FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING"){
 var valid=String(p.data&&p.data.waba_id||"")==="482578634949575"&&String(p.data&&p.data.phone_number_id||"")==="492828200591020";
-log(valid?"FINALIZADO_EN_META":"IDENTIDAD_NO_COINCIDE",{waba_correcta:String(p.data&&p.data.waba_id||"")==="482578634949575",numero_correcto:String(p.data&&p.data.phone_number_id||"")==="492828200591020"});
+terminal=true;running=false;update();log(valid?"FINALIZADO_EN_META":"IDENTIDAD_NO_COINCIDE",{waba_correcta:String(p.data&&p.data.waba_id||"")==="482578634949575",numero_correcto:String(p.data&&p.data.phone_number_id||"")==="492828200591020"});
 setStatus(valid?"Meta indicó finalización. Ejecuta el preflight de solo lectura para comprobar la conexión real.":"El resultado de Meta no coincide con el número protegido. Detener y revisar.");
-}else if(p.event==="ERROR"){log("ERROR_META",{mensaje:String(p.data&&p.data.error_message||"Error de Meta").slice(0,350)});setStatus("Error en Meta. No repitas el proceso.");running=false;update();}
-else if(p.event==="CANCEL"){log("CANCELADO_EN_META");setStatus("Proceso cancelado.");running=false;update();}
+}else if(p.event==="ERROR"){terminal=true;log("ERROR_META",{mensaje:String(p.data&&p.data.error_message||"Error de Meta").slice(0,350)});setStatus("Error en Meta. No repitas el proceso.");running=false;update();}
+else if(p.event==="CANCEL"){terminal=true;log("CANCELADO_EN_META");setStatus("Proceso cancelado.");running=false;update();}
 }catch(_){}
 });
 window.fbAsyncInit=function(){FB.init({appId:appId,cookie:true,xfbml:false,version:"v26.0"});ready=true;setStatus("Meta está listo. Verifica las confirmaciones antes de continuar.");update()};
@@ -72,7 +72,7 @@ var s=document.createElement("script");s.async=true;s.defer=true;s.crossOrigin="
 b.addEventListener("click",function(){
 if(b.disabled||typeof FB==="undefined")return;
 running=true;update();log("INICIO_META_V5");setStatus("Completa los pasos de Coexistence en la ventana oficial de Meta.");
-try{FB.login(function(response){running=false;update();log(response&&response.authResponse?"AUTORIZACION_META_RECIBIDA":"SIN_AUTORIZACION",{"nota":"No se almacenó ninguna credencial. Revisa el resultado de Coexistence en Meta y repite el preflight."});},{
+try{FB.login(function(response){running=false;if(!response||!response.authResponse)terminal=true;update();log(response&&response.authResponse?"AUTORIZACION_META_RECIBIDA":"SIN_AUTORIZACION",{"nota":"No se almacenó ninguna credencial. Revisa el resultado de Coexistence en Meta y repite el preflight."});},{
 config_id:configId,
 response_type:"code",
 override_default_response_type:true,
