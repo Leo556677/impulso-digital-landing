@@ -10,16 +10,16 @@
 <section><h2>3. Preparar formulario en Meta</h2>
 <label><input id="approve" type="checkbox" disabled> Autorizo crear y publicar <b>únicamente este Flow de prueba</b> para Impulso Digital.</label>
 <button id="prepare" disabled>Preparar formulario Meta</button><small class="muted"> Si hay error no reintentes a ciegas; usa el diagnóstico inferior.</small></section>
-<section><h2>4. Enviar solamente a mi WhatsApp</h2><p class="muted">Si la ventana de atención venció, envía primero «Hola» desde tu WhatsApp personal.</p><div class="actions"><a href="https://wa.me/51903396082" target="_blank" rel="noopener">Abrir WhatsApp personal</a><button id="send" disabled>Enviar formulario a mi chat</button></div></section>
-<section><h2>5. Verificar la captura</h2><button id="check" disabled>Actualizar resultado</button><div id="capture">Aún no se ha confirmado ningún formulario.</div><details><summary>Diagnóstico técnico</summary><pre id="log">Sin acciones ejecutadas.</pre></details></section>
+<section><h2>4. Enviar solamente a mi WhatsApp</h2><p class="muted">Si la ventana de atención venció, envía primero «Hola» desde tu WhatsApp personal. <strong>Mientras Meta mantenga un bloqueo de integridad, esta prueba no enviará el formulario.</strong></p><div class="actions"><a href="https://wa.me/51903396082" target="_blank" rel="noopener">Abrir WhatsApp personal</a><button id="send" disabled>Enviar formulario a mi chat</button></div></section>
+<section><h2>5. Verificar la captura</h2><div class="actions"><button id="check" disabled>Actualizar resultado</button><button id="audit" disabled>Auditar Flow en Meta (solo lectura)</button></div><p id="integrity" class="alert" hidden></p><div id="capture">Aún no se ha confirmado ningún formulario.</div><details><summary>Diagnóstico técnico</summary><pre id="log">Sin acciones ejecutadas.</pre></details></section>
 <p class="muted"><a href="./crm-login.html" target="_blank" rel="noopener">Iniciar sesión CRM en este navegador</a> · <a href="https://impulso-crm-saas.pages.dev/automations.html?automation_id=0f3d1213-964a-487c-bf39-1bd96904dc05" target="_blank" rel="noopener">Abrir borrador del Flow Builder</a> (sin cambios a otras ramas).</p>
 </main>
 <script type="module">
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
 const db=createClient("https://xnlzsgulskqyecfgzhwa.supabase.co","sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-const B='c656a9ac-2739-451b-a93f-9e25fc9f4cbe', el=x=>document.getElementById(x);let admin=false,ready=false,busy=false;
+const B='c656a9ac-2739-451b-a93f-9e25fc9f4cbe', el=x=>document.getElementById(x);let admin=false,ready=false,busy=false,blocked=false;
 const output=x=>el('log').textContent=JSON.stringify(x,null,2);
-const controls=()=>{el('approve').disabled=!admin||busy||ready;el('prepare').disabled=!admin||busy||ready||!el('approve').checked;el('send').disabled=!admin||busy||!ready;el('check').disabled=!admin||busy};
+const controls=()=>{el('approve').disabled=!admin||busy||ready||blocked;el('prepare').disabled=!admin||busy||ready||blocked||!el('approve').checked;el('send').disabled=!admin||busy||!ready||blocked;el('check').disabled=!admin||busy;el('audit').disabled=!admin||busy||!blocked};
 el('approve').addEventListener('change',controls);
 async function api(action,confirmation=''){
  const {data,error}=await db.functions.invoke('whatsapp-coexistence-prod',{body:{action,negocio_id:B,...(confirmation?{confirmacion:confirmation}:{})}});
@@ -27,8 +27,13 @@ async function api(action,confirmation=''){
  return data;
 }
 function view(data){
- ready=!!data.flow_ready;
- el('status').textContent=ready?'✅ Formulario de Meta preparado. Ya puedes enviarlo.':'Formulario de Meta aún pendiente de preparar.';
+ blocked=Boolean(data.publishing_blocked);
+ ready=!blocked&&Boolean(data.flow_ready);
+ el('approve').checked=false;
+ const warn=el('integrity');
+ warn.hidden=!blocked;
+ warn.textContent=blocked?'⚠️ Meta rechazó publicar el Flow '+String(data.reported_draft_flow_id||'')+' (139000 / 4233020: Blocked by Integrity). No se debe reintentar ni crear otro. Usa la auditoría de solo lectura para consultar su estado.':'';
+ el('status').textContent=blocked?'⚠️ PUBLICACIÓN BLOQUEADA POR META. Solo se permite consultar el estado (sin cambios).':ready?'✅ Formulario de Meta preparado. Ya puedes enviarlo.':'Formulario de Meta aún pendiente de preparar.';
  const root=el('capture');root.replaceChildren();
  if(data.capture_received&&data.capture?.fields){
  const h=document.createElement('b');h.textContent='✅ Datos recibidos en Supabase';root.append(h);
@@ -40,7 +45,7 @@ function view(data){
 }
 async function check(){
  const d=await api('DEMO_FLOW_STATUS');if(!d?.ok)throw d;
- output({ok:d.ok,flow_ready:d.flow_ready,sent_at:d.sent_at,capture_received:d.capture_received,capture:d.capture||null});view(d)
+ output({ok:d.ok,flow_ready:d.flow_ready,publishing_blocked:d.publishing_blocked,draft_flow_id:d.reported_draft_flow_id,integrity_error:d.integrity_error,sent_at:d.sent_at,capture_received:d.capture_received,capture:d.capture||null});view(d)
 }
 async function run(action,confirm){
  if(!admin||busy)return;busy=true;controls();el('status').textContent='Comprobando Meta y Supabase…';
@@ -54,7 +59,20 @@ async function run(action,confirm){
 }
 el('prepare').onclick=()=>run('DEMO_FLOW_PREPARE','AUTORIZO_CREAR_FORMULARIO_DEMO_EN_WABA');
 el('send').onclick=()=>run('DEMO_FLOW_SEND','ENVIAR_SOLO_A_MI_WHATSAPP');
-el('check').onclick=async()=>{busy=true;controls();try{await check()}catch(e){output(e)}finally{busy=false;controls()}};
+el('check').onclick=async()=>{busy=true;controls();try{await check()}catch(e){output(e);el('status').textContent='⚠️ No se pudo consultar el estado: '+String(e?.error||e?.message||e).slice(0,220)}finally{busy=false;controls()}};
+el('audit').onclick=async()=>{
+ if(!admin||busy||!blocked)return;
+ busy=true;controls();el('status').textContent='Consultando Meta en modo solo lectura…';
+ try{
+  const d=await api('DEMO_FLOW_AUDIT');
+  output(d);
+  if(d?.ok){
+    el('status').textContent='✅ Auditoría solo lectura completada. Meta indica Flow '+String(d.flow?.status||'DESCONOCIDO')+'. La publicación continúa suspendida por el error de integridad.';
+    const n=el('integrity');n.hidden=false;n.textContent='Meta: '+String(d.flow?.status||'UNKNOWN')+' · Errores de validación: '+String(Array.isArray(d.flow?.validation_errors)?d.flow.validation_errors.length:'no informados')+' · Integridad: 139000 / 4233020. No se realizó ninguna mutación.';
+  }else el('status').textContent='⚠️ Auditoría incompleta. Revisa el diagnóstico sin repetir publicaciones.';
+ }catch(e){output(e);el('status').textContent='⚠️ Auditoría fallida: '+String(e?.error||e?.message||e).slice(0,230)}
+ finally{busy=false;controls()}
+};
 try{
  const {data:{user},error}=await db.auth.getUser();
  if(error||!user){el('session').textContent='Inicia sesión en el CRM desde este mismo navegador. Usa el enlace de acceso que está al pie.'}
