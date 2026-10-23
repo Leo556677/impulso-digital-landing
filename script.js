@@ -18,10 +18,10 @@ const IMPULSO = {
       interest: 'Logo + Identidad'
     },
     social: {
-      title: 'Impulso Social',
-      copy: 'Si necesitas presentar mejor tu negocio en redes, los packs de creativos pueden ayudarte a mantener una línea visual más coherente.',
+      title: 'Impulso Social · Imágenes',
+      copy: 'Diseñamos imágenes estáticas para publicaciones orgánicas y anuncios publicitarios digitales. No incluye videos, publicación ni gestión de campañas.',
       price: 'Desde S/420',
-      interest: 'Creativos para redes'
+      interest: 'Imágenes para redes y anuncios'
     },
     agenda: {
       title: 'Impulso Agenda',
