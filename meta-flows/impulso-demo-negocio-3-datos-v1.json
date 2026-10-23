@@ -1,0 +1,60 @@
+{
+  "version": "7.3",
+  "screens": [
+    {
+      "id": "DEMO_NEGOCIO",
+      "title": "Crea tu chatbot",
+      "terminal": true,
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Prueba un chatbot para tu negocio"
+          },
+          {
+            "type": "TextBody",
+            "text": "Completa tres datos para personalizar una demostración. No se realizarán pedidos, reservas ni cobros."
+          },
+          {
+            "type": "TextInput",
+            "name": "nombre_negocio",
+            "label": "Nombre del negocio",
+            "required": true,
+            "input-type": "text"
+          },
+          {
+            "type": "TextInput",
+            "name": "rubro",
+            "label": "Rubro del negocio",
+            "required": true,
+            "input-type": "text"
+          },
+          {
+            "type": "TextInput",
+            "name": "servicio_principal",
+            "label": "Producto o servicio",
+            "required": true,
+            "input-type": "text"
+          },
+          {
+            "type": "TextCaption",
+            "text": "Tus datos se usarán únicamente en esta demostración."
+          },
+          {
+            "type": "Footer",
+            "label": "Crear mi demo",
+            "on-click-action": {
+              "name": "complete",
+              "payload": {
+                "nombre_negocio": "${form.nombre_negocio}",
+                "rubro": "${form.rubro}",
+                "servicio_principal": "${form.servicio_principal}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
