@@ -12,7 +12,7 @@
 <button id="prepare" disabled>Preparar formulario Meta</button><small class="muted"> Si hay error no reintentes a ciegas; usa el diagnóstico inferior.</small></section>
 <section><h2>4. Enviar solamente a mi WhatsApp</h2><p class="muted">Si la ventana de atención venció, envía primero «Hola» desde tu WhatsApp personal.</p><div class="actions"><a href="https://wa.me/51903396082" target="_blank" rel="noopener">Abrir WhatsApp personal</a><button id="send" disabled>Enviar formulario a mi chat</button></div></section>
 <section><h2>5. Verificar la captura</h2><button id="check" disabled>Actualizar resultado</button><div id="capture">Aún no se ha confirmado ningún formulario.</div><details><summary>Diagnóstico técnico</summary><pre id="log">Sin acciones ejecutadas.</pre></details></section>
-<p class="muted"><a href="https://impulso-crm-saas.pages.dev/automations.html?automation_id=0f3d1213-964a-487c-bf39-1bd96904dc05" target="_blank" rel="noopener">Abrir borrador del Flow Builder</a> (sin cambios a otras ramas).</p>
+<p class="muted"><a href="./crm-login.html" target="_blank" rel="noopener">Iniciar sesión CRM en este navegador</a> · <a href="https://impulso-crm-saas.pages.dev/automations.html?automation_id=0f3d1213-964a-487c-bf39-1bd96904dc05" target="_blank" rel="noopener">Abrir borrador del Flow Builder</a> (sin cambios a otras ramas).</p>
 </main>
 <script type="module">
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
@@ -57,7 +57,7 @@ el('send').onclick=()=>run('DEMO_FLOW_SEND','ENVIAR_SOLO_A_MI_WHATSAPP');
 el('check').onclick=async()=>{busy=true;controls();try{await check()}catch(e){output(e)}finally{busy=false;controls()}};
 try{
  const {data:{user},error}=await db.auth.getUser();
- if(error||!user){el('session').textContent='Inicia sesión en el CRM desde este mismo navegador.'}
+ if(error||!user){el('session').textContent='Inicia sesión en el CRM desde este mismo navegador. Usa el enlace de acceso que está al pie.'}
  else{
  const {data:member,error:memError}=await db.from('usuarios_negocio').select('rol').eq('negocio_id',B).eq('user_id',user.id).maybeSingle();
  if(memError||member?.rol!=='admin')el('session').textContent='Se requiere rol administrador de Impulso Digital.';
