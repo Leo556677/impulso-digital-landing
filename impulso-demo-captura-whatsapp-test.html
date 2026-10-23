@@ -1,0 +1,68 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Impulso Digital · Prueba formulario WhatsApp</title>
+<style>*{box-sizing:border-box}body{background:#f8f5f9;font:15px/1.55 system-ui,Arial;color:#29202e;padding:15px;margin:0}main{max-width:800px;margin:auto}header{display:flex;gap:12px;align-items:center;margin:16px 0 26px}header img{width:52px;height:52px;border-radius:50%}h1{font-size:clamp(25px,4.5vw,37px);line-height:1.16;margin:5px 0}h2{font-size:18px;margin:0 0 10px}section{background:#fff;border:1px solid #e5dce7;border-radius:16px;padding:23px;margin:15px 0}.muted{color:#635a69}.alert{background:#fff5d6;border:1px solid #edcf76;padding:14px;border-radius:12px}label{display:block;margin:14px 0}input[type=checkbox]{width:18px;height:18px;vertical-align:middle;accent-color:#c30d75;margin-right:8px}button{padding:12px 16px;background:#b10c66;border:0;border-radius:10px;color:white;font-weight:800;cursor:pointer;margin:4px}button:disabled{opacity:.4;cursor:not-allowed}a{color:#9b005a}pre{background:#29232b;color:#fff;padding:13px;border-radius:10px;overflow:auto;white-space:pre-wrap;font-size:12px}small{font-size:12px}.rows{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.rows>div{border:1px solid #e5dce7;border-radius:10px;padding:11px}.actions{display:flex;flex-wrap:wrap;gap:8px}.badge{color:#a6005e;font-size:12px;font-weight:800}#capture{background:#f1edf3;padding:13px;border-radius:10px}@media(max-width:640px){section{padding:17px}.rows{grid-template-columns:1fr}.actions button{flex:1}}</style></head><body><main>
+<header><img src="./img/logo-impulso-digital.png" alt=""><b>IMPULSO DIGITAL<br><small class="muted">WhatsApp · Prueba exclusiva de administrador</small></b></header>
+<div class="badge">PRUEBA REAL · UN SOLO CONTACTO</div><h1>Prueba el formulario de 3 datos en WhatsApp</h1>
+<p class="muted">Este formulario abre dentro de WhatsApp. No cambia tu número, no conecta clientes nuevos y no ejecuta todavía los cinco niveles de la demostración.</p>
+<p class="alert"><b>Acción en Meta:</b> Preparar crea y publica un Flow independiente en tu WABA real. Meta no permite editar un Flow después de publicarlo; puede deprecarse si es necesario. El respaldo del backend ya existe.</p>
+<section><h2>1. Sesión de administrador</h2><p id="session">Comprobando la sesión CRM…</p><p id="status" class="muted">Estado aún no consultado.</p></section>
+<section><h2>2. Datos que verá el prospecto</h2><div class="rows"><div><b>Nombre del negocio</b><div class="muted">Florería Aurora</div></div><div><b>Rubro</b><div class="muted">Florería y regalos</div></div><div><b>Producto o servicio</b><div class="muted">Arreglos florales</div></div></div><p class="muted">Botón final: <b>Crear mi demo</b>. No crea compras, citas ni pagos.</p></section>
+<section><h2>3. Preparar formulario en Meta</h2>
+<label><input id="approve" type="checkbox" disabled> Autorizo crear y publicar <b>únicamente este Flow de prueba</b> para Impulso Digital.</label>
+<button id="prepare" disabled>Preparar formulario Meta</button><small class="muted"> Si hay error no reintentes a ciegas; usa el diagnóstico inferior.</small></section>
+<section><h2>4. Enviar solamente a mi WhatsApp</h2><p class="muted">Si la ventana de atención venció, envía primero «Hola» desde tu WhatsApp personal.</p><div class="actions"><a href="https://wa.me/51903396082" target="_blank" rel="noopener">Abrir WhatsApp personal</a><button id="send" disabled>Enviar formulario a mi chat</button></div></section>
+<section><h2>5. Verificar la captura</h2><button id="check" disabled>Actualizar resultado</button><div id="capture">Aún no se ha confirmado ningún formulario.</div><details><summary>Diagnóstico técnico</summary><pre id="log">Sin acciones ejecutadas.</pre></details></section>
+<p class="muted"><a href="https://impulso-crm-saas.pages.dev/automations.html?automation_id=0f3d1213-964a-487c-bf39-1bd96904dc05" target="_blank" rel="noopener">Abrir borrador del Flow Builder</a> (sin cambios a otras ramas).</p>
+</main>
+<script type="module">
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.2/+esm';
+const db=createClient("https://xnlzsgulskqyecfgzhwa.supabase.co","sb_publishable_s9YdJaMe_ll4QehPkADlKQ_KkuvWt32",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const B='c656a9ac-2739-451b-a93f-9e25fc9f4cbe', el=x=>document.getElementById(x);let admin=false,ready=false,busy=false;
+const output=x=>el('log').textContent=JSON.stringify(x,null,2);
+const controls=()=>{el('approve').disabled=!admin||busy||ready;el('prepare').disabled=!admin||busy||ready||!el('approve').checked;el('send').disabled=!admin||busy||!ready;el('check').disabled=!admin||busy};
+el('approve').addEventListener('change',controls);
+async function api(action,confirmation=''){
+ const {data,error}=await db.functions.invoke('whatsapp-coexistence-prod',{body:{action,negocio_id:B,...(confirmation?{confirmacion:confirmation}:{})}});
+ if(error){let detail=null;try{detail=await error.context?.json?.()}catch{}throw detail||{ok:false,error:error.message}}
+ return data;
+}
+function view(data){
+ ready=!!data.flow_ready;
+ el('status').textContent=ready?'✅ Formulario de Meta preparado. Ya puedes enviarlo.':'Formulario de Meta aún pendiente de preparar.';
+ const root=el('capture');root.replaceChildren();
+ if(data.capture_received&&data.capture?.fields){
+ const h=document.createElement('b');h.textContent='✅ Datos recibidos en Supabase';root.append(h);
+ for(const [k,v] of Object.entries(data.capture.fields)){
+ const p=document.createElement('p');const title=document.createElement('b');title.textContent=k.replace(/_/g,' ')+': ';p.append(title,document.createTextNode(String(v)));root.append(p)
+ }
+ }else root.textContent='Sin captura todavía. Después de llenar el formulario, pulsa Actualizar resultado.';
+ controls()
+}
+async function check(){
+ const d=await api('DEMO_FLOW_STATUS');if(!d?.ok)throw d;
+ output({ok:d.ok,flow_ready:d.flow_ready,sent_at:d.sent_at,capture_received:d.capture_received,capture:d.capture||null});view(d)
+}
+async function run(action,confirm){
+ if(!admin||busy)return;busy=true;controls();el('status').textContent='Comprobando Meta y Supabase…';
+ try{const d=await api(action,confirm);output(d);
+ if(d?.ok){
+ if(action==='DEMO_FLOW_PREPARE'){ready=true;el('status').textContent='✅ Formulario registrado en Meta.'}
+ else el('status').textContent='✅ Meta aceptó el envío. Completa el formulario en tu WhatsApp.';
+ }else el('status').textContent='No se confirmó esta operación; revisa el diagnóstico.';
+ }catch(e){output(e);el('status').textContent='⚠️ Operación fallida. No repitas sin revisar el error.'}
+ finally{busy=false;controls()}
+}
+el('prepare').onclick=()=>run('DEMO_FLOW_PREPARE','AUTORIZO_CREAR_FORMULARIO_DEMO_EN_WABA');
+el('send').onclick=()=>run('DEMO_FLOW_SEND','ENVIAR_SOLO_A_MI_WHATSAPP');
+el('check').onclick=async()=>{busy=true;controls();try{await check()}catch(e){output(e)}finally{busy=false;controls()}};
+try{
+ const {data:{user},error}=await db.auth.getUser();
+ if(error||!user){el('session').textContent='Inicia sesión en el CRM desde este mismo navegador.'}
+ else{
+ const {data:member,error:memError}=await db.from('usuarios_negocio').select('rol').eq('negocio_id',B).eq('user_id',user.id).maybeSingle();
+ if(memError||member?.rol!=='admin')el('session').textContent='Se requiere rol administrador de Impulso Digital.';
+ else{admin=true;el('session').textContent='✅ Administrador confirmado.';await check()}
+ }
+}catch(e){output(e);el('session').textContent='No fue posible verificar la sesión.'}
+controls();
+</script></body></html>
