@@ -49,7 +49,7 @@ async function run(action,confirm){
  if(action==='DEMO_FLOW_PREPARE'){ready=true;el('status').textContent='✅ Formulario registrado en Meta.'}
  else el('status').textContent='✅ Meta aceptó el envío. Completa el formulario en tu WhatsApp.';
  }else el('status').textContent='No se confirmó esta operación; revisa el diagnóstico.';
- }catch(e){output(e);el('status').textContent='⚠️ Operación fallida. No repitas sin revisar el error.'}
+ }catch(e){output(e);el('status').textContent='⚠️ '+String(e?.error||e?.message||'Operación rechazada').slice(0,280)+'. Revisa el diagnóstico sin repetir la operación.'}
  finally{busy=false;controls()}
 }
 el('prepare').onclick=()=>run('DEMO_FLOW_PREPARE','AUTORIZO_CREAR_FORMULARIO_DEMO_EN_WABA');
@@ -61,7 +61,11 @@ try{
  else{
  const {data:member,error:memError}=await db.from('usuarios_negocio').select('rol').eq('negocio_id',B).eq('user_id',user.id).maybeSingle();
  if(memError||member?.rol!=='admin')el('session').textContent='Se requiere rol administrador de Impulso Digital.';
- else{admin=true;el('session').textContent='✅ Administrador confirmado.';await check()}
+ else{
+  admin=true;el('session').textContent='✅ Administrador confirmado.';
+  try{await check()}
+  catch(e){output(e);el('status').textContent='⚠️ Error del servicio: '+String(e?.error||e?.message||'No se pudo consultar el estado').slice(0,280)}
+ }
  }
 }catch(e){output(e);el('session').textContent='No fue posible verificar la sesión.'}
 controls();
